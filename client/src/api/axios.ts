@@ -13,6 +13,15 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config
 
+        // Do not intercept authentication-related requests to prevent infinite loops
+        if (
+            originalRequest.url?.includes('/auth/login') ||
+            originalRequest.url?.includes('/auth/register') ||
+            originalRequest.url?.includes('/auth/refresh')
+        ) {
+            return Promise.reject(error)
+        }
+
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true
 
@@ -24,7 +33,8 @@ api.interceptors.response.use(
                 )
                 return api(originalRequest) // retry the original request
             } catch {
-                window.location.href = '/login' // refresh failed, send to login
+                // Refresh failed, let the caller handle the 401 error
+                return Promise.reject(error)
             }
         }
 

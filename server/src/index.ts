@@ -5,8 +5,15 @@ import fastifyCookie from '@fastify/cookie'
 import prismaPlugin from './plugins/prisma.js'
 import authRoutes from './routes/auth.js'
 import { authenticate } from './middleware/authenticate.js'
+import cors from '@fastify/cors'
 
 const app = Fastify({ logger: true })
+
+app.register(cors, {
+  origin: process.env.CORS_ORIGIN!, // set the env variable to the url of the client
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+})
 
 app.register(fastifyCookie)
 app.register(fastifyJwt, {
