@@ -2,5 +2,8 @@ packages:
   - 'client'
   - 'server'
 allowBuilds:
+  '@prisma/engines': true
+  bcrypt: true
   esbuild: true
   msw: false
+  prisma: true
