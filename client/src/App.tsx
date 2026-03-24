@@ -1,10 +1,29 @@
-import { Button } from '@/components/ui/button'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { AuthProvider } from './context/AuthContext'
+import { ProtectedRoute } from './components/ProtectedRoute'
+import DashboardPage from './pages/DashboardPage'
+
+const queryClient = new QueryClient()
 
 function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <Button>Let's get swole</Button>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<div>Login page coming soon</div>} />
+            <Route path="/register" element={<div>Register page coming soon</div>} />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            } />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </QueryClientProvider>
   )
 }
 

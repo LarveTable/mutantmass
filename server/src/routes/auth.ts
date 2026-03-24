@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import bcrypt from 'bcrypt'
+import { authenticate } from '../middleware/authenticate.js'
 
 const SALT_ROUNDS = 12
 const ACCESS_TOKEN_EXPIRY = '15m'
@@ -192,5 +193,16 @@ export default async function authRoutes(app: FastifyInstance) {
             .clearCookie('access_token', { path: '/' })
             .clearCookie('refresh_token', { path: '/' })
             .send({ success: true })
+    })
+
+    // ME
+    app.get('/auth/me', { preHandler: authenticate }, async (request, reply) => {
+        const { userId } = request.user as { userId: string }
+        const user = await app.prisma.user.findUnique({
+            where: { id: userId },
+            select: { id: true, email: true }
+        })
+        if (!user) return reply.status(404).send({ error: 'User not found' })
+        return { user }
     })
 }
