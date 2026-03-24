@@ -1,15 +1,35 @@
 import 'dotenv/config'
 import Fastify from 'fastify'
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from './generated/prisma/client.js'
+import fastifyJwt from '@fastify/jwt'
+import fastifyCookie from '@fastify/cookie'
+import prismaPlugin from './plugins/prisma.js'
+import authRoutes from './routes/auth.js'
+import { authenticate } from './middleware/authenticate.js'
 
 const app = Fastify({ logger: true })
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
 
+app.register(fastifyCookie)
+app.register(fastifyJwt, {
+  secret: process.env.JWT_SECRET!,
+  cookie: {
+    cookieName: 'access_token',
+    signed: false,
+  }
+})
+
+app.register(prismaPlugin)
+app.register(authRoutes)
+
+// Health check route
 app.get('/health', async () => {
-  const userCount = await prisma.user.count()
+  const userCount = await app.prisma.user.count()
   return { status: 'ok', users: userCount }
+})
+
+// Auth test route
+app.get('/protected', { preHandler: authenticate }, async (request) => {
+  const { userId } = request.user as { userId: string }
+  return { message: `Hello user ${userId}` }
 })
 
 app.listen({ port: 3000 }, (err) => {

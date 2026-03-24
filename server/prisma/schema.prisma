@@ -12,14 +12,18 @@ datasource db {
   provider = "postgresql"
 }
 
+// User table
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  refreshTokens RefreshToken[]
+  refreshTokens RefreshToken[] // Multiple tokens if multiple devices
 }
+
+// Refresh token table, used for staying authenticated longer
 
 model RefreshToken {
   id        String   @id @default(cuid())
