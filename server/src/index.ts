@@ -6,6 +6,7 @@ import prismaPlugin from './plugins/prisma.js'
 import authRoutes from './routes/auth.js'
 import cors from '@fastify/cors'
 import exerciseRoutes from './routes/exercises.js'
+import workoutRoutes from './routes/workouts.js'
 
 const app = Fastify({ logger: true })
 
@@ -31,6 +32,9 @@ app.register(authRoutes)
 
 // Exercises routes
 app.register(exerciseRoutes)
+
+// Workout routes
+app.register(workoutRoutes)
 
 app.listen({ port: 3000 }, (err) => {
   if (err) process.exit(1)

@@ -23,10 +23,11 @@ export default async function exerciseRoutes(app: FastifyInstance) {
     // POST /exercises - create a custom exercise
     app.post('/exercises', { preHandler: authenticate }, async (request, reply) => {
         const { userId } = request.user as { userId: string }
-        const { name, type, isPublic } = request.body as {
+        const { name, type, isPublic, imageUrl } = request.body as {
             name: string
             type: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'
             isPublic?: boolean
+            imageUrl?: string
         }
 
         if (!name || !type) {
@@ -43,6 +44,7 @@ export default async function exerciseRoutes(app: FastifyInstance) {
                 type,
                 isPublic: isPublic ?? false,
                 userId,
+                imageUrl: imageUrl ?? null,
             },
         })
 

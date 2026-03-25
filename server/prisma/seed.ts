@@ -49,6 +49,7 @@ const exercises: ExerciseSeed[] = [
 async function main() {
     console.log('Seeding exercises...')
 
+    // For each ex, check if it exists in db (only the non-custom / global ones)
     for (const exercise of exercises) {
         const existing = await prisma.exercise.findFirst({
             where: { name: exercise.name, userId: null },
