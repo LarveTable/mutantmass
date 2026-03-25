@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.js'
 import cors from '@fastify/cors'
 import exerciseRoutes from './routes/exercises.js'
 import workoutRoutes from './routes/workouts.js'
+import setRoutes from './routes/sets.js'
 
 const app = Fastify({ logger: true })
 
@@ -35,6 +36,9 @@ app.register(exerciseRoutes)
 
 // Workout routes
 app.register(workoutRoutes)
+
+// Sets routes
+app.register(setRoutes)
 
 app.listen({ port: 3000 }, (err) => {
   if (err) process.exit(1)
