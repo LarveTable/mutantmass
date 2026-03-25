@@ -4,11 +4,12 @@ import fastifyJwt from '@fastify/jwt'
 import fastifyCookie from '@fastify/cookie'
 import prismaPlugin from './plugins/prisma.js'
 import authRoutes from './routes/auth.js'
-import { authenticate } from './middleware/authenticate.js'
 import cors from '@fastify/cors'
+import exerciseRoutes from './routes/exercises.js'
 
 const app = Fastify({ logger: true })
 
+// CORS
 app.register(cors, {
   origin: process.env.CORS_ORIGIN!, // set the env variable to the url of the client
   credentials: true,
@@ -25,19 +26,11 @@ app.register(fastifyJwt, {
 })
 
 app.register(prismaPlugin)
+// Auth routes
 app.register(authRoutes)
 
-// Health check route
-app.get('/health', async () => {
-  const userCount = await app.prisma.user.count()
-  return { status: 'ok', users: userCount }
-})
-
-// Auth test route
-app.get('/protected', { preHandler: authenticate }, async (request) => {
-  const { userId } = request.user as { userId: string }
-  return { message: `Hello user ${userId}` }
-})
+// Exercises routes
+app.register(exerciseRoutes)
 
 app.listen({ port: 3000 }, (err) => {
   if (err) process.exit(1)

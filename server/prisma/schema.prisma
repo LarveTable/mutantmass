@@ -12,6 +12,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ExerciseType {
+  WEIGHTED
+  BODYWEIGHT
+  CARDIO
+}
+
 // User table
 
 model User {
@@ -21,6 +27,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   refreshTokens RefreshToken[] // Multiple tokens if multiple devices
+  workouts      Workout[]
+  exercises     Exercise[]
 }
 
 // Refresh token table, used for staying authenticated longer
@@ -32,4 +40,56 @@ model RefreshToken {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+// Exercise table
+
+model Exercise {
+  id               String            @id @default(cuid())
+  name             String
+  type             ExerciseType
+  userId           String?
+  user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageUrl         String?
+  isPublic         Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  workoutExercises WorkoutExercise[]
+}
+
+model Workout {
+  id               String            @id @default(cuid())
+  userId           String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String?
+  note             String?
+  date             DateTime          @default(now())
+  duration         Int?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  workoutExercises WorkoutExercise[]
+}
+
+model WorkoutExercise {
+  id            String   @id @default(cuid())
+  workoutId     String
+  workout       Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseId    String
+  exercise      Exercise @relation(fields: [exerciseId], references: [id])
+  order         Int
+  supersetGroup Int?
+  createdAt     DateTime @default(now())
+  sets          Set[]
+}
+
+model Set {
+  id                String          @id @default(cuid())
+  workoutExerciseId String
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+  order             Int
+  reps              Int?
+  weight            Float?
+  duration          Int?
+  distance          Float?
+  restTime          Int?
+  createdAt         DateTime        @default(now())
 }

@@ -8,6 +8,8 @@ import RegisterPage from './pages/RegisterPage'
 
 const queryClient = new QueryClient()
 
+// Main file for the whole app
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
