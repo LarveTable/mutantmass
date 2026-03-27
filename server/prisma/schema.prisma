@@ -18,6 +18,20 @@ enum ExerciseType {
   CARDIO
 }
 
+enum MuscleGroup {
+  CHEST
+  BACK
+  SHOULDERS
+  BICEPS
+  TRICEPS
+  FOREARMS
+  LEGS
+  GLUTES
+  CORE
+  CARDIO
+  FULL_BODY
+}
+
 // User table
 
 model User {
@@ -48,6 +62,7 @@ model Exercise {
   id               String            @id @default(cuid())
   name             String
   type             ExerciseType
+  muscleGroup      MuscleGroup
   userId           String?
   user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
   imageUrl         String?

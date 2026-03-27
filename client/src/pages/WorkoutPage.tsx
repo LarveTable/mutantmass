@@ -1,0 +1,196 @@
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Dumbbell, Plus, StopCircle } from 'lucide-react'
+import {
+    useActiveWorkout,
+    useCreateWorkout,
+    useFinishWorkout,
+    useAddExercise,
+    useAddSet,
+    useDeleteSet,
+} from '@/hooks/useWorkout'
+import { useActiveWorkoutState } from '@/hooks/useActiveWorkoutState'
+import StartWorkoutDialog from '@/components/workout/StartWorkoutDialog'
+import ExercisePicker from '@/components/workout/ExercisePicker'
+import SetLogger from '@/components/workout/SetLogger'
+import RestTimer from '@/components/workout/RestTimer'
+import WorkoutSummary from '@/components/workout/WorkoutSummary'
+import WorkoutTimer from '@/components/workout/WorkoutTimer'
+
+// Main page for logging workouts
+
+export default function WorkoutPage() {
+    const { workoutId, startTime, startWorkout, endWorkout } = useActiveWorkoutState()
+    const [startDialogOpen, setStartDialogOpen] = useState(false)
+    const [exercisePickerOpen, setExercisePickerOpen] = useState(false)
+    const [restTimer, setRestTimer] = useState<number | null>(null)
+    const [restTimerActive, setRestTimerActive] = useState(false)
+    const [finishedWorkout, setFinishedWorkout] = useState<any>(null)
+
+    const { data: workout, isLoading } = useActiveWorkout(workoutId)
+    const createWorkout = useCreateWorkout()
+    const finishWorkout = useFinishWorkout()
+    const addExercise = useAddExercise(workoutId ?? '')
+    const addSet = useAddSet(workoutId ?? '')
+    const deleteSet = useDeleteSet(workoutId ?? '')
+
+    const handleStart = async (name: string, rest: number | null) => {
+        const created = await createWorkout.mutateAsync({ name: name || undefined })
+        startWorkout(created.id)
+        setRestTimer(rest)
+        setStartDialogOpen(false)
+    }
+
+    const handleFinish = async () => {
+        if (!workoutId) return
+        const duration = Math.floor((Date.now() - startTime) / 1000)
+        await finishWorkout.mutateAsync({ id: workoutId, duration })
+        setFinishedWorkout({ ...workout, duration })
+        endWorkout()
+        setRestTimer(null)
+        setRestTimerActive(false)
+    }
+
+    const handleAddSet = (data: Parameters<typeof addSet.mutateAsync>[0]) => {
+        addSet.mutate(data)
+        if (restTimer) setRestTimerActive(true)
+    }
+
+    const handleDeleteSet = (workoutExerciseId: string, setId: string) => {
+        deleteSet.mutate({ workoutExerciseId, setId })
+    }
+
+    // Show workout summary after finishing
+    if (finishedWorkout) {
+        return (
+            <WorkoutSummary
+                workout={finishedWorkout}
+                onDone={() => setFinishedWorkout(null)}
+            />
+        )
+    }
+
+    // No active workout
+    if (!workoutId) {
+        return (
+            <div className="flex min-h-[80vh] flex-col items-center justify-center gap-6 px-6">
+                <div className="flex flex-col items-center gap-2 text-center">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+                        <Dumbbell size={36} className="text-primary" />
+                    </div>
+                    <h1 className="text-2xl font-bold">Ready to train?</h1>
+                    <p className="text-muted-foreground">Start a new workout to begin logging your sets</p>
+                </div>
+                <Button size="lg" className="w-full max-w-xs" onClick={() => setStartDialogOpen(true)}>
+                    Start Workout
+                </Button>
+
+                <StartWorkoutDialog
+                    open={startDialogOpen}
+                    onClose={() => setStartDialogOpen(false)}
+                    onStart={handleStart}
+                    isLoading={createWorkout.isPending}
+                />
+            </div>
+        )
+    }
+
+    // Active workout
+    if (isLoading) {
+        return (
+            <div className="flex min-h-[80vh] items-center justify-center">
+                <p className="text-muted-foreground">Loading workout...</p>
+            </div>
+        )
+    }
+
+    return (
+        <div className="flex flex-col gap-4 px-4 py-6">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-xl font-bold">{workout?.name ?? 'Workout'}</h1>
+                    <p className="text-sm text-muted-foreground">
+                        {workout?.workoutExercises?.length ?? 0} exercise
+                        {workout?.workoutExercises?.length !== 1 ? 's' : ''}
+                    </p>
+                </div>
+                <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleFinish}
+                    disabled={finishWorkout.isPending}
+                >
+                    <StopCircle size={16} className="mr-1" />
+                    Finish
+                </Button>
+            </div>
+
+            {/* Timer */}
+            <WorkoutTimer startTime={startTime} />
+
+            {/* Exercise list */}
+            <div className="flex flex-col gap-4">
+                {workout?.workoutExercises?.map((we: any) => (
+                    <div key={we.id} className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
+                        <div className="flex items-center gap-3">
+                            {we.exercise.imageUrl ? (
+                                <img
+                                    src={we.exercise.imageUrl}
+                                    alt={we.exercise.name}
+                                    className="h-10 w-10 rounded-lg object-cover"
+                                />
+                            ) : (
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                                    <Dumbbell size={18} className="text-primary" />
+                                </div>
+                            )}
+                            <div>
+                                <p className="font-semibold">{we.exercise.name}</p>
+                                <p className="text-xs text-muted-foreground capitalize">
+                                    {we.exercise.type.toLowerCase()}
+                                </p>
+                            </div>
+                        </div>
+
+                        <SetLogger
+                            workoutExerciseId={we.id}
+                            exerciseName={we.exercise.name}
+                            exerciseType={we.exercise.type}
+                            sets={we.sets}
+                            restTimer={restTimer}
+                            onAddSet={handleAddSet}
+                            onDeleteSet={handleDeleteSet}
+                        />
+                    </div>
+                ))}
+            </div>
+
+            {/* Add exercise button */}
+            <Button
+                variant="outline"
+                className="w-full border-dashed"
+                onClick={() => setExercisePickerOpen(true)}
+            >
+                <Plus size={18} className="mr-2" />
+                Add Exercise
+            </Button>
+
+            {/* Exercise picker */}
+            <ExercisePicker
+                open={exercisePickerOpen}
+                onClose={() => setExercisePickerOpen(false)}
+                onSelect={(exerciseId) => addExercise.mutate(exerciseId)}
+            />
+
+            {/* Rest timer */}
+            {restTimerActive && restTimer && (
+                <RestTimer
+                    duration={restTimer}
+                    onComplete={() => setRestTimerActive(false)}
+                    onDismiss={() => setRestTimerActive(false)}
+                />
+            )}
+        </div>
+    )
+}

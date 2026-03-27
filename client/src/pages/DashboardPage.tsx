@@ -1,6 +1,7 @@
 import { useAuth } from '../hooks/useAuth'
 
 // Dashboard page, only accessible if the user is authenticated
+// The main page of the app
 export default function DashboardPage() {
     const { user, logout } = useAuth()
 
