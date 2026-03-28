@@ -140,7 +140,7 @@ export default async function authRoutes(app: FastifyInstance) {
         }
 
         // Rotate refresh token
-        await app.prisma.refreshToken.delete({ where: { token: refreshToken } })
+        await app.prisma.refreshToken.deleteMany({ where: { token: refreshToken } })
 
         // Generate new tokens
         const newAccessToken = app.jwt.sign(

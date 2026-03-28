@@ -16,10 +16,10 @@ type ExerciseSeed = {
 
 const exercises: ExerciseSeed[] = [
     // WEIGHTED - CHEST
-    { name: 'Bench Press', type: 'WEIGHTED', muscleGroup: 'CHEST', imageUrl: 'assets/exercises/bench_press.jpg' },
-    { name: 'Incline Bench Press', type: 'WEIGHTED', muscleGroup: 'CHEST', imageUrl: 'assets/exercises/incline_bench_press.jpg' },
+    { name: 'Bench Press', type: 'WEIGHTED', muscleGroup: 'CHEST' },
+    { name: 'Incline Bench Press', type: 'WEIGHTED', muscleGroup: 'CHEST' },
     // WEIGHTED - BACK
-    { name: 'Deadlift', type: 'WEIGHTED', muscleGroup: 'BACK', imageUrl: 'assets/exercises/deadlift.jpg' },
+    { name: 'Deadlift', type: 'WEIGHTED', muscleGroup: 'BACK' },
     { name: 'Barbell Row', type: 'WEIGHTED', muscleGroup: 'BACK' },
     { name: 'Lat Pulldown', type: 'WEIGHTED', muscleGroup: 'BACK' },
     { name: 'Cable Row', type: 'WEIGHTED', muscleGroup: 'BACK' },
