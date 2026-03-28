@@ -128,7 +128,11 @@ export default function SetLogger({
                                 <Pencil size={13} />
                             </button>
                             <button
-                                onClick={() => onDeleteSet(workoutExerciseId, set.id)}
+                                onClick={() => {
+                                    if (confirm('Delete this set?')) {
+                                        onDeleteSet(workoutExerciseId, set.id)
+                                    }
+                                }}
                                 className="flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
                             >
                                 <Trash2 size={14} />

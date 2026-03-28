@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react'
-import { useWorkouts } from '@/hooks/useWorkout'
+import { useWorkouts, useDeleteWorkout } from '@/hooks/useWorkout'
 import WeeklyCalendar from '@/components/history/WeeklyCalendar'
 import WorkoutDetailModal from '@/components/history/WorkoutDetailModal'
-import { Dumbbell, Clock } from 'lucide-react'
+import { Dumbbell, Clock, Trash2 } from 'lucide-react'
 
 // Page used to access the past workouts and maybe edit them
 
@@ -33,6 +33,7 @@ export default function HistoryPage() {
 
     const month = toMonthString(weekStart)
     const { data: workouts = [] } = useWorkouts(month)
+    const deleteWorkout = useDeleteWorkout()
 
     const workoutDates = useMemo(() =>
         workouts.map((w: any) => w.date.split('T')[0]), [workouts])
@@ -101,12 +102,26 @@ export default function HistoryPage() {
                             >
                                 <div className="flex items-center justify-between">
                                     <p className="font-semibold">{workout.name ?? 'Workout'}</p>
-                                    {workout.duration && (
-                                        <div className="flex items-center gap-1 text-muted-foreground">
-                                            <Clock size={13} />
-                                            <span className="text-xs">{formatDuration(workout.duration)}</span>
+                                    <div className="flex items-center gap-2">
+                                        {workout.duration && (
+                                            <div className="flex items-center gap-1 text-muted-foreground">
+                                                <Clock size={13} />
+                                                <span className="text-xs">{formatDuration(workout.duration)}</span>
+                                            </div>
+                                        )}
+                                        <div
+                                            role="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                if (confirm('Delete this workout?')) {
+                                                    deleteWorkout.mutate(workout.id)
+                                                }
+                                            }}
+                                            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                        >
+                                            <Trash2 size={14} />
                                         </div>
-                                    )}
+                                    </div>
                                 </div>
 
                                 {/* Exercise pills */}

@@ -36,6 +36,16 @@ export function useFinishWorkout() {
     })
 }
 
+export function useDeleteWorkout() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (id: string) => {
+            await api.delete(`/workouts/${id}`)
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workouts'] }),
+    })
+}
+
 export function useWorkoutSearch(query: string) {
     return useQuery({
         queryKey: ['workouts', 'search', query],

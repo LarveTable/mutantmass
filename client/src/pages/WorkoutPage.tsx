@@ -227,7 +227,11 @@ export default function WorkoutPage() {
                                     <StickyNote size={18} />
                                 </button>
                                 <button
-                                    onClick={() => removeExercise.mutate(we.id)}
+                                    onClick={() => {
+                                        if (confirm('Delete this exercise?')) {
+                                            removeExercise.mutate(we.id)
+                                        }
+                                    }}
                                     className="text-muted-foreground hover:text-destructive transition-colors"
                                 >
                                     <Trash2 size={18} />
