@@ -28,11 +28,32 @@ export function useCreateWorkout() {
 export function useFinishWorkout() {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async ({ id, duration }: { id: string; duration: number }) => {
-            const res = await api.patch(`/workouts/${id}`, { duration })
+        mutationFn: async ({ id, duration, note }: { id: string; duration: number; note?: string }) => {
+            const res = await api.patch(`/workouts/${id}`, { duration, note })
             return res.data.workout
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workouts'] }),
+    })
+}
+
+export function useRemoveExercise(workoutId: string) {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (workoutExerciseId: string) => {
+            await api.delete(`/workouts/${workoutId}/exercises/${workoutExerciseId}`)
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workout', workoutId] }),
+    })
+}
+
+export function useUpdateExerciseNote(workoutId: string) {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async ({ workoutExerciseId, note }: { workoutExerciseId: string; note: string }) => {
+            const res = await api.patch(`/workouts/${workoutId}/exercises/${workoutExerciseId}`, { note })
+            return res.data.workoutExercise
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workout', workoutId] }),
     })
 }
 

@@ -110,6 +110,26 @@ export default async function setRoutes(app: FastifyInstance) {
         return reply.status(201).send({ set })
     })
 
+    // PATCH /workouts/:workoutId/exercises/:workoutExerciseId - update exercise note (in a workout)
+    app.patch('/workouts/:workoutId/exercises/:workoutExerciseId', { preHandler: authenticate }, async (request, reply) => {
+        const { userId } = request.user as { userId: string }
+        const { workoutId, workoutExerciseId } = request.params as {
+            workoutId: string
+            workoutExerciseId: string
+        }
+        const { note } = request.body as { note: string }
+
+        const workout = await app.prisma.workout.findFirst({ where: { id: workoutId, userId } })
+        if (!workout) return reply.status(404).send({ error: 'Workout not found' })
+
+        const workoutExercise = await app.prisma.workoutExercise.update({
+            where: { id: workoutExerciseId },
+            data: { note },
+        })
+
+        return { workoutExercise }
+    })
+
     // PATCH /workouts/:workoutId/exercises/:workoutExerciseId/sets/:setId - update a set
     app.patch('/workouts/:workoutId/exercises/:workoutExerciseId/sets/:setId', { preHandler: authenticate }, async (request, reply) => {
         const { userId } = request.user as { userId: string }

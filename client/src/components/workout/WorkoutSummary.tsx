@@ -27,6 +27,7 @@ interface Workout {
     duration?: number | null
     date: string
     workoutExercises: WorkoutExercise[]
+    note?: string | null
 }
 
 interface Props {
@@ -112,6 +113,14 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
                     </span>
                 </div>
             </div>
+
+            {/* Notes section */}
+            {workout.note && (
+                <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-1">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Session Note</p>
+                    <p className="text-sm">{workout.note}</p>
+                </div>
+            )}
 
             {/* Exercise breakdown */}
             <div className="flex flex-col gap-3">

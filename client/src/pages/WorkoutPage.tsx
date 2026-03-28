@@ -16,6 +16,10 @@ import SetLogger from '@/components/workout/SetLogger'
 import RestTimer from '@/components/workout/RestTimer'
 import WorkoutSummary from '@/components/workout/WorkoutSummary'
 import WorkoutTimer from '@/components/workout/WorkoutTimer'
+import FinishWorkoutDialog from '@/components/workout/FinishWorkoutDialog'
+import { useRemoveExercise, useUpdateExerciseNote } from '@/hooks/useWorkout'
+import ExerciseNoteDialog from '@/components/workout/ExerciseNoteDialog'
+import { Trash2, StickyNote } from 'lucide-react'
 
 // Main page for logging workouts
 
@@ -26,6 +30,13 @@ export default function WorkoutPage() {
     const [restTimer, setRestTimer] = useState<number | null>(null)
     const [restTimerActive, setRestTimerActive] = useState(false)
     const [finishedWorkout, setFinishedWorkout] = useState<any>(null)
+    const [finishDialogOpen, setFinishDialogOpen] = useState(false)
+    const [noteDialog, setNoteDialog] = useState<{ open: boolean; workoutExerciseId: string; name: string; note?: string | null }>({
+        open: false,
+        workoutExerciseId: '',
+        name: '',
+        note: null,
+    })
 
     const { data: workout, isLoading } = useActiveWorkout(workoutId)
     const createWorkout = useCreateWorkout()
@@ -33,6 +44,8 @@ export default function WorkoutPage() {
     const addExercise = useAddExercise(workoutId ?? '')
     const addSet = useAddSet(workoutId ?? '')
     const deleteSet = useDeleteSet(workoutId ?? '')
+    const removeExercise = useRemoveExercise(workoutId ?? '')
+    const updateExerciseNote = useUpdateExerciseNote(workoutId ?? '')
 
     const handleStart = async (name: string, rest: number | null) => {
         const created = await createWorkout.mutateAsync({ name: name || undefined })
@@ -41,14 +54,15 @@ export default function WorkoutPage() {
         setStartDialogOpen(false)
     }
 
-    const handleFinish = async () => {
+    const handleFinish = async (note: string) => {
         if (!workoutId) return
         const duration = Math.floor((Date.now() - startTime) / 1000)
-        await finishWorkout.mutateAsync({ id: workoutId, duration })
-        setFinishedWorkout({ ...workout, duration })
+        await finishWorkout.mutateAsync({ id: workoutId, duration, note: note || undefined })
+        setFinishedWorkout({ ...workout, duration, note })
         endWorkout()
         setRestTimer(null)
         setRestTimerActive(false)
+        setFinishDialogOpen(false)
     }
 
     const handleAddSet = (data: Parameters<typeof addSet.mutateAsync>[0]) => {
@@ -95,7 +109,7 @@ export default function WorkoutPage() {
         )
     }
 
-    // Active workout
+    // If still loading workout
     if (isLoading) {
         return (
             <div className="flex min-h-[80vh] items-center justify-center">
@@ -104,6 +118,7 @@ export default function WorkoutPage() {
         )
     }
 
+    // Active workout
     return (
         <div className="flex flex-col gap-4 px-4 py-6">
             {/* Header */}
@@ -118,8 +133,7 @@ export default function WorkoutPage() {
                 <Button
                     variant="destructive"
                     size="sm"
-                    onClick={handleFinish}
-                    disabled={finishWorkout.isPending}
+                    onClick={() => setFinishDialogOpen(true)}
                 >
                     <StopCircle size={16} className="mr-1" />
                     Finish
@@ -145,13 +159,40 @@ export default function WorkoutPage() {
                                     <Dumbbell size={18} className="text-primary" />
                                 </div>
                             )}
-                            <div>
+                            <div className="flex-1">
                                 <p className="font-semibold">{we.exercise.name}</p>
                                 <p className="text-xs text-muted-foreground capitalize">
                                     {we.exercise.type.toLowerCase()}
                                 </p>
                             </div>
+                            {/* Action buttons */}
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setNoteDialog({
+                                        open: true,
+                                        workoutExerciseId: we.id,
+                                        name: we.exercise.name,
+                                        note: we.note,
+                                    })}
+                                    className={`transition-colors ${we.note ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                                >
+                                    <StickyNote size={18} />
+                                </button>
+                                <button
+                                    onClick={() => removeExercise.mutate(we.id)}
+                                    className="text-muted-foreground hover:text-destructive transition-colors"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            </div>
                         </div>
+
+                        {/* Show note if exists */}
+                        {we.note && (
+                            <p className="text-xs text-muted-foreground italic border-l-2 border-primary/40 pl-3">
+                                {we.note}
+                            </p>
+                        )}
 
                         <SetLogger
                             workoutExerciseId={we.id}
@@ -164,6 +205,22 @@ export default function WorkoutPage() {
                         />
                     </div>
                 ))}
+
+                {/* Exercise note dialog */}
+                <ExerciseNoteDialog
+                    open={noteDialog.open}
+                    onClose={() => setNoteDialog((prev) => ({ ...prev, open: false }))}
+                    exerciseName={noteDialog.name}
+                    initialNote={noteDialog.note}
+                    onConfirm={(note) => {
+                        updateExerciseNote.mutate({
+                            workoutExerciseId: noteDialog.workoutExerciseId,
+                            note,
+                        })
+                        setNoteDialog((prev) => ({ ...prev, open: false }))
+                    }}
+                    isLoading={updateExerciseNote.isPending}
+                />
             </div>
 
             {/* Add exercise button */}
@@ -191,6 +248,12 @@ export default function WorkoutPage() {
                     onDismiss={() => setRestTimerActive(false)}
                 />
             )}
+            <FinishWorkoutDialog
+                open={finishDialogOpen}
+                onClose={() => setFinishDialogOpen(false)}
+                onConfirm={handleFinish}
+                isLoading={finishWorkout.isPending}
+            />
         </div>
     )
 }
