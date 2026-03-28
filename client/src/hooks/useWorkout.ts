@@ -36,6 +36,27 @@ export function useFinishWorkout() {
     })
 }
 
+export function useWorkouts(month: string) {
+    return useQuery({
+        queryKey: ['workouts', month],
+        queryFn: async () => {
+            const res = await api.get(`/workouts?month=${month}`)
+            return res.data.workouts
+        },
+    })
+}
+
+export function useWorkout(id: string | null) {
+    return useQuery({
+        queryKey: ['workout', id],
+        queryFn: async () => {
+            const res = await api.get(`/workouts/${id}`)
+            return res.data.workout
+        },
+        enabled: !!id,
+    })
+}
+
 export function useRemoveExercise(workoutId: string) {
     const queryClient = useQueryClient()
     return useMutation({

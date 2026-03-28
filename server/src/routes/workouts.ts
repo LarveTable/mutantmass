@@ -5,9 +5,19 @@ export default async function workoutRoutes(app: FastifyInstance) {
     // GET /workouts - list all workouts for the logged in user
     app.get('/workouts', { preHandler: authenticate }, async (request) => {
         const { userId } = request.user as { userId: string }
+        const { month } = request.query as { month?: string }
+
+        const where: any = { userId }
+
+        if (month) {
+            const start = new Date(`${month}-01`)
+            const end = new Date(start)
+            end.setMonth(end.getMonth() + 1)
+            where.date = { gte: start, lt: end }
+        }
 
         const workouts = await app.prisma.workout.findMany({
-            where: { userId },
+            where,
             orderBy: { date: 'desc' },
             include: {
                 workoutExercises: {
