@@ -7,6 +7,10 @@ const api = axios.create({
     withCredentials: true, // send cookies with every request
 })
 
+// Refresh lock: ensures only one refresh request is in-flight at a time.
+// All concurrent 401s wait for the same refresh promise.
+let refreshPromise: Promise<void> | null = null
+
 // Intercept 401s and try to refresh the token
 api.interceptors.response.use(
     (response) => response,
@@ -26,11 +30,18 @@ api.interceptors.response.use(
             originalRequest._retry = true
 
             try {
-                await axios.post(
-                    'http://localhost:3000/auth/refresh',
-                    {},
-                    { withCredentials: true }
-                )
+                // If a refresh is already in progress, wait for it instead of firing a new one
+                if (!refreshPromise) {
+                    refreshPromise = axios.post(
+                        'http://localhost:3000/auth/refresh',
+                        {},
+                        { withCredentials: true }
+                    ).then(() => {}).finally(() => {
+                        refreshPromise = null
+                    })
+                }
+
+                await refreshPromise
                 return api(originalRequest) // retry the original request
             } catch {
                 // Refresh failed, let the caller handle the 401 error
