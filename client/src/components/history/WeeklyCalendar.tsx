@@ -1,5 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
+// Component to show a weekly calendar for the history page
+
 interface Props {
     currentWeekStart: Date
     workoutDates: string[] // ISO date strings
@@ -20,7 +22,10 @@ function getWeekDays(weekStart: Date): Date[] {
 }
 
 function toDateString(date: Date): string {
-    return date.toISOString().split('T')[0]
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const d = String(date.getDate()).padStart(2, '0')
+    return `${y}-${m}-${d}`
 }
 
 function isToday(date: Date): boolean {
@@ -76,10 +81,10 @@ export default function WeeklyCalendar({
                             onClick={() => hasWorkout && onSelectDate(dateStr)}
                             disabled={!hasWorkout}
                             className={`flex flex-col items-center gap-1.5 rounded-xl py-2 transition-colors ${isSelected
-                                    ? 'bg-primary text-primary-foreground'
-                                    : today
-                                        ? 'border border-primary text-foreground'
-                                        : 'text-muted-foreground'
+                                ? 'bg-primary text-primary-foreground'
+                                : today
+                                    ? 'border border-primary text-foreground'
+                                    : 'text-muted-foreground'
                                 } ${hasWorkout && !isSelected ? 'hover:bg-accent cursor-pointer' : ''} ${!hasWorkout ? 'opacity-40 cursor-default' : ''
                                 }`}
                         >

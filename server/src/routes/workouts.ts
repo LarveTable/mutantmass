@@ -33,6 +33,59 @@ export default async function workoutRoutes(app: FastifyInstance) {
         return { workouts }
     })
 
+    // GET /workouts/recent - last 5 workouts
+    app.get('/workouts/recent', { preHandler: authenticate }, async (request) => {
+        const { userId } = request.user as { userId: string }
+
+        const workouts = await app.prisma.workout.findMany({
+            where: { userId },
+            orderBy: { date: 'desc' },
+            take: 5,
+            include: {
+                workoutExercises: {
+                    include: {
+                        exercise: true,
+                        sets: { orderBy: { order: 'asc' } },
+                    },
+                    orderBy: { order: 'asc' },
+                },
+            },
+        })
+
+        return { workouts }
+    })
+
+    // GET /workouts/search?q=push - search workouts by name
+    app.get('/workouts/search', { preHandler: authenticate }, async (request) => {
+        const { userId } = request.user as { userId: string }
+        const { q } = request.query as { q?: string }
+
+        const workouts = await app.prisma.workout.findMany({
+            where: {
+                userId,
+                ...(q && {
+                    name: {
+                        contains: q,
+                        mode: 'insensitive',
+                    },
+                }),
+            },
+            orderBy: { date: 'desc' },
+            take: 5,
+            include: {
+                workoutExercises: {
+                    include: {
+                        exercise: true,
+                        sets: { orderBy: { order: 'asc' } },
+                    },
+                    orderBy: { order: 'asc' },
+                },
+            },
+        })
+
+        return { workouts }
+    })
+
     // GET /workouts/:id - get one workout with all its exercises and sets
     app.get('/workouts/:id', { preHandler: authenticate }, async (request, reply) => {
         const { userId } = request.user as { userId: string }

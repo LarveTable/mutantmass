@@ -35,7 +35,7 @@ export default function HistoryPage() {
     const { data: workouts = [] } = useWorkouts(month)
 
     const workoutDates = useMemo(() =>
-        workouts.map((w: any) => w.date), [workouts])
+        workouts.map((w: any) => w.date.split('T')[0]), [workouts])
 
     const workoutsOnSelectedDate = useMemo(() => {
         if (!selectedDate) return []

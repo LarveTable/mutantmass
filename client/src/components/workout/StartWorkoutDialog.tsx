@@ -10,31 +10,51 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useWorkoutSearch } from '@/hooks/useWorkout'
+import { ChevronDown, X } from 'lucide-react'
 
-// Component to log a workout
+const REST_PRESETS = [60, 90, 120, 180]
 
 interface Props {
     open: boolean
     onClose: () => void
-    onStart: (name: string, restTimer: number | null) => void
+    onStart: (name: string, restTimer: number | null, templateWorkout: any | null) => void
     isLoading: boolean
 }
-
-const REST_PRESETS = [60, 90, 120, 180]
 
 export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }: Props) {
     const [name, setName] = useState('')
     const [restTimerEnabled, setRestTimerEnabled] = useState(false)
     const [restDuration, setRestDuration] = useState(90)
+    const [templateSearch, setTemplateSearch] = useState('')
+    const [selectedTemplate, setSelectedTemplate] = useState<any | null>(null)
+    const [templatePickerOpen, setTemplatePickerOpen] = useState(false)
+
+    const { data: filteredWorkouts = [] } = useWorkoutSearch(templateSearch)
+
+    const handleSelectTemplate = (workout: any) => {
+        setSelectedTemplate(workout)
+        setName(workout.name ?? '')
+        setTemplatePickerOpen(false)
+        setTemplateSearch('')
+    }
+
+    const handleClearTemplate = () => {
+        setSelectedTemplate(null)
+        setName('')
+    }
 
     const handleStart = () => {
-        onStart(name || '', restTimerEnabled ? restDuration : null)
+        onStart(name || '', restTimerEnabled ? restDuration : null, selectedTemplate)
     }
 
     const handleClose = () => {
         setName('')
         setRestTimerEnabled(false)
         setRestDuration(90)
+        setSelectedTemplate(null)
+        setTemplateSearch('')
+        setTemplatePickerOpen(false)
         onClose()
     }
 
@@ -46,6 +66,71 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                 </DialogHeader>
 
                 <div className="flex flex-col gap-5 py-2">
+                    {/* Template picker */}
+                    <div className="flex flex-col gap-1.5">
+                        <Label>Base on previous workout (optional)</Label>
+                        {selectedTemplate ? (
+                            <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2">
+                                <div>
+                                    <p className="text-sm font-medium">{selectedTemplate.name ?? 'Workout'}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {selectedTemplate.workoutExercises.length} exercise
+                                        {selectedTemplate.workoutExercises.length !== 1 ? 's' : ''}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={handleClearTemplate}
+                                    className="text-muted-foreground hover:text-foreground transition-colors"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setTemplatePickerOpen((v) => !v)}
+                                    className="flex w-full items-center justify-between rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:bg-accent transition-colors"
+                                >
+                                    <span>Select a workout...</span>
+                                    <ChevronDown size={16} />
+                                </button>
+
+                                {templatePickerOpen && (
+                                    <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg border border-border bg-card shadow-lg overflow-hidden">
+                                        <div className="p-2 border-b border-border">
+                                            <Input
+                                                placeholder="Search workouts..."
+                                                value={templateSearch}
+                                                onChange={(e) => setTemplateSearch(e.target.value)}
+                                                autoFocus
+                                                className="h-8 text-sm"
+                                            />
+                                        </div>
+                                        <div className="max-h-48 overflow-y-auto">
+                                            {filteredWorkouts.length === 0 && (
+                                                <p className="text-center text-xs text-muted-foreground py-4">
+                                                    No workouts found
+                                                </p>
+                                            )}
+                                            {filteredWorkouts.map((workout: any) => (
+                                                <button
+                                                    key={workout.id}
+                                                    onClick={() => handleSelectTemplate(workout)}
+                                                    className="flex w-full flex-col gap-0.5 px-3 py-2.5 text-left hover:bg-accent transition-colors"
+                                                >
+                                                    <p className="text-sm font-medium">{workout.name ?? 'Workout'}</p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {workout.workoutExercises.map((we: any) => we.exercise.name).join(', ')}
+                                                    </p>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
                     {/* Workout name */}
                     <div className="flex flex-col gap-1.5">
                         <Label htmlFor="workout-name">Workout name (optional)</Label>

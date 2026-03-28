@@ -20,6 +20,10 @@ import FinishWorkoutDialog from '@/components/workout/FinishWorkoutDialog'
 import { useRemoveExercise, useUpdateExerciseNote } from '@/hooks/useWorkout'
 import ExerciseNoteDialog from '@/components/workout/ExerciseNoteDialog'
 import { Trash2, StickyNote } from 'lucide-react'
+import { useUpdateSet } from '@/hooks/useWorkout'
+import LogSetDialog from '@/components/workout/LogSetDialog'
+import { useQueryClient } from '@tanstack/react-query'
+import api from '@/api/axios'
 
 // Main page for logging workouts
 
@@ -37,6 +41,14 @@ export default function WorkoutPage() {
         name: '',
         note: null,
     })
+    const [editSetDialog, setEditSetDialog] = useState<{
+        open: boolean
+        workoutExerciseId: string
+        setId: string
+        exerciseName: string
+        exerciseType: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'
+        currentSet: any
+    } | null>(null)
 
     const { data: workout, isLoading } = useActiveWorkout(workoutId)
     const createWorkout = useCreateWorkout()
@@ -46,12 +58,48 @@ export default function WorkoutPage() {
     const deleteSet = useDeleteSet(workoutId ?? '')
     const removeExercise = useRemoveExercise(workoutId ?? '')
     const updateExerciseNote = useUpdateExerciseNote(workoutId ?? '')
+    const updateSet = useUpdateSet(workoutId ?? '')
+    const queryClient = useQueryClient()
 
-    const handleStart = async (name: string, rest: number | null) => {
+    const handleStart = async (name: string, rest: number | null, template: any | null) => {
         const created = await createWorkout.mutateAsync({ name: name || undefined })
         startWorkout(created.id)
         setRestTimer(rest)
         setStartDialogOpen(false)
+
+        if (template) {
+            for (const we of template.workoutExercises) {
+                const newWe = await api.post(`/workouts/${created.id}/exercises`, {
+                    exerciseId: we.exercise.id,
+                })
+                for (const set of we.sets) {
+                    await api.post(`/workouts/${created.id}/exercises/${newWe.data.workoutExercise.id}/sets`, {
+                        reps: set.reps ?? undefined,
+                        weight: set.weight ?? undefined,
+                        duration: set.duration ?? undefined,
+                        distance: set.distance ?? undefined,
+                    })
+                }
+            }
+            // Refresh the workout data after all exercises and sets are added
+            queryClient.invalidateQueries({ queryKey: ['workout', created.id] })
+        }
+    }
+
+    const handleEditSet = (data: {
+        reps?: number
+        weight?: number
+        duration?: number
+        distance?: number
+    }) => {
+        if (!editSetDialog) return
+        updateSet.mutate({
+            workoutExerciseId: editSetDialog.workoutExerciseId,
+            setId: editSetDialog.setId,
+            ...data,
+        })
+        if (restTimer) setRestTimerActive(true)
+        setEditSetDialog(null)
     }
 
     const handleFinish = async (note: string) => {
@@ -202,7 +250,29 @@ export default function WorkoutPage() {
                             restTimer={restTimer}
                             onAddSet={handleAddSet}
                             onDeleteSet={handleDeleteSet}
+                            onEditSet={(workoutExerciseId, set) =>
+                                setEditSetDialog({
+                                    open: true,
+                                    workoutExerciseId,
+                                    setId: set.id,
+                                    exerciseName: we.exercise.name,
+                                    exerciseType: we.exercise.type,
+                                    currentSet: set,
+                                })
+                            }
                         />
+
+                        {/* Edit set dialog */}
+                        {editSetDialog && (
+                            <LogSetDialog
+                                open={editSetDialog.open}
+                                onClose={() => setEditSetDialog(null)}
+                                exerciseName={editSetDialog.exerciseName}
+                                exerciseType={editSetDialog.exerciseType}
+                                lastSet={editSetDialog.currentSet}
+                                onConfirm={handleEditSet}
+                            />
+                        )}
                     </div>
                 ))}
 

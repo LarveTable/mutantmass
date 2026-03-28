@@ -36,6 +36,44 @@ export function useFinishWorkout() {
     })
 }
 
+export function useWorkoutSearch(query: string) {
+    return useQuery({
+        queryKey: ['workouts', 'search', query],
+        queryFn: async () => {
+            const res = await api.get(`/workouts/search${query ? `?q=${encodeURIComponent(query)}` : ''}`)
+            return res.data.workouts
+        },
+    })
+}
+
+export function useUpdateSet(workoutId: string) {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async ({
+            workoutExerciseId,
+            setId,
+            reps,
+            weight,
+            duration,
+            distance,
+        }: {
+            workoutExerciseId: string
+            setId: string
+            reps?: number
+            weight?: number
+            duration?: number
+            distance?: number
+        }) => {
+            const res = await api.patch(
+                `/workouts/${workoutId}/exercises/${workoutExerciseId}/sets/${setId}`,
+                { reps, weight, duration, distance }
+            )
+            return res.data.set
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workout', workoutId] }),
+    })
+}
+
 export function useWorkouts(month: string) {
     return useQuery({
         queryKey: ['workouts', month],

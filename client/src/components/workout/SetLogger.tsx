@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Trash2, Plus } from 'lucide-react'
+import { Trash2, Plus, Pencil } from 'lucide-react'
 import LogSetDialog from './LogSetDialog'
 
 interface Set {
@@ -28,6 +28,7 @@ interface Props {
         restTime?: number
     }) => void
     onDeleteSet: (workoutExerciseId: string, setId: string) => void
+    onEditSet: (workoutExerciseId: string, set: Set) => void
 }
 
 export default function SetLogger({
@@ -38,6 +39,7 @@ export default function SetLogger({
     restTimer,
     onAddSet,
     onDeleteSet,
+    onEditSet,
 }: Props) {
     const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -94,7 +96,7 @@ export default function SetLogger({
                     {sets.map((set, index) => (
                         <div
                             key={set.id}
-                            className="grid grid-cols-[2rem_1fr_1fr_2rem] gap-2 items-center px-1 py-1.5 rounded-lg bg-muted/40"
+                            className="grid grid-cols-[2rem_1fr_1fr_2rem_2rem] gap-2 items-center px-1 py-1.5 rounded-lg bg-muted/40"
                         >
                             <span className="text-sm text-muted-foreground text-center">{index + 1}</span>
                             {exerciseType === 'WEIGHTED' && (
@@ -119,6 +121,12 @@ export default function SetLogger({
                                     </span>
                                 </>
                             )}
+                            <button
+                                onClick={() => onEditSet(workoutExerciseId, set)}
+                                className="flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <Pencil size={13} />
+                            </button>
                             <button
                                 onClick={() => onDeleteSet(workoutExerciseId, set.id)}
                                 className="flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"

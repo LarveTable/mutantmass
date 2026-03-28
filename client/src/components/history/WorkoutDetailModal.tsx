@@ -1,6 +1,8 @@
 import { X, Dumbbell, Clock, Trophy, StickyNote } from 'lucide-react'
 import { useEffect } from 'react'
 
+// Component to show a past workout details in the history page
+
 interface Set {
     id: string
     reps?: number | null
