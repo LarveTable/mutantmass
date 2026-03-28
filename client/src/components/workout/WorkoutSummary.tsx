@@ -209,7 +209,7 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
                                 {/* Best set highlight for weighted */}
                                 {we.exercise.type === 'WEIGHTED' && bestSet && (
                                     <p className="text-xs text-primary mt-1 px-1">
-                                        🏆 Best set for workout: {bestSet.reps} reps @ {bestSet.weight} kg
+                                        🏆 Best set for this workout: {bestSet.reps} reps @ {bestSet.weight} kg
                                     </p>
                                 )}
                             </div>
