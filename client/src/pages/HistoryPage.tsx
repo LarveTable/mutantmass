@@ -29,7 +29,7 @@ function formatDuration(seconds: number) {
 export default function HistoryPage() {
     const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
     const [selectedDate, setSelectedDate] = useState<string | null>(null)
-    const [selectedWorkout, setSelectedWorkout] = useState<any>(null)
+    const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null)
 
     const month = toMonthString(weekStart)
     const { data: workouts = [] } = useWorkouts(month)
@@ -97,7 +97,7 @@ export default function HistoryPage() {
                         return (
                             <button
                                 key={workout.id}
-                                onClick={() => setSelectedWorkout(workout)}
+                                onClick={() => setSelectedWorkoutId(workout.id)}
                                 className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left hover:bg-accent transition-colors"
                             >
                                 <div className="flex items-center justify-between">
@@ -164,10 +164,10 @@ export default function HistoryPage() {
             )}
 
             {/* Workout detail modal */}
-            {selectedWorkout && (
+            {selectedWorkoutId && (
                 <WorkoutDetailModal
-                    workout={selectedWorkout}
-                    onClose={() => setSelectedWorkout(null)}
+                    workoutId={selectedWorkoutId}
+                    onClose={() => setSelectedWorkoutId(null)}
                 />
             )}
         </div>

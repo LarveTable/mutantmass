@@ -46,6 +46,20 @@ export function useDeleteWorkout() {
     })
 }
 
+export function useUpdateWorkout() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async ({ id, note, name }: { id: string; note?: string; name?: string }) => {
+            const res = await api.patch(`/workouts/${id}`, { note, name })
+            return res.data.workout
+        },
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['workout', variables.id] })
+            queryClient.invalidateQueries({ queryKey: ['workouts'] })
+        },
+    })
+}
+
 export function useWorkoutSearch(query: string) {
     return useQuery({
         queryKey: ['workouts', 'search', query],
