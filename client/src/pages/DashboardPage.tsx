@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useProfile, useWorkouts, useConsistencyStats, useOverviewStats } from '@/hooks/useWorkout'
 import { Dumbbell, ChevronLeft, ChevronRight, Zap, Clock, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useMuscleStats } from '@/hooks/useWorkout'
 
 // --- Helpers ---
 function toDateString(date: Date): string {
@@ -273,6 +274,21 @@ export default function DashboardPage() {
     const { data: profile } = useProfile()
     const { data: consistency } = useConsistencyStats()
     const { data: weekStats } = useOverviewStats('week')
+    const { data: muscleData = {} } = useMuscleStats('week')
+
+    const MUSCLE_COLORS: Record<string, string> = {
+        CHEST: '#ef4444',
+        BACK: '#3b82f6',
+        SHOULDERS: '#a855f7',
+        BICEPS: '#f97316',
+        TRICEPS: '#eab308',
+        FOREARMS: '#84cc16',
+        LEGS: '#06b6d4',
+        GLUTES: '#ec4899',
+        CORE: '#14b8a6',
+        CARDIO: '#64748b',
+        FULL_BODY: '#8b5cf6',
+    }
 
     const currentMonth = useMemo(() => {
         const now = new Date()
@@ -354,12 +370,7 @@ export default function DashboardPage() {
 
             {/* Quick stats */}
             {weekStats && (
-                <div className="grid grid-cols-3 gap-2">
-                    <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
-                        <Dumbbell size={15} className="text-primary" />
-                        <span className="text-base font-bold">{weekStats.totalWorkouts}</span>
-                        <span className="text-xs text-muted-foreground">Workouts</span>
-                    </div>
+                <div className="grid grid-cols-2 gap-2">
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
                         <Trophy size={15} className="text-primary" />
                         <span className="text-base font-bold">{weekStats.totalSets}</span>
@@ -374,6 +385,49 @@ export default function DashboardPage() {
                         </span>
                         <span className="text-xs text-muted-foreground">Volume</span>
                     </div>
+                    <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
+                        <Clock size={15} className="text-primary" />
+                        <span className="text-base font-bold">{formatDuration(weekStats.totalDuration ?? 0)}</span>
+                        <span className="text-xs text-muted-foreground">Time</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
+                        <Dumbbell size={15} className="text-primary" />
+                        <span className="text-base font-bold truncate px-1 max-w-full capitalize">
+                            {Object.entries(muscleData as Record<string, number>).sort(([, a], [, b]) => b - a)[0]?.[0].toLowerCase().replace('_', ' ') ?? '-'}
+                        </span>
+                        <span className="text-xs text-muted-foreground">Most Trained</span>
+                    </div>
+                </div>
+            )}
+
+            {/* Muscles Hit This Week */}
+            {Object.keys(muscleData).length > 0 && (
+                <div className="rounded-2xl border border-border bg-card p-4 flex flex-col gap-3">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                        Muscles Hit This Week
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        {Object.entries(muscleData as Record<string, number>)
+                            .sort(([, a], [, b]) => b - a)
+                            .map(([muscle, volume]) => (
+                                <div
+                                    key={muscle}
+                                    className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
+                                    style={{ background: `${MUSCLE_COLORS[muscle]}20`, border: `1px solid ${MUSCLE_COLORS[muscle]}40` }}
+                                >
+                                    <div
+                                        className="h-2 w-2 rounded-full"
+                                        style={{ background: MUSCLE_COLORS[muscle] }}
+                                    />
+                                    <span className="text-xs font-medium capitalize" style={{ color: MUSCLE_COLORS[muscle] }}>
+                                        {muscle.toLowerCase().replace('_', ' ')}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {(volume / 1000).toFixed(1)}t
+                                    </span>
+                                </div>
+                            ))}
+                    </div>
                 </div>
             )}
 
@@ -384,7 +438,7 @@ export default function DashboardPage() {
                 onClick={() => navigate('/workout')}
             >
                 <Dumbbell size={20} className="mr-2" />
-                Start Workout
+                Let's get going!
             </Button>
 
             {/* Last workout */}
