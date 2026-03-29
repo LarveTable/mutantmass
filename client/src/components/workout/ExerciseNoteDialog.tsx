@@ -5,6 +5,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -40,6 +41,7 @@ export default function ExerciseNoteDialog({
             <DialogContent className="max-w-sm">
                 <DialogHeader>
                     <DialogTitle>{exerciseName}</DialogTitle>
+                    <DialogDescription />
                 </DialogHeader>
 
                 <div className="flex flex-col gap-1.5 py-2">

@@ -5,6 +5,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -77,6 +78,7 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
             <DialogContent className="max-w-sm">
                 <DialogHeader>
                     <DialogTitle>Add Custom Exercise</DialogTitle>
+                    <DialogDescription />
                 </DialogHeader>
 
                 <div className="flex flex-col gap-5 py-2">
@@ -100,8 +102,8 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
                                     key={t.value}
                                     onClick={() => setType(t.value)}
                                     className={`rounded-lg border py-2 text-sm font-medium transition-colors ${type === t.value
-                                            ? 'border-primary bg-primary text-primary-foreground'
-                                            : 'border-border bg-card hover:bg-accent'
+                                        ? 'border-primary bg-primary text-primary-foreground'
+                                        : 'border-border bg-card hover:bg-accent'
                                         }`}
                                 >
                                     {t.label}
@@ -119,8 +121,8 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
                                     key={m.value}
                                     onClick={() => setMuscleGroup(m.value)}
                                     className={`rounded-lg border py-2 text-xs font-medium transition-colors ${muscleGroup === m.value
-                                            ? 'border-primary bg-primary text-primary-foreground'
-                                            : 'border-border bg-card hover:bg-accent'
+                                        ? 'border-primary bg-primary text-primary-foreground'
+                                        : 'border-border bg-card hover:bg-accent'
                                         }`}
                                 >
                                     {m.label}

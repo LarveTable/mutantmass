@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import { useExercises } from '@/hooks/useWorkout'
 import { Dumbbell, PersonStanding, Timer, ChevronRight } from 'lucide-react'
 
@@ -99,6 +99,7 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                             </button>
                         )}
                     </SheetTitle>
+                    <SheetDescription />
                 </SheetHeader>
 
                 <div className="flex-1 overflow-y-auto mt-4 flex flex-col gap-4">

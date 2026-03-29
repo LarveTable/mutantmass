@@ -5,6 +5,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -276,6 +277,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                         )}
                         {step === 'info' ? 'Log Past Workout' : 'Exercises & Sets'}
                     </DialogTitle>
+                    <DialogDescription />
                 </DialogHeader>
 
                 <div className="flex-1 overflow-y-auto">

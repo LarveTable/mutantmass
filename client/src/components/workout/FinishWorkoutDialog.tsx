@@ -5,6 +5,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -32,6 +33,7 @@ export default function FinishWorkoutDialog({ open, onClose, onConfirm, isLoadin
             <DialogContent className="max-w-sm">
                 <DialogHeader>
                     <DialogTitle>Finish Workout</DialogTitle>
+                    <DialogDescription />
                 </DialogHeader>
 
                 <div className="flex flex-col gap-3 py-2">
