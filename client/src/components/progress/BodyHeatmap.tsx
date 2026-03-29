@@ -63,17 +63,17 @@ export default function BodyHeatmap({ period }: Props) {
     ]
 
     return (
-        <div className="flex flex-col gap-6">
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+        <div className="flex flex-col gap-4">
+            <div className="flex flex-row gap-4 sm:gap-12 justify-center items-center">
                 {/* Front view */}
-                <div className="flex flex-col items-center gap-2">
-                    <p className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">Front</p>
-                    <div className="w-[140px] aspect-[1/2] px-2 svg-container flex items-start justify-center overflow-hidden">
+                <div className="flex flex-col items-center gap-3 flex-1 max-w-[180px]">
+                    <p className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase opacity-60">Front</p>
+                    <div className="w-full aspect-[1/2.2] flex items-center justify-center p-0">
                         <Model
                             data={highlightedData}
-                            style={{ width: '100%', fill: 'hsl(var(--muted))' }}
-                            svgStyle={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
-                            bodyColor="hsl(var(--muted))"
+                            style={{ width: '100%', height: '100%' }}
+                            svgStyle={{ stroke: 'hsl(var(--border))', strokeWidth: 0.8 }}
+                            bodyColor="hsl(var(--muted) / 0.5)"
                             highlightedColors={colors}
                             type="anterior"
                         />
@@ -81,14 +81,14 @@ export default function BodyHeatmap({ period }: Props) {
                 </div>
 
                 {/* Back view */}
-                <div className="flex flex-col items-center gap-2">
-                    <p className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">Back</p>
-                    <div className="w-[140px] aspect-[1/2] px-2 svg-container flex items-start justify-center overflow-hidden">
+                <div className="flex flex-col items-center gap-3 flex-1 max-w-[180px]">
+                    <p className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase opacity-60">Back</p>
+                    <div className="w-full aspect-[1/2.2] flex items-center justify-center p-0">
                         <Model
                             data={highlightedData}
-                            style={{ width: '100%', fill: 'hsl(var(--muted))' }}
-                            svgStyle={{ stroke: 'hsl(var(--border))', strokeWidth: 1, transform: 'scale(0.92) translateY(-4%)' }}
-                            bodyColor="hsl(var(--muted))"
+                            style={{ width: '100%', height: '100%' }}
+                            svgStyle={{ stroke: 'hsl(var(--border))', strokeWidth: 0.8 }}
+                            bodyColor="hsl(var(--muted) / 0.5)"
                             highlightedColors={colors}
                             type="posterior"
                         />
@@ -99,13 +99,13 @@ export default function BodyHeatmap({ period }: Props) {
             {/* Legend */}
             <div className="flex items-center justify-center gap-4">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[3] }} /> 1st
+                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[3] }} /> 1st -{'>'} {uniqueVolumes[0] / 1000 > 1 ? uniqueVolumes[0] / 1000 + 't' : uniqueVolumes[0] + 'kg'}
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[2] }} /> 2nd
+                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[2] }} /> 2nd -{'>'} {uniqueVolumes[1] / 1000 > 1 ? uniqueVolumes[1] / 1000 + 't' : uniqueVolumes[1] + 'kg'}
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[1] }} /> 3rd
+                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[1] }} /> 3rd -{'>'} {uniqueVolumes[2] / 1000 > 1 ? uniqueVolumes[2] / 1000 + 't' : uniqueVolumes[2] + 'kg'}
                 </div>
                 {uniqueVolumes.length > 3 && (
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">

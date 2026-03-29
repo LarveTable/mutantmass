@@ -29,7 +29,7 @@ export default function ProgressPage() {
             {/* Muscle heatmap - HIGHER UP */}
             <section className="flex flex-col gap-3 md:col-span-6 lg:col-span-5">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Muscle Groups
+                    Muscle Groups Ranked (volume)
                 </h2>
                 <div className="rounded-xl border border-border bg-card p-4 h-full flex items-center justify-center">
                     <BodyHeatmap period={period} />
@@ -46,33 +46,33 @@ export default function ProgressPage() {
                 </div>
             </section>
 
-            {/* Consistency */}
+            {/* Exercise progress */}
             <section className="flex flex-col gap-3 md:col-span-12 lg:col-span-6">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Consistency
+                    Exercise Progress
                 </h2>
-                <div className="h-full">
-                    <ConsistencyTracker />
+                <div className="rounded-xl border border-border bg-card p-4 h-full min-h-[300px]">
+                    <ExerciseProgress period={period} />
                 </div>
             </section>
 
             {/* Personal records */}
             <section className="flex flex-col gap-3 md:col-span-12 lg:col-span-6">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Personal Records
+                    Personal Records (top 5)
                 </h2>
                 <div className="h-full">
                     <PersonalRecords />
                 </div>
             </section>
 
-            {/* Exercise progress */}
+            {/* Consistency */}
             <section className="flex flex-col gap-3 md:col-span-12">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Exercise Progress
+                    Consistency
                 </h2>
-                <div className="rounded-xl border border-border bg-card p-4 h-full min-h-[300px]">
-                    <ExerciseProgress period={period} />
+                <div className="h-full">
+                    <ConsistencyTracker />
                 </div>
             </section>
         </div>

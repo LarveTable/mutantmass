@@ -195,6 +195,7 @@ export default async function statsRoutes(app: FastifyInstance) {
 
         const prs = Array.from(prMap.values())
             .sort((a, b) => b.estimatedOneRM - a.estimatedOneRM)
+            .slice(0, 5)
 
         return { prs }
     })
