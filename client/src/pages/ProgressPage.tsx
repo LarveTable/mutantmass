@@ -59,10 +59,14 @@ export default function ProgressPage() {
             {/* Personal records */}
             <section className="flex flex-col gap-3 md:col-span-12 lg:col-span-6">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Personal Records (top 5)
+                    Personal Records (top 10)
                 </h2>
-                <div className="h-full">
-                    <PersonalRecords />
+                {/* Make this wrapper relative and take up remaining space */}
+                <div className="flex-1 relative">
+                    {/* On desktop, absolute positioning removes it from grid height calculation */}
+                    <div className="lg:absolute lg:inset-0 w-full h-full">
+                        <PersonalRecords />
+                    </div>
                 </div>
             </section>
 

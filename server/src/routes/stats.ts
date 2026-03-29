@@ -169,24 +169,49 @@ export default async function statsRoutes(app: FastifyInstance) {
         const prMap = new Map<string, {
             exerciseId: string
             exerciseName: string
-            bestWeight: number
-            bestReps: number
-            estimatedOneRM: number
+            type: string
+            bestWeight: number | null
+            bestReps: number | null
+            bestDistance: number | null
+            bestDuration: number | null
+            estimatedOneRM: number | null
             muscleGroup: string
         }>()
 
         for (const we of workoutExercises) {
             for (const set of we.sets) {
-                if (!set.weight || !set.reps) continue
-                const orm = estimateOneRM(set.weight, set.reps)
+                const type = we.exercise.type
+                let isBetter = false
+                const orm = (set.weight && set.reps) ? estimateOneRM(set.weight, set.reps) : 0
+                const reps = set.reps ?? 0
+                const distance = set.distance ?? 0
+                const duration = set.duration ?? 0
+
                 const existing = prMap.get(we.exerciseId)
-                if (!existing || orm > existing.estimatedOneRM) {
+
+                if (!existing) {
+                    isBetter = true
+                } else {
+                    if (type === 'WEIGHTED') {
+                        isBetter = orm > (existing.estimatedOneRM ?? 0)
+                    } else if (type === 'BODYWEIGHT') {
+                        isBetter = reps > (existing.bestReps ?? 0)
+                    } else if (type === 'CARDIO') {
+                        // Better is more distance, or more duration if distance is same
+                        isBetter = distance > (existing.bestDistance ?? 0) || (distance === (existing.bestDistance ?? 0) && duration > (existing.bestDuration ?? 0))
+                    }
+                }
+
+                if (isBetter) {
                     prMap.set(we.exerciseId, {
                         exerciseId: we.exerciseId,
                         exerciseName: we.exercise.name,
-                        bestWeight: set.weight,
-                        bestReps: set.reps,
-                        estimatedOneRM: orm,
+                        type,
+                        bestWeight: set.weight ?? null,
+                        bestReps: set.reps ?? null,
+                        bestDistance: set.distance ?? null,
+                        bestDuration: set.duration ?? null,
+                        estimatedOneRM: type === 'WEIGHTED' ? orm : null,
                         muscleGroup: we.exercise.muscleGroup,
                     })
                 }
@@ -194,8 +219,13 @@ export default async function statsRoutes(app: FastifyInstance) {
         }
 
         const prs = Array.from(prMap.values())
-            .sort((a, b) => b.estimatedOneRM - a.estimatedOneRM)
-            .slice(0, 5)
+            .sort((a, b) => {
+                const priority: Record<string, number> = { WEIGHTED: 0, BODYWEIGHT: 1, CARDIO: 2 }
+                const pA = priority[a.type] ?? 99
+                const pB = priority[b.type] ?? 99
+                return pA - pB || a.exerciseName.localeCompare(b.exerciseName)
+            })
+            .slice(0, 10)
 
         return { prs }
     })
