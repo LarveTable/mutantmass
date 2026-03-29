@@ -391,7 +391,10 @@ export default function ProfilePage() {
                 <EditableField
                     label="Weekly Goal"
                     value={profile?.weeklyGoal}
-                    onSave={handleUpdate('weeklyGoal')}
+                    onSave={(val) => {
+                        const clamped = Math.min(Math.max(Number(val), 1), 7)
+                        handleUpdate('weeklyGoal')(String(clamped))
+                    }}
                     type="number"
                     unit="workouts / week"
                     icon={Target}

@@ -28,7 +28,7 @@ export default async function profileRoutes(app: FastifyInstance) {
     })
 
     // PATCH /profile - update profile fields
-    app.patch('/profile', { preHandler: authenticate }, async (request) => {
+    app.patch('/profile', { preHandler: authenticate }, async (request, reply) => {
         const { userId } = request.user as { userId: string }
         const { name, age, sex, weight, height, weeklyGoal } = request.body as {
             name?: string
@@ -37,6 +37,12 @@ export default async function profileRoutes(app: FastifyInstance) {
             weight?: number
             height?: number
             weeklyGoal?: number
+        }
+
+        if (weeklyGoal !== undefined) {
+            if (weeklyGoal < 1 || weeklyGoal > 7) {
+                return reply.status(400).send({ error: 'Weekly goal must be between 1 and 7' })
+            }
         }
 
         const user = await app.prisma.user.update({
