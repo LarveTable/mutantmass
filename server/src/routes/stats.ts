@@ -225,27 +225,6 @@ export default async function statsRoutes(app: FastifyInstance) {
         return { data: muscleVolume }
     })
 
-    // GET /stats/frequency
-    app.get('/stats/frequency', { preHandler: authenticate }, async (request) => {
-        const { userId } = request.user as { userId: string }
-
-        const start = new Date()
-        start.setFullYear(start.getFullYear() - 1)
-
-        const workouts = await app.prisma.workout.findMany({
-            where: { userId, date: { gte: start } },
-            select: { date: true },
-            orderBy: { date: 'asc' }
-        })
-
-        const countMap: Record<string, number> = {}
-        for (const w of workouts) {
-            const d = w.date.toISOString().split('T')[0]!
-            countMap[d] = (countMap[d] ?? 0) + 1
-        }
-
-        return { data: countMap }
-    })
 
     // GET /stats/consistency
     app.get('/stats/consistency', { preHandler: authenticate }, async (request) => {

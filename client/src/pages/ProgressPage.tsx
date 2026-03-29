@@ -5,7 +5,6 @@ import VolumeChart from '@/components/progress/VolumeChart'
 import ExerciseProgress from '@/components/progress/ExerciseProgress'
 import PersonalRecords from '@/components/progress/PersonalRecords'
 import BodyHeatmap from '@/components/progress/BodyHeatmap'
-import FrequencyHeatmap from '@/components/progress/FrequencyHeatmap'
 import ConsistencyTracker from '@/components/progress/ConsistencyTracker'
 
 // Page to display the progress of the user
@@ -57,26 +56,6 @@ export default function ProgressPage() {
                 </div>
             </section>
 
-            {/* Workout Frequency */}
-            <section className="flex flex-col gap-3 md:col-span-12 lg:col-span-6">
-                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Workout Frequency
-                </h2>
-                <div className="rounded-xl border border-border bg-card p-4 overflow-hidden h-full">
-                    <FrequencyHeatmap />
-                </div>
-            </section>
-
-            {/* Exercise progress */}
-            <section className="flex flex-col gap-3 md:col-span-12 lg:col-span-6">
-                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Exercise Progress
-                </h2>
-                <div className="rounded-xl border border-border bg-card p-4 h-full min-h-[300px]">
-                    <ExerciseProgress period={period} />
-                </div>
-            </section>
-
             {/* Personal records */}
             <section className="flex flex-col gap-3 md:col-span-12 lg:col-span-6">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
@@ -84,6 +63,16 @@ export default function ProgressPage() {
                 </h2>
                 <div className="h-full">
                     <PersonalRecords />
+                </div>
+            </section>
+
+            {/* Exercise progress */}
+            <section className="flex flex-col gap-3 md:col-span-12">
+                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                    Exercise Progress
+                </h2>
+                <div className="rounded-xl border border-border bg-card p-4 h-full min-h-[300px]">
+                    <ExerciseProgress period={period} />
                 </div>
             </section>
         </div>

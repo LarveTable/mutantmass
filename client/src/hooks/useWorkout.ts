@@ -259,15 +259,6 @@ export function useMuscleStats(period: string) {
     })
 }
 
-export function useFrequencyStats() {
-    return useQuery({
-        queryKey: ['stats', 'frequency'],
-        queryFn: async () => {
-            const res = await api.get('/stats/frequency')
-            return res.data.data
-        },
-    })
-}
 
 export function useConsistencyStats() {
     return useQuery({
