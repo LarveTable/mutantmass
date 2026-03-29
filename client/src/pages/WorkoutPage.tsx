@@ -24,6 +24,8 @@ import { useUpdateSet } from '@/hooks/useWorkout'
 import LogSetDialog from '@/components/workout/LogSetDialog'
 import { useQueryClient } from '@tanstack/react-query'
 import api from '@/api/axios'
+import AddExerciseDialog from '@/components/workout/AddExerciseDialog'
+import LogPastWorkoutDialog from '@/components/workout/LogPastWorkoutDialog'
 
 // Main page for logging workouts
 
@@ -49,6 +51,8 @@ export default function WorkoutPage() {
         exerciseType: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'
         currentSet: any
     } | null>(null)
+    const [addExerciseOpen, setAddExerciseOpen] = useState(false)
+    const [logPastOpen, setLogPastOpen] = useState(false)
 
     const { data: workout, isLoading } = useActiveWorkout(workoutId)
     const createWorkout = useCreateWorkout()
@@ -133,7 +137,7 @@ export default function WorkoutPage() {
     }
 
     // No active workout
-    if (!workoutId) {
+    if (!workoutId && !finishedWorkout) {
         return (
             <div className="flex min-h-[80vh] flex-col items-center justify-center gap-6 px-6">
                 <div className="flex flex-col items-center gap-2 text-center">
@@ -141,17 +145,50 @@ export default function WorkoutPage() {
                         <Dumbbell size={36} className="text-primary" />
                     </div>
                     <h1 className="text-2xl font-bold">Ready to train?</h1>
-                    <p className="text-muted-foreground">Start a new workout to begin logging your sets</p>
+                    <p className="text-muted-foreground text-sm">
+                        Start a new workout or log a previous session
+                    </p>
                 </div>
-                <Button size="lg" className="w-full max-w-xs" onClick={() => setStartDialogOpen(true)}>
+
+                <Button
+                    size="lg"
+                    className="w-full max-w-xs"
+                    onClick={() => setStartDialogOpen(true)}
+                >
+                    <Dumbbell size={18} className="mr-2" />
                     Start Workout
                 </Button>
+
+                <div className="flex gap-3 w-full max-w-xs">
+                    <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => setLogPastOpen(true)}
+                    >
+                        Log Past Workout
+                    </Button>
+                    <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => setAddExerciseOpen(true)}
+                    >
+                        Add Exercise
+                    </Button>
+                </div>
 
                 <StartWorkoutDialog
                     open={startDialogOpen}
                     onClose={() => setStartDialogOpen(false)}
                     onStart={handleStart}
                     isLoading={createWorkout.isPending}
+                />
+                <LogPastWorkoutDialog
+                    open={logPastOpen}
+                    onClose={() => setLogPastOpen(false)}
+                />
+                <AddExerciseDialog
+                    open={addExerciseOpen}
+                    onClose={() => setAddExerciseOpen(false)}
                 />
             </div>
         )

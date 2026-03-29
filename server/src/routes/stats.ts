@@ -41,8 +41,9 @@ export default async function statsRoutes(app: FastifyInstance) {
         const avgDuration = workouts.length > 0
             ? Math.round(workouts.reduce((t, w) => t + (w.duration ?? 0), 0) / workouts.length)
             : 0
+        const totalDuration = workouts.reduce((t, w) => t + (w.duration ?? 0), 0)
 
-        return { totalWorkouts, totalSets, totalVolume, avgDuration }
+        return { totalWorkouts, totalSets, totalVolume, avgDuration, totalDuration }
     })
 
     // GET /stats/volume
