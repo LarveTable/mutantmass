@@ -39,8 +39,29 @@ function getTotalVolume(exercises: any[]) {
 }
 
 function getBestSet(sets: any[]) {
-    return sets.reduce((best: any, set: any) =>
-        !best || (set.weight ?? 0) > (best.weight ?? 0) ? set : best, sets[0])
+    if (!sets.length) return null
+    return sets.reduce((best: any, set: any) => {
+        if (!best) return set
+        const weight = set.weight ?? 0
+        const bestWeight = best.weight ?? 0
+        const reps = set.reps ?? 0
+        const bestReps = best.reps ?? 0
+
+        const volume = weight * reps
+        const bestVolume = bestWeight * bestReps
+
+        if (volume > bestVolume) return set
+        if (volume < bestVolume) return best
+
+        // If volume is tied (e.g., both 0 for bodyweight), prioritize higher weight
+        if (weight > bestWeight) return set
+        if (weight < bestWeight) return best
+
+        // If weight is also tied, prioritize higher reps
+        if (reps > bestReps) return set
+
+        return best
+    }, null)
 }
 
 export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
@@ -404,9 +425,10 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                     ))}
 
                                     {/* Best set */}
-                                    {we.exercise.type === 'WEIGHTED' && bestSet?.weight && (
+                                    {['WEIGHTED', 'BODYWEIGHT'].includes(we.exercise.type) && bestSet && (
                                         <p className="text-xs text-primary mt-1 px-1">
-                                            🏆 Best: {bestSet.reps} reps @ {bestSet.weight} kg
+                                            🏆 Best: {bestSet.reps ?? 0} reps
+                                            {bestSet.weight ? ` @ ${bestSet.weight} kg` : ''}
                                         </p>
                                     )}
 

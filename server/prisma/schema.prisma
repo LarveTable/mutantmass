@@ -35,11 +35,12 @@ enum MuscleGroup {
 // User table
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  weeklyGoal    Int      @default(3)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   refreshTokens RefreshToken[] // Multiple tokens if multiple devices
   workouts      Workout[]
   exercises     Exercise[]
@@ -71,6 +72,8 @@ model Exercise {
   workoutExercises WorkoutExercise[]
 }
 
+// Workout table
+
 model Workout {
   id               String            @id @default(cuid())
   userId           String
@@ -84,6 +87,8 @@ model Workout {
   workoutExercises WorkoutExercise[]
 }
 
+// Workout exercise table
+
 model WorkoutExercise {
   id            String   @id @default(cuid())
   workoutId     String
@@ -96,6 +101,8 @@ model WorkoutExercise {
   createdAt     DateTime @default(now())
   sets          Set[]
 }
+
+// Set table
 
 model Set {
   id                String          @id @default(cuid())

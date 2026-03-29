@@ -207,3 +207,85 @@ export function useExercises(type?: string, muscleGroup?: string) {
         },
     })
 }
+
+export function useOverviewStats(period: string) {
+    return useQuery({
+        queryKey: ['stats', 'overview', period],
+        queryFn: async () => {
+            const res = await api.get(`/stats/overview?period=${period}`)
+            return res.data
+        },
+    })
+}
+
+export function useVolumeStats(period: string) {
+    return useQuery({
+        queryKey: ['stats', 'volume', period],
+        queryFn: async () => {
+            const res = await api.get(`/stats/volume?period=${period}`)
+            return res.data.data
+        },
+    })
+}
+
+export function useExerciseStats(exerciseId: string | null, period: string) {
+    return useQuery({
+        queryKey: ['stats', 'exercise', exerciseId, period],
+        queryFn: async () => {
+            const res = await api.get(`/stats/exercise/${exerciseId}?period=${period}`)
+            return res.data.data
+        },
+        enabled: !!exerciseId,
+    })
+}
+
+export function usePRs() {
+    return useQuery({
+        queryKey: ['stats', 'prs'],
+        queryFn: async () => {
+            const res = await api.get('/stats/prs')
+            return res.data.prs
+        },
+    })
+}
+
+export function useMuscleStats(period: string) {
+    return useQuery({
+        queryKey: ['stats', 'muscles', period],
+        queryFn: async () => {
+            const res = await api.get(`/stats/muscles?period=${period}`)
+            return res.data.data
+        },
+    })
+}
+
+export function useFrequencyStats() {
+    return useQuery({
+        queryKey: ['stats', 'frequency'],
+        queryFn: async () => {
+            const res = await api.get('/stats/frequency')
+            return res.data.data
+        },
+    })
+}
+
+export function useConsistencyStats() {
+    return useQuery({
+        queryKey: ['stats', 'consistency'],
+        queryFn: async () => {
+            const res = await api.get('/stats/consistency')
+            return res.data
+        },
+    })
+}
+
+export function useUpdateWeeklyGoal() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (weeklyGoal: number) => {
+            const res = await api.patch('/stats/goal', { weeklyGoal })
+            return res.data
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['stats', 'consistency'] }),
+    })
+}
