@@ -107,7 +107,7 @@ export default function VolumeChart({ period }: Props) {
 
             {/* Chart */}
             <div className="flex-1 w-full min-h-[200px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 1, height: 1 }}>
                     <ComposedChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                         <XAxis
                             dataKey="weekStart"

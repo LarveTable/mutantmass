@@ -16,6 +16,7 @@ import { Plus, Pencil, X, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
@@ -35,7 +36,7 @@ function Sparkline({ data }: { data: any[] }) {
     )
 
     return (
-        <ResponsiveContainer width="100%" height={64}>
+        <ResponsiveContainer width="100%" height={64} initialDimension={{ width: 1, height: 1 }}>
             <AreaChart data={data} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
                 <defs>
                     <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
@@ -186,6 +187,9 @@ function ExerciseCard({
                 <DialogContent className="max-w-sm">
                     <DialogHeader>
                         <DialogTitle>{slot.name}</DialogTitle>
+                        <DialogDescription>
+                            {period}
+                        </DialogDescription>
                     </DialogHeader>
 
                     <div className="flex flex-col gap-4">
@@ -211,7 +215,7 @@ function ExerciseCard({
 
                         {/* Full chart */}
                         {data.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={200}>
+                            <ResponsiveContainer width="100%" height={200} initialDimension={{ width: 1, height: 1 }}>
                                 <LineChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
@@ -309,6 +313,7 @@ function ExercisePicker({
             <DialogContent className="max-w-sm">
                 <DialogHeader>
                     <DialogTitle>Choose Exercise</DialogTitle>
+                    <DialogDescription />
                 </DialogHeader>
                 <div className="flex flex-col gap-3">
                     <input
