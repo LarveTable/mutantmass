@@ -42,7 +42,7 @@ const CustomTooltip = ({ active, payload, mode }: any) => {
                 {week.total.toLocaleString()} kg total
             </p>
             <p className="text-muted-foreground text-xs mb-1">
-                ~{(week.total / 1000).toFixed(1)}t · avg {(week.rollingAvg / 1000).toFixed(1)}t
+                ~{week.total >= 1000 ? (week.total / 1000).toFixed(1) + 't' : week.total + 'kg'} · avg {week.rollingAvg >= 1000 ? (week.rollingAvg / 1000).toFixed(1) + 't' : week.rollingAvg + 'kg'}
             </p>
             {mode === 'muscle' && (
                 <div className="flex flex-col gap-0.5 mt-1 border-t border-border pt-1">
@@ -121,7 +121,7 @@ export default function VolumeChart({ period }: Props) {
                         />
                         <YAxis
                             tick={{ fontSize: 10, fill: '#888' }}
-                            tickFormatter={(v) => `${(v / 1000).toFixed(0)}t`}
+                            tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(1)}t` : `${v}kg`}
                             axisLine={false}
                             tickLine={false}
                         />
@@ -145,7 +145,7 @@ export default function VolumeChart({ period }: Props) {
                                     dataKey={`byMuscle.${muscle}`}
                                     stackId="muscles"
                                     fill={MUSCLE_COLORS[muscle]}
-                                    radius={muscle === 'FULL_BODY' ? [4, 4, 0, 0] : [0, 0, 0, 0]}
+                                    radius={[0, 0, 0, 0]}
                                 />
                             ))
                         )}

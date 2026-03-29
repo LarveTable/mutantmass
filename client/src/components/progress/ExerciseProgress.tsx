@@ -45,7 +45,7 @@ function Sparkline({ data }: { data: any[] }) {
                 </defs>
                 <Area
                     type="monotone"
-                    dataKey="estimatedOneRM"
+                    dataKey="primaryValue"
                     stroke="hsl(var(--primary))"
                     strokeWidth={2}
                     fill="url(#sparkGrad)"
@@ -63,12 +63,23 @@ const FullTooltip = ({ active, payload }: any) => {
     const d = payload[0].payload
     return (
         <div className="rounded-lg border border-border bg-card px-3 py-2 text-sm shadow">
-            <p className="text-muted-foreground text-xs">{d.date}</p>
-            <p className="text-primary font-bold">{d.estimatedOneRM} kg e1RM</p>
-            <p className="text-xs text-muted-foreground">
-                {d.bestWeight}kg × {d.bestReps} reps
+            <p className="text-muted-foreground text-xs mb-1">{d.date}</p>
+            <p className="text-primary font-bold">
+                {d.type === 'WEIGHTED' && `${d.primaryValue} kg e1RM`}
+                {d.type === 'BODYWEIGHT' && `${d.primaryValue} reps max`}
+                {d.type === 'CARDIO' && (d.primaryValue ? `${d.primaryValue} km` : `${Math.floor((d.bestDuration || 0) / 60)} min`)}
             </p>
-            <p className="text-xs text-muted-foreground">
+            {d.type === 'WEIGHTED' && (
+                <p className="text-xs text-muted-foreground">
+                    {d.bestWeight}kg × {d.bestReps} reps
+                </p>
+            )}
+            {d.type === 'CARDIO' && d.bestDistance > 0 && d.bestDuration > 0 && (
+                <p className="text-xs text-muted-foreground">
+                    in {Math.floor(d.bestDuration / 60)}m
+                </p>
+            )}
+            <p className="text-xs text-muted-foreground mt-1">
                 Vol: {d.volume.toLocaleString()} kg
             </p>
         </div>
@@ -90,14 +101,19 @@ function ExerciseCard({
     const { data = [], isLoading } = useExerciseStats(slot?.id ?? null, period)
     const [expanded, setExpanded] = useState(false)
 
-    const values = data.map((d: any) => d.estimatedOneRM ?? 0).filter(Boolean)
+    const values = data.map((d: any) => d.primaryValue).filter((v: any) => v !== null)
     const latest = values[values.length - 1] ?? null
     const first = values[0] ?? null
     const trend = latest !== null && first !== null ? latest - first : null
     const bestEver = values.length > 0 ? Math.max(...values) : null
 
+    const exerciseType = data.length > 0 ? data[data.length - 1].type : 'WEIGHTED'
+    const unit = exerciseType === 'BODYWEIGHT' ? 'reps' : exerciseType === 'CARDIO' ? 'km' : 'kg'
+    const label = exerciseType === 'BODYWEIGHT' ? 'Max Reps' : exerciseType === 'CARDIO' ? 'Distance' : 'e1RM'
+
     const TrendIcon = trend === null ? null : trend > 0 ? TrendingUp : trend < 0 ? TrendingDown : Minus
     const trendColor = trend === null ? '' : trend > 0 ? 'text-green-500' : trend < 0 ? 'text-red-500' : 'text-muted-foreground'
+    const formatValue = (v: any) => `${v}${exerciseType === 'BODYWEIGHT' ? '' : unit}`
 
     // Empty slot
     if (!slot) {
@@ -126,7 +142,7 @@ function ExerciseCard({
                         <p className="text-sm font-semibold truncate">{slot.name}</p>
                         {latest !== null && (
                             <p className="text-xs text-muted-foreground">
-                                e1RM: <span className="text-primary font-semibold">{latest} kg</span>
+                                {label}: <span className="text-primary font-semibold">{formatValue(latest)}</span>
                             </p>
                         )}
                     </div>
@@ -153,13 +169,13 @@ function ExerciseCard({
                         <div className={`flex items-center gap-1 ${trendColor}`}>
                             <TrendIcon size={13} />
                             <span className="text-xs font-medium">
-                                {trend > 0 ? '+' : ''}{trend} kg
+                                {trend > 0 ? '+' : ''}{formatValue(trend)}
                             </span>
                         </div>
                     )}
                     {bestEver !== null && (
                         <p className="text-xs text-muted-foreground ml-auto">
-                            Best: <span className="font-medium text-foreground">{bestEver} kg</span>
+                            Best: <span className="font-medium text-foreground">{formatValue(bestEver)}</span>
                         </p>
                     )}
                 </div>
@@ -177,13 +193,13 @@ function ExerciseCard({
                         <div className="grid grid-cols-3 gap-2">
                             <div className="flex flex-col items-center gap-0.5 rounded-xl bg-muted/50 p-3">
                                 <span className="text-base font-bold text-primary">
-                                    {latest ?? '-'}
+                                    {latest !== null ? latest : '-'}
                                 </span>
-                                <span className="text-xs text-muted-foreground text-center">Current e1RM</span>
+                                <span className="text-xs text-muted-foreground text-center">Current {label}</span>
                             </div>
                             <div className="flex flex-col items-center gap-0.5 rounded-xl bg-muted/50 p-3">
-                                <span className="text-base font-bold">{bestEver ?? '-'}</span>
-                                <span className="text-xs text-muted-foreground text-center">Best e1RM</span>
+                                <span className="text-base font-bold">{bestEver !== null ? bestEver : '-'}</span>
+                                <span className="text-xs text-muted-foreground text-center">Best {label}</span>
                             </div>
                             <div className={`flex flex-col items-center gap-0.5 rounded-xl bg-muted/50 p-3 ${trendColor}`}>
                                 <span className="text-base font-bold">
@@ -216,7 +232,7 @@ function ExerciseCard({
                                     />
                                     <YAxis
                                         tick={{ fontSize: 10, fill: '#888' }}
-                                        tickFormatter={(v) => `${v}kg`}
+                                        tickFormatter={(v) => exerciseType === 'BODYWEIGHT' ? `${v}` : exerciseType === 'CARDIO' ? `${v}km` : `${v}kg`}
                                         axisLine={false}
                                         tickLine={false}
                                         domain={['auto', 'auto']}
@@ -224,7 +240,7 @@ function ExerciseCard({
                                     <Tooltip content={<FullTooltip />} />
                                     <Line
                                         type="monotone"
-                                        dataKey="estimatedOneRM"
+                                        dataKey="primaryValue"
                                         stroke="hsl(var(--primary))"
                                         strokeWidth={2.5}
                                         dot={{ fill: 'hsl(var(--primary))', r: 4, strokeWidth: 0 }}
@@ -252,10 +268,12 @@ function ExerciseCard({
                                         >
                                             <span className="text-xs text-muted-foreground">{d.date}</span>
                                             <span className="text-xs font-medium">
-                                                {d.bestWeight}kg × {d.bestReps} reps
+                                                {d.type === 'WEIGHTED' && `${d.bestWeight}kg × ${d.bestReps} reps`}
+                                                {d.type === 'BODYWEIGHT' && `${d.bestReps} reps`}
+                                                {d.type === 'CARDIO' && (d.bestDistance ? `${d.bestDistance} km` : `${Math.floor((d.bestDuration || 0) / 60)} min`)}
                                             </span>
                                             <span className="text-xs text-primary font-semibold">
-                                                {d.estimatedOneRM}kg
+                                                {d.primaryValue ? formatValue(d.primaryValue) : '-'}
                                             </span>
                                         </div>
                                     ))}
@@ -283,10 +301,7 @@ function ExercisePicker({
     const { data: exercises = [] } = useExercises()
 
     const filtered = exercises
-        .filter((e: any) =>
-            e.type === 'WEIGHTED' &&
-            e.name.toLowerCase().includes(search.toLowerCase())
-        )
+        .filter((e: any) => e.name.toLowerCase().includes(search.toLowerCase()))
         .slice(0, 10)
 
     return (

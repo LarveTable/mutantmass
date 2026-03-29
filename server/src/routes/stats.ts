@@ -129,25 +129,53 @@ export default async function statsRoutes(app: FastifyInstance) {
             include: {
                 sets: true,
                 workout: true,
+                exercise: true,
             },
             orderBy: { workout: { date: 'asc' } }
         })
 
         const data = workoutExercises.map(we => {
-            const weightedSets = we.sets.filter(s => s.weight && s.reps)
-            const bestSet = weightedSets.reduce((best, s) => {
-                const orm = estimateOneRM(s.weight!, s.reps!)
-                const bestOrm = best ? estimateOneRM(best.weight!, best.reps!) : 0
-                return orm > bestOrm ? s : best
-            }, weightedSets[0])
+            const type = we.exercise.type
+            let bestSet = null
+
+            if (we.sets.length > 0) {
+                if (type === 'WEIGHTED') {
+                    const valid = we.sets.filter(s => s.weight && s.reps)
+                    if (valid.length > 0) {
+                        bestSet = valid.reduce((best, s) => {
+                            const orm = estimateOneRM(s.weight!, s.reps!)
+                            const bestOrm = best ? estimateOneRM(best.weight!, best.reps!) : 0
+                            return orm > bestOrm ? s : best
+                        }, valid[0])
+                    }
+                } else if (type === 'BODYWEIGHT') {
+                    const valid = we.sets.filter(s => s.reps)
+                    if (valid.length > 0) bestSet = valid.reduce((best, s) => s.reps! > (best?.reps ?? 0) ? s : best, valid[0])
+                } else if (type === 'CARDIO') {
+                    bestSet = we.sets.reduce((best, s) => {
+                        const d1 = s.distance ?? 0; const d2 = best?.distance ?? 0
+                        if (d1 > d2) return s
+                        if (d1 === d2 && (s.duration ?? 0) > (best?.duration ?? 0)) return s
+                        return best
+                    }, we.sets[0])
+                }
+            }
+
+            const primaryValue = type === 'WEIGHTED' && bestSet ? estimateOneRM(bestSet.weight!, bestSet.reps!)
+                : type === 'BODYWEIGHT' && bestSet ? bestSet.reps
+                    : type === 'CARDIO' && bestSet ? (bestSet.distance || null)
+                        : null
 
             return {
                 date: we.workout.date.toISOString().split('T')[0],
+                type,
                 bestWeight: bestSet?.weight ?? null,
                 bestReps: bestSet?.reps ?? null,
-                estimatedOneRM: bestSet ? estimateOneRM(bestSet.weight!, bestSet.reps!) : null,
-                volume: we.sets.reduce((t, s) =>
-                    t + (s.weight && s.reps ? s.weight * s.reps : 0), 0),
+                bestDistance: bestSet?.distance ?? null,
+                bestDuration: bestSet?.duration ?? null,
+                estimatedOneRM: type === 'WEIGHTED' && bestSet ? primaryValue : null,
+                primaryValue,
+                volume: we.sets.reduce((t, s) => t + (s.weight && s.reps ? s.weight * s.reps : 0), 0),
             }
         })
 

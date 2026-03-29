@@ -31,7 +31,11 @@ export default function OverviewStrip({ period }: Props) {
         {
             icon: Zap,
             label: 'Volume',
-            value: isLoading ? '-' : `${((data?.totalVolume ?? 0) / 1000).toFixed(1)}t`,
+            value: isLoading ? '-' : (
+                (data?.totalVolume ?? 0) >= 1000 
+                    ? `${((data?.totalVolume ?? 0) / 1000).toFixed(1)}t` 
+                    : `${data?.totalVolume ?? 0}kg`
+            ),
         },
         {
             icon: Clock,

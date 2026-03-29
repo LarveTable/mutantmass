@@ -18,8 +18,10 @@ export default function ConsistencyTracker() {
 
     const { weeks, weeklyGoal } = data
     const currentWeek = weeks[weeks.length - 1]
-    const streak = [...weeks].reverse().findIndex(w => !w.met)
-    const actualStreak = streak === -1 ? weeks.length : streak
+    const pastWeeks = [...weeks].slice(0, -1)
+    const pastStreakBreak = [...pastWeeks].reverse().findIndex(w => !w.met)
+    const pastStreak = pastStreakBreak === -1 ? pastWeeks.length : pastStreakBreak
+    const actualStreak = currentWeek.met ? pastStreak + 1 : pastStreak
 
     const handleGoalSave = () => {
         const val = parseInt(goalInput)
