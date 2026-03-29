@@ -18,6 +18,12 @@ enum ExerciseType {
   CARDIO
 }
 
+enum Sex {
+  MALE
+  FEMALE
+  OTHER
+}
+
 enum MuscleGroup {
   CHEST
   BACK
@@ -38,6 +44,11 @@ model User {
   id            String   @id @default(cuid())
   email         String   @unique
   password      String
+  name          String?
+  age           Int?
+  sex           Sex?
+  weight        Float?
+  height        Float?
   weeklyGoal    Int      @default(3)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

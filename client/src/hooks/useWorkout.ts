@@ -280,3 +280,52 @@ export function useUpdateWeeklyGoal() {
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['stats', 'consistency'] }),
     })
 }
+
+export function useProfile() {
+    return useQuery({
+        queryKey: ['profile'],
+        queryFn: async () => {
+            const res = await api.get('/profile')
+            return res.data.user
+        },
+    })
+}
+
+export function useUpdateProfile() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (data: {
+            name?: string
+            age?: number
+            sex?: string
+            weight?: number
+            height?: number
+            weeklyGoal?: number
+        }) => {
+            const res = await api.patch('/profile', data)
+            return res.data.user
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['profile'] })
+            queryClient.invalidateQueries({ queryKey: ['stats', 'consistency'] })
+        },
+    })
+}
+
+export function useChangePassword() {
+    return useMutation({
+        mutationFn: async (data: { currentPassword: string; newPassword: string }) => {
+            const res = await api.patch('/profile/password', data)
+            return res.data
+        },
+    })
+}
+
+export function useDeleteAccount() {
+    return useMutation({
+        mutationFn: async (password: string) => {
+            const res = await api.delete('/profile', { data: { password } })
+            return res.data
+        },
+    })
+}

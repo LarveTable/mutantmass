@@ -9,6 +9,7 @@ import exerciseRoutes from './routes/exercises.js'
 import workoutRoutes from './routes/workouts.js'
 import setRoutes from './routes/sets.js'
 import statsRoutes from './routes/stats.js'
+import profileRoutes from './routes/profile.js'
 
 const app = Fastify({ logger: true })
 
@@ -43,6 +44,9 @@ app.register(setRoutes)
 
 // Stats routes
 app.register(statsRoutes)
+
+// Profile routes
+app.register(profileRoutes)
 
 app.listen({ port: 3000 }, (err) => {
   if (err) process.exit(1)
