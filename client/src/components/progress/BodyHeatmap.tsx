@@ -17,7 +17,7 @@ const PRISMA_TO_BODY_HIGHLIGHTER: Record<string, string[]> = {
     CORE: ['abs', 'obliques'],
 }
 
-
+// Component to show the most trained muscles in a visual way
 
 export default function BodyHeatmap({ period }: Props) {
     const { data = {}, isLoading } = useMuscleStats(period)

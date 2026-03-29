@@ -56,20 +56,62 @@ export default async function statsRoutes(app: FastifyInstance) {
             orderBy: { date: 'asc' },
             include: {
                 workoutExercises: {
-                    include: { sets: true }
+                    include: {
+                        exercise: true,
+                        sets: true,
+                    }
                 }
             }
         })
 
-        const data = workouts.map(w => ({
-            date: w.date.toISOString().split('T')[0],
-            volume: w.workoutExercises.reduce((t, we) =>
-                t + we.sets.reduce((t2, s) =>
-                    t2 + (s.weight && s.reps ? s.weight * s.reps : 0), 0), 0),
-            name: w.name ?? 'Workout',
-        }))
+        // Group by week (Monday as start)
+        const weekMap = new Map<string, {
+            weekStart: string
+            total: number
+            byMuscle: Record<string, number>
+        }>()
 
-        return { data }
+        for (const workout of workouts) {
+            const date = new Date(workout.date)
+            const day = date.getDay()
+            const diff = day === 0 ? -6 : 1 - day
+            const monday = new Date(date)
+            monday.setDate(date.getDate() + diff)
+            monday.setHours(0, 0, 0, 0)
+
+            const y = monday.getFullYear()
+            const m = String(monday.getMonth() + 1).padStart(2, '0')
+            const d = String(monday.getDate()).padStart(2, '0')
+            const weekKey = `${y}-${m}-${d}`
+
+            if (!weekMap.has(weekKey)) {
+                weekMap.set(weekKey, { weekStart: weekKey, total: 0, byMuscle: {} })
+            }
+
+            const week = weekMap.get(weekKey)!
+
+            for (const we of workout.workoutExercises) {
+                const muscle = we.exercise.muscleGroup ?? 'FULL_BODY'
+                const volume = we.sets.reduce((t, s) =>
+                    t + (s.weight && s.reps ? s.weight * s.reps : 0), 0)
+
+                week.total += volume
+                week.byMuscle[muscle] = (week.byMuscle[muscle] ?? 0) + volume
+            }
+        }
+
+        const data = Array.from(weekMap.values()).sort((a, b) =>
+            a.weekStart.localeCompare(b.weekStart)
+        )
+
+        // Compute 4-week rolling average
+        const dataWithAvg = data.map((week, i) => {
+            const slice = data.slice(Math.max(0, i - 3), i + 1)
+            const avg = Math.round(slice.reduce((t, w) => t + w.total, 0) / slice.length)
+            return { ...week, rollingAvg: avg }
+        })
+
+        return { data: dataWithAvg }
     })
 
     // GET /stats/exercise/:exerciseId
@@ -216,10 +258,18 @@ export default async function statsRoutes(app: FastifyInstance) {
 
         // Get last 8 weeks
         const weeks: { weekStart: string; count: number; goal: number; met: boolean }[] = []
+        const now = new Date()
+
         for (let i = 7; i >= 0; i--) {
-            const weekStart = new Date()
-            weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1 - i * 7)
+            const date = new Date(now)
+            date.setDate(date.getDate() - i * 7)
+
+            const day = date.getDay()
+            const diff = day === 0 ? -6 : 1 - day
+            const weekStart = new Date(date)
+            weekStart.setDate(date.getDate() + diff)
             weekStart.setHours(0, 0, 0, 0)
+
             const weekEnd = new Date(weekStart)
             weekEnd.setDate(weekEnd.getDate() + 7)
 
