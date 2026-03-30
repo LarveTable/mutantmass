@@ -15,6 +15,7 @@ import ExerciseNoteDialog from '@/components/workout/ExerciseNoteDialog'
 import ExercisePicker from '@/components/workout/ExercisePicker'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import ExerciseImage from '@/components/workout/ExerciseImage'
 
 // Component to show and edit a past workout's details in the history page
 
@@ -292,17 +293,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                             >
                                 {/* Exercise header */}
                                 <div className="flex items-center gap-3">
-                                    {we.exercise.imageUrl ? (
-                                        <img
-                                            src={we.exercise.imageUrl}
-                                            alt={we.exercise.name}
-                                            className="h-10 w-10 rounded-lg object-cover"
-                                        />
-                                    ) : (
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                                            <Dumbbell size={18} className="text-primary" />
-                                        </div>
-                                    )}
+                                    <ExerciseImage imageUrl={we.exercise.imageUrl} name={we.exercise.name} size="md" />
                                     <div className="flex-1">
                                         <p className="font-semibold">{we.exercise.name}</p>
                                         <p className="text-xs text-muted-foreground">

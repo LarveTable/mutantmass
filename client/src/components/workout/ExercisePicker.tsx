@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import { useExercises } from '@/hooks/useWorkout'
 import { Dumbbell, PersonStanding, Timer, ChevronRight } from 'lucide-react'
+import ExerciseImage from './ExerciseImage'
 
 // Component to pick an exercise to add to the workout
 
@@ -175,17 +176,7 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                                             onClick={() => handleExerciseSelect(exercise.id)}
                                             className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:bg-accent transition-colors text-left"
                                         >
-                                            {exercise.imageUrl ? (
-                                                <img
-                                                    src={exercise.imageUrl}
-                                                    alt={exercise.name}
-                                                    className="h-12 w-12 rounded-lg object-cover"
-                                                />
-                                            ) : (
-                                                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                                                    <Dumbbell size={20} className="text-primary" />
-                                                </div>
-                                            )}
+                                            <ExerciseImage imageUrl={exercise.imageUrl} name={exercise.name} size="lg" />
                                             <span className="font-medium">{exercise.name}</span>
                                         </button>
                                     ))}

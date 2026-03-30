@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import confetti from 'canvas-confetti'
 import { Button } from '@/components/ui/button'
 import { Dumbbell, Clock, Trophy, ChevronRight } from 'lucide-react'
+import ExerciseImage from './ExerciseImage'
 
 interface Set {
     id: string
@@ -149,17 +150,7 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
                         >
                             {/* Exercise header */}
                             <div className="flex items-center gap-3">
-                                {we.exercise.imageUrl ? (
-                                    <img
-                                        src={we.exercise.imageUrl}
-                                        alt={we.exercise.name}
-                                        className="h-10 w-10 rounded-lg object-cover"
-                                    />
-                                ) : (
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                                        <Dumbbell size={18} className="text-primary" />
-                                    </div>
-                                )}
+                                <ExerciseImage imageUrl={we.exercise.imageUrl} name={we.exercise.name} size="md" />
                                 <div className="flex-1">
                                     <p className="font-semibold">{we.exercise.name}</p>
                                     <p className="text-xs text-muted-foreground">

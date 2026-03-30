@@ -10,6 +10,13 @@ import workoutRoutes from './routes/workouts.js'
 import setRoutes from './routes/sets.js'
 import statsRoutes from './routes/stats.js'
 import profileRoutes from './routes/profile.js'
+import fastifyStatic from '@fastify/static'
+import fastifyMultipart from '@fastify/multipart'
+import { fileURLToPath } from 'url'
+import { dirname, join } from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const app = Fastify({ logger: true })
 
@@ -27,6 +34,18 @@ app.register(fastifyJwt, {
     cookieName: 'access_token',
     signed: false,
   }
+})
+
+// Exercises images
+app.register(fastifyStatic, {
+  root: join(__dirname, '../uploads'),
+  prefix: '/uploads/',
+})
+
+app.register(fastifyMultipart, {
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB max
+  },
 })
 
 app.register(prismaPlugin)

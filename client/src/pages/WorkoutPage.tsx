@@ -26,6 +26,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import api from '@/api/axios'
 import AddExerciseDialog from '@/components/workout/AddExerciseDialog'
 import LogPastWorkoutDialog from '@/components/workout/LogPastWorkoutDialog'
+import ExerciseImage from '@/components/workout/ExerciseImage'
 
 // Main page for logging workouts
 
@@ -65,7 +66,7 @@ export default function WorkoutPage() {
     const queryClient = useQueryClient()
 
     const handleStart = async (name: string, rest: number | null, template: any | null) => {
-        const created = await createWorkout.mutateAsync({ 
+        const created = await createWorkout.mutateAsync({
             name: name || undefined,
             restTimer: rest ?? undefined
         })
@@ -233,17 +234,7 @@ export default function WorkoutPage() {
                 {workout?.workoutExercises?.map((we: any) => (
                     <div key={we.id} className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
                         <div className="flex items-center gap-3">
-                            {we.exercise.imageUrl ? (
-                                <img
-                                    src={we.exercise.imageUrl}
-                                    alt={we.exercise.name}
-                                    className="h-10 w-10 rounded-lg object-cover"
-                                />
-                            ) : (
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                                    <Dumbbell size={18} className="text-primary" />
-                                </div>
-                            )}
+                            <ExerciseImage imageUrl={we.exercise.imageUrl} name={we.exercise.name} size="md" />
                             <div className="flex-1">
                                 <p className="font-semibold">{we.exercise.name}</p>
                                 <p className="text-xs text-muted-foreground capitalize">

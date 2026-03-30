@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import {
     Dialog,
     DialogContent,
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { ImagePlus, X } from 'lucide-react'
 import api from '@/api/axios'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -41,12 +42,29 @@ const MUSCLE_GROUPS = [
 
 export default function AddExerciseDialog({ open, onClose }: Props) {
     const queryClient = useQueryClient()
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
     const [name, setName] = useState('')
     const [type, setType] = useState<string>('WEIGHTED')
     const [muscleGroup, setMuscleGroup] = useState<string>('CHEST')
     const [isPublic, setIsPublic] = useState(false)
+    const [imageFile, setImageFile] = useState<File | null>(null)
+    const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        setImageFile(file)
+        setImagePreview(URL.createObjectURL(file))
+    }
+
+    const handleRemoveImage = () => {
+        setImageFile(null)
+        setImagePreview(null)
+        if (fileInputRef.current) fileInputRef.current.value = ''
+    }
 
     const handleSubmit = async () => {
         setError('')
@@ -54,7 +72,17 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
 
         setLoading(true)
         try {
-            await api.post('/exercises', { name: name.trim(), type, muscleGroup, isPublic })
+            const formData = new FormData()
+            formData.append('name', name.trim())
+            formData.append('type', type)
+            formData.append('muscleGroup', muscleGroup)
+            formData.append('isPublic', String(isPublic))
+            if (imageFile) formData.append('image', imageFile)
+
+            await api.post('/exercises', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            })
+
             queryClient.invalidateQueries({ queryKey: ['exercises'] })
             handleClose()
         } catch (err: any) {
@@ -69,19 +97,57 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
         setType('WEIGHTED')
         setMuscleGroup('CHEST')
         setIsPublic(false)
+        setImageFile(null)
+        setImagePreview(null)
         setError('')
         onClose()
     }
 
     return (
         <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="max-w-sm">
+            <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Add Custom Exercise</DialogTitle>
                     <DialogDescription />
                 </DialogHeader>
 
                 <div className="flex flex-col gap-5 py-2">
+                    {/* Image picker */}
+                    <div className="flex flex-col gap-1.5">
+                        <Label>Image (optional)</Label>
+                        {imagePreview ? (
+                            <div className="relative w-full h-36 rounded-xl overflow-hidden border border-border">
+                                <img
+                                    src={imagePreview}
+                                    alt="Preview"
+                                    className="w-full h-full object-cover"
+                                />
+                                <button
+                                    onClick={handleRemoveImage}
+                                    className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background transition-colors"
+                                >
+                                    <X size={14} />
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="flex flex-col items-center justify-center gap-2 w-full h-36 rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-accent transition-colors"
+                            >
+                                <ImagePlus size={24} className="text-muted-foreground" />
+                                <p className="text-sm text-muted-foreground">Tap to upload image</p>
+                                <p className="text-xs text-muted-foreground">JPEG, PNG, WebP — max 5MB</p>
+                            </button>
+                        )}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp,image/gif"
+                            className="hidden"
+                            onChange={handleImageChange}
+                        />
+                    </div>
+
                     {/* Name */}
                     <div className="flex flex-col gap-1.5">
                         <Label>Exercise name</Label>
@@ -89,7 +155,6 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
                             placeholder="e.g. Cable Lateral Raise"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            autoFocus
                         />
                     </div>
 
