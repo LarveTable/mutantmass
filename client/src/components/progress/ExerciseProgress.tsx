@@ -40,14 +40,14 @@ function Sparkline({ data }: { data: any[] }) {
             <AreaChart data={data} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
                 <defs>
                     <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                        <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.3} />
+                        <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
                     </linearGradient>
                 </defs>
                 <Area
                     type="monotone"
                     dataKey="primaryValue"
-                    stroke="hsl(var(--primary))"
+                    stroke="var(--primary)"
                     strokeWidth={2}
                     fill="url(#sparkGrad)"
                     dot={false}
@@ -216,14 +216,14 @@ function ExerciseCard({
                         {/* Full chart */}
                         {data.length > 0 ? (
                             <ResponsiveContainer width="100%" height={200} initialDimension={{ width: 1, height: 1 }}>
-                                <LineChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                                <LineChart data={data} margin={{ top: 4, right: 20, left: 0, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
-                                            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                            <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.2} />
+                                            <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                                     <XAxis
                                         dataKey="date"
                                         tick={{ fontSize: 10, fill: '#888' }}
@@ -245,9 +245,9 @@ function ExerciseCard({
                                     <Line
                                         type="monotone"
                                         dataKey="primaryValue"
-                                        stroke="hsl(var(--primary))"
+                                        stroke="var(--primary)"
                                         strokeWidth={2.5}
-                                        dot={{ fill: 'hsl(var(--primary))', r: 4, strokeWidth: 0 }}
+                                        dot={{ fill: 'var(--primary)', r: 4, strokeWidth: 0 }}
                                         activeDot={{ r: 6, strokeWidth: 0 }}
                                     />
                                 </LineChart>
