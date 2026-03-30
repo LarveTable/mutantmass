@@ -436,7 +436,8 @@ export default function DashboardPage() {
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
                         <Dumbbell size={15} className="text-primary" />
                         <span className="text-base font-bold truncate px-1 max-w-full capitalize">
-                            {Object.entries(muscleData as Record<string, number>).sort(([, a], [, b]) => b - a)[0]?.[0].toLowerCase().replace('_', ' ') ?? '-'}
+                            {Object.entries(muscleData as Record<string, { volume: number; reps: number; duration: number }>)
+                                .sort(([, a], [, b]) => (b.volume || b.duration) - (a.volume || a.duration))[0]?.[0].toLowerCase().replace('_', ' ') ?? '-'}
                         </span>
                         <span className="text-xs text-muted-foreground">Most Trained</span>
                     </div>
@@ -450,9 +451,9 @@ export default function DashboardPage() {
                         Muscles Hit This Week
                     </p>
                     <div className="flex flex-wrap gap-2">
-                        {Object.entries(muscleData as Record<string, number>)
-                            .sort(([, a], [, b]) => b - a)
-                            .map(([muscle, volume]) => (
+                        {Object.entries(muscleData as Record<string, { volume: number; reps: number; duration: number }>)
+                            .sort(([, a], [, b]) => (b.volume || b.duration) - (a.volume || a.duration))
+                            .map(([muscle, stats]) => (
                                 <div
                                     key={muscle}
                                     className="flex items-center gap-1.5 rounded-full px-3 py-1.5"
@@ -465,8 +466,19 @@ export default function DashboardPage() {
                                     <span className="text-xs font-medium capitalize" style={{ color: MUSCLE_COLORS[muscle] }}>
                                         {muscle.toLowerCase().replace('_', ' ')}
                                     </span>
-                                    <span className="text-xs text-muted-foreground">
-                                        {(volume / 1000).toFixed(1)}t
+                                    <span className="text-[10px] text-muted-foreground flex flex-col gap-0.5">
+                                        {stats.volume > 0 && (
+                                            <span>{(stats.volume / 1000).toFixed(1)}t for {stats.reps} reps</span>
+                                        )}
+                                        {stats.volume === 0 && stats.reps > 0 && (
+                                            <span>{stats.reps} reps</span>
+                                        )}
+                                        {stats.duration > 0 && (
+                                            <span className="flex items-center gap-1">
+                                                {stats.volume === 0 && stats.reps === 0 ? '' : '• '}
+                                                {formatDuration(stats.duration)}
+                                            </span>
+                                        )}
                                     </span>
                                 </div>
                             ))}

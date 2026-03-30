@@ -283,16 +283,27 @@ export default async function statsRoutes(app: FastifyInstance) {
             }
         })
 
-        const muscleVolume: Record<string, number> = {}
+        const muscleStats: Record<string, { volume: number; reps: number; duration: number }> = {}
 
         for (const we of workoutExercises) {
             const muscle = we.exercise.muscleGroup
-            const volume = we.sets.reduce((t, s) =>
-                t + (s.weight && s.reps ? s.weight * s.reps : 0), 0)
-            muscleVolume[muscle] = (muscleVolume[muscle] ?? 0) + volume
+            if (!muscleStats[muscle]) {
+                muscleStats[muscle] = { volume: 0, reps: 0, duration: 0 }
+            }
+
+            const stats = we.sets.reduce((acc, s) => {
+                acc.volume += (s.weight && s.reps ? s.weight * s.reps : 0)
+                acc.reps += (s.reps ?? 0)
+                acc.duration += (s.duration ?? 0)
+                return acc
+            }, { volume: 0, reps: 0, duration: 0 })
+
+            muscleStats[muscle].volume += stats.volume
+            muscleStats[muscle].reps += stats.reps
+            muscleStats[muscle].duration += stats.duration
         }
 
-        return { data: muscleVolume }
+        return { data: muscleStats }
     })
 
 

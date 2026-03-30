@@ -28,9 +28,20 @@ export default function BodyHeatmap({ period }: Props) {
         </div>
     )
 
-    const rawData = data as Record<string, number>
+    const rawData = data as Record<string, any>
+    
+    // Extract volumes and ignore CARDIO
+    const volumeData: Record<string, number> = {}
+    Object.entries(rawData).forEach(([muscle, stats]) => {
+        if (muscle === 'CARDIO') return
+        const vol = typeof stats === 'number' ? stats : (stats?.volume || 0)
+        if (vol > 0) {
+            volumeData[muscle] = vol
+        }
+    })
+
     // Get unique volumes sorted descending to determine ranks
-    const uniqueVolumes = Array.from(new Set(Object.values(rawData).filter((v) => v > 0))).sort((a, b) => b - a)
+    const uniqueVolumes = Array.from(new Set(Object.values(volumeData))).sort((a, b) => b - a)
 
     // Map volume to a frequency bucket based on actual rank (1st, 2nd, 3rd, Rest)
     function getRankBucket(volume: number): number {
@@ -42,7 +53,7 @@ export default function BodyHeatmap({ period }: Props) {
         return 1 // 4th+ Place
     }
 
-    const highlightedData: IExerciseData[] = Object.entries(rawData)
+    const highlightedData: IExerciseData[] = Object.entries(volumeData)
         .map(([muscle, volume]) => {
             const bucket = getRankBucket(volume)
             if (bucket === 0 || !PRISMA_TO_BODY_HIGHLIGHTER[muscle]) return null
