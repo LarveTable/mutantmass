@@ -160,18 +160,16 @@ export function useAddSet(workoutId: string) {
             weight,
             duration,
             distance,
-            restTime,
         }: {
             workoutExerciseId: string
             reps?: number
             weight?: number
             duration?: number
             distance?: number
-            restTime?: number
         }) => {
             const res = await api.post(
                 `/workouts/${workoutId}/exercises/${workoutExerciseId}/sets`,
-                { reps, weight, duration, distance, restTime }
+                { reps, weight, duration, distance }
             )
             return res.data.set
         },

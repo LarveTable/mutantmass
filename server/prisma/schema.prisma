@@ -93,6 +93,7 @@ model Workout {
   note             String?
   date             DateTime          @default(now())
   duration         Int?
+  restTimer        Int?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   workoutExercises WorkoutExercise[]
@@ -124,6 +125,5 @@ model Set {
   weight            Float?
   duration          Int?
   distance          Float?
-  restTime          Int?
   createdAt         DateTime        @default(now())
 }

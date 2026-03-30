@@ -73,12 +73,11 @@ export default async function setRoutes(app: FastifyInstance) {
             workoutId: string
             workoutExerciseId: string
         }
-        const { reps, weight, duration, distance, restTime } = request.body as {
+        const { reps, weight, duration, distance } = request.body as {
             reps?: number
             weight?: number
             duration?: number
             distance?: number
-            restTime?: number
         }
 
         const workout = await app.prisma.workout.findFirst({ where: { id: workoutId, userId } })
@@ -103,7 +102,6 @@ export default async function setRoutes(app: FastifyInstance) {
                 weight: weight ?? null,
                 duration: duration ?? null,
                 distance: distance ?? null,
-                restTime: restTime ?? null,
             },
         })
 
@@ -138,12 +136,11 @@ export default async function setRoutes(app: FastifyInstance) {
             workoutExerciseId: string
             setId: string
         }
-        const { reps, weight, duration, distance, restTime } = request.body as {
+        const { reps, weight, duration, distance } = request.body as {
             reps?: number
             weight?: number
             duration?: number
             distance?: number
-            restTime?: number
         }
 
         const workout = await app.prisma.workout.findFirst({ where: { id: workoutId, userId } })
@@ -161,7 +158,6 @@ export default async function setRoutes(app: FastifyInstance) {
                 ...(weight !== undefined && { weight }),
                 ...(duration !== undefined && { duration }),
                 ...(distance !== undefined && { distance }),
-                ...(restTime !== undefined && { restTime }),
             },
         })
 

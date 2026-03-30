@@ -10,7 +10,6 @@ interface Set {
     weight?: number | null
     duration?: number | null
     distance?: number | null
-    restTime?: number | null
 }
 
 interface Props {
@@ -18,14 +17,12 @@ interface Props {
     exerciseName: string
     exerciseType: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'
     sets: Set[]
-    restTimer: number | null
     onAddSet: (data: {
         workoutExerciseId: string
         reps?: number
         weight?: number
         duration?: number
         distance?: number
-        restTime?: number
     }) => void
     onDeleteSet: (workoutExerciseId: string, setId: string) => void
     onEditSet: (workoutExerciseId: string, set: Set) => void
@@ -36,7 +33,6 @@ export default function SetLogger({
     exerciseName,
     exerciseType,
     sets,
-    restTimer,
     onAddSet,
     onDeleteSet,
     onEditSet,
@@ -54,7 +50,6 @@ export default function SetLogger({
         onAddSet({
             workoutExerciseId,
             ...data,
-            restTime: restTimer ?? undefined,
         })
     }
 

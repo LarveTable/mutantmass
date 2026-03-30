@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { Trash2, Plus, ChevronRight, ChevronLeft } from 'lucide-react'
 import { useExercises } from '@/hooks/useWorkout'
 import api from '@/api/axios'
@@ -159,6 +160,8 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
     })
     const [durationHours, setDurationHours] = useState('')
     const [durationMins, setDurationMins] = useState('')
+    const [restTimerEnabled, setRestTimerEnabled] = useState(false)
+    const [restDuration, setRestDuration] = useState('90')
     const [note, setNote] = useState('')
     const [exercises, setExercises] = useState<ExerciseEntry[]>([])
     const [showPicker, setShowPicker] = useState(false)
@@ -223,6 +226,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                 name: name || undefined,
                 date: new Date(date).toISOString(),
                 duration,
+                restTimer: restTimerEnabled ? Number(restDuration) : undefined,
                 note: note || undefined,
             })
             const workoutId = workoutRes.data.workout.id
@@ -255,6 +259,8 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
         setDate(new Date().toISOString().split('T')[0])
         setDurationHours('')
         setDurationMins('')
+        setRestTimerEnabled(false)
+        setRestDuration('90')
         setNote('')
         setExercises([])
         setShowPicker(false)
@@ -322,6 +328,30 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                                     />
                                     <span className="text-sm text-muted-foreground shrink-0">min</span>
                                 </div>
+                            </div>
+                            <div className="flex flex-col gap-3 p-3 rounded-lg border border-border bg-muted/30">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex flex-col">
+                                        <Label className="text-sm font-medium">Rest Timer</Label>
+                                        <p className="text-xs text-muted-foreground">Record rest duration for this session</p>
+                                    </div>
+                                    <Switch
+                                        checked={restTimerEnabled}
+                                        onCheckedChange={setRestTimerEnabled}
+                                    />
+                                </div>
+                                {restTimerEnabled && (
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            type="number"
+                                            value={restDuration}
+                                            onChange={(e) => setRestDuration(e.target.value)}
+                                            className="w-20 h-8 text-center text-sm"
+                                            min={0}
+                                        />
+                                        <span className="text-xs text-muted-foreground">seconds</span>
+                                    </div>
+                                )}
                             </div>
                             <div className="flex flex-col gap-1.5">
                                 <Label>Session note (optional)</Label>

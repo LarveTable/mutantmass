@@ -36,6 +36,10 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
     const handleSelectTemplate = (workout: any) => {
         setSelectedTemplate(workout)
         setName(workout.name ?? '')
+        if (workout.restTimer) {
+            setRestTimerEnabled(true)
+            setRestDuration(workout.restTimer)
+        }
         setTemplatePickerOpen(false)
         setTemplateSearch('')
     }

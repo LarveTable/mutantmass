@@ -25,6 +25,7 @@ interface Workout {
     id: string
     name?: string | null
     duration?: number | null
+    restTimer?: number | null
     date: string
     workoutExercises: WorkoutExercise[]
     note?: string | null
@@ -90,28 +91,35 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
             </div>
 
             {/* Stats row */}
-            <div className="grid grid-cols-3 gap-3">
-                <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3">
-                    <Clock size={18} className="text-primary mb-1" />
-                    <span className="text-lg font-bold">
+            <div className={`grid gap-3 ${workout.restTimer ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-3'}`}>
+                <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3 text-center">
+                    <Clock size={16} className="text-primary" />
+                    <span className="text-base font-bold whitespace-nowrap">
                         {workout.duration ? formatDuration(workout.duration) : '-'}
                     </span>
-                    <span className="text-xs text-muted-foreground">Duration</span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-semibold">Duration</span>
                 </div>
-                <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3">
-                    <Trophy size={18} className="text-primary mb-1" />
-                    <span className="text-lg font-bold">{totalSets}</span>
-                    <span className="text-xs text-muted-foreground">Sets</span>
+                <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3 text-center">
+                    <Trophy size={16} className="text-primary" />
+                    <span className="text-base font-bold">{totalSets}</span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-semibold">Sets</span>
                 </div>
-                <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3">
-                    <Dumbbell size={18} className="text-primary mb-1" />
-                    <span className="text-lg font-bold">
+                <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3 text-center">
+                    <Dumbbell size={16} className="text-primary" />
+                    <span className="text-base font-bold">
                         {totalVolume > 0 ? `${totalVolume.toLocaleString()}` : '-'}
                     </span>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-[10px] text-muted-foreground uppercase font-semibold">
                         {totalVolume > 0 ? 'kg volume' : 'Volume'}
                     </span>
                 </div>
+                {workout.restTimer && (
+                    <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3 text-center">
+                        <Clock size={16} className="text-primary rotate-12" />
+                        <span className="text-base font-bold">{workout.restTimer}s</span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-semibold">Rest</span>
+                    </div>
+                )}
             </div>
 
             {/* Notes section */}

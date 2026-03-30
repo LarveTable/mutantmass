@@ -112,11 +112,12 @@ export default async function workoutRoutes(app: FastifyInstance) {
     // POST /workouts - create a new workout
     app.post('/workouts', { preHandler: authenticate }, async (request, reply) => {
         const { userId } = request.user as { userId: string }
-        const { name, note, date, duration } = request.body as {
+        const { name, note, date, duration, restTimer } = request.body as {
             name?: string
             note?: string
             date?: string
             duration?: number
+            restTimer?: number
         }
 
         const workout = await app.prisma.workout.create({
@@ -126,6 +127,7 @@ export default async function workoutRoutes(app: FastifyInstance) {
                 note: note ?? null,
                 date: date ? new Date(date) : new Date(),
                 duration: duration ?? null,
+                restTimer: restTimer ?? null,
             },
         })
 
@@ -136,11 +138,12 @@ export default async function workoutRoutes(app: FastifyInstance) {
     app.patch('/workouts/:id', { preHandler: authenticate }, async (request, reply) => {
         const { userId } = request.user as { userId: string }
         const { id } = request.params as { id: string }
-        const { name, note, date, duration } = request.body as {
+        const { name, note, date, duration, restTimer } = request.body as {
             name?: string
             note?: string
             date?: string
             duration?: number
+            restTimer?: number
         }
 
         const existing = await app.prisma.workout.findFirst({ where: { id, userId } })
@@ -153,6 +156,7 @@ export default async function workoutRoutes(app: FastifyInstance) {
                 ...(note !== undefined && { note }),
                 ...(date !== undefined && { date: new Date(date) }),
                 ...(duration !== undefined && { duration }),
+                ...(restTimer !== undefined && { restTimer }),
             },
         })
 

@@ -33,7 +33,6 @@ export default function WorkoutPage() {
     const { workoutId, startTime, startWorkout, endWorkout } = useActiveWorkoutState()
     const [startDialogOpen, setStartDialogOpen] = useState(false)
     const [exercisePickerOpen, setExercisePickerOpen] = useState(false)
-    const [restTimer, setRestTimer] = useState<number | null>(null)
     const [restTimerActive, setRestTimerActive] = useState(false)
     const [finishedWorkout, setFinishedWorkout] = useState<any>(null)
     const [finishDialogOpen, setFinishDialogOpen] = useState(false)
@@ -66,9 +65,11 @@ export default function WorkoutPage() {
     const queryClient = useQueryClient()
 
     const handleStart = async (name: string, rest: number | null, template: any | null) => {
-        const created = await createWorkout.mutateAsync({ name: name || undefined })
+        const created = await createWorkout.mutateAsync({ 
+            name: name || undefined,
+            restTimer: rest ?? undefined
+        })
         startWorkout(created.id)
-        setRestTimer(rest)
         setStartDialogOpen(false)
 
         if (template) {
@@ -102,7 +103,7 @@ export default function WorkoutPage() {
             setId: editSetDialog.setId,
             ...data,
         })
-        if (restTimer) setRestTimerActive(true)
+        if (workout?.restTimer) setRestTimerActive(true)
         setEditSetDialog(null)
     }
 
@@ -112,14 +113,13 @@ export default function WorkoutPage() {
         await finishWorkout.mutateAsync({ id: workoutId, duration, note: note || undefined })
         setFinishedWorkout({ ...workout, duration, note })
         endWorkout()
-        setRestTimer(null)
         setRestTimerActive(false)
         setFinishDialogOpen(false)
     }
 
     const handleAddSet = (data: Parameters<typeof addSet.mutateAsync>[0]) => {
         addSet.mutate(data)
-        if (restTimer) setRestTimerActive(true)
+        if (workout?.restTimer) setRestTimerActive(true)
     }
 
     const handleDeleteSet = (workoutExerciseId: string, setId: string) => {
@@ -288,7 +288,6 @@ export default function WorkoutPage() {
                             exerciseName={we.exercise.name}
                             exerciseType={we.exercise.type}
                             sets={we.sets}
-                            restTimer={restTimer}
                             onAddSet={handleAddSet}
                             onDeleteSet={handleDeleteSet}
                             onEditSet={(workoutExerciseId, set) =>
@@ -352,9 +351,9 @@ export default function WorkoutPage() {
             />
 
             {/* Rest timer */}
-            {restTimerActive && restTimer && (
+            {restTimerActive && workout?.restTimer && (
                 <RestTimer
-                    duration={restTimer}
+                    duration={workout.restTimer}
                     onComplete={() => setRestTimerActive(false)}
                     onDismiss={() => setRestTimerActive(false)}
                 />
