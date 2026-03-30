@@ -273,8 +273,8 @@ export default function DashboardPage() {
     const { user } = useAuth()
     const { data: profile } = useProfile()
     const { data: consistency } = useConsistencyStats()
-    const { data: weekStats } = useOverviewStats('week')
-    const { data: muscleData = {} } = useMuscleStats('week')
+    const { data: weekStats } = useOverviewStats('thisWeek')
+    const { data: muscleData = {} } = useMuscleStats('thisWeek')
 
     const MUSCLE_COLORS: Record<string, string> = {
         CHEST: '#ef4444',
@@ -317,10 +317,15 @@ export default function DashboardPage() {
 
     const currentWeek = consistency?.weeks?.[consistency.weeks.length - 1]
     const streak = useMemo(() => {
-        if (!consistency?.weeks) return 0
-        const reversed = [...consistency.weeks].reverse()
-        const idx = reversed.findIndex((w: any) => !w.met)
-        return idx === -1 ? consistency.weeks.length : idx
+        if (!consistency?.weeks || consistency.weeks.length === 0) return 0
+        const weeks = consistency.weeks
+        const currentWeek = weeks[weeks.length - 1]
+        const pastWeeks = weeks.slice(0, -1)
+
+        const pastStreakBreak = [...pastWeeks].reverse().findIndex((w: any) => !w.met)
+        const pastStreak = pastStreakBreak === -1 ? pastWeeks.length : pastStreakBreak
+
+        return currentWeek.met ? pastStreak + 1 : pastStreak
     }, [consistency])
 
     const displayName = profile?.name ?? user?.email?.split('@')[0] ?? 'there'

@@ -4,10 +4,20 @@ import { authenticate } from '../middleware/authenticate.js'
 function getDateRange(period: string): { start: Date; end: Date } {
     const end = new Date()
     const start = new Date()
-    if (period === 'week') start.setDate(start.getDate() - 7)
-    else if (period === 'month') start.setMonth(start.getMonth() - 1)
-    else if (period === '3months') start.setMonth(start.getMonth() - 3)
-    else start.setFullYear(2000) // all time
+    if (period === 'thisWeek') {
+        const day = start.getDay()
+        const diff = day === 0 ? -6 : 1 - day
+        start.setDate(start.getDate() + diff)
+        start.setHours(0, 0, 0, 0)
+    } else if (period === 'week') {
+        start.setDate(start.getDate() - 7)
+    } else if (period === 'month') {
+        start.setMonth(start.getMonth() - 1)
+    } else if (period === '3months') {
+        start.setMonth(start.getMonth() - 3)
+    } else {
+        start.setFullYear(2000) // all time
+    }
     return { start, end }
 }
 
