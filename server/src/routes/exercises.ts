@@ -40,6 +40,35 @@ export default async function exerciseRoutes(app: FastifyInstance) {
         return { exercises }
     })
 
+    // DELETE /exercises/:id
+    app.delete('/exercises/:id', { preHandler: authenticate }, async (request, reply) => {
+        const { userId } = request.user as { userId: string }
+        const { id } = request.params as { id: string }
+
+        const exercise = await app.prisma.exercise.findFirst({
+            where: { id, userId } // userId check ensures only owner can delete
+        })
+
+        if (!exercise) {
+            return reply.status(404).send({ error: 'Exercise not found or not yours to delete' })
+        }
+
+        // Delete image file if exists
+        if (exercise.imageUrl) {
+            const { unlink } = await import('fs/promises')
+            const { join } = await import('path')
+            try {
+                await unlink(join(__dirname, '../../../', exercise.imageUrl))
+            } catch {
+                // File might not exist, ignore
+            }
+        }
+
+        await app.prisma.exercise.delete({ where: { id } })
+
+        return reply.status(204).send()
+    })
+
     // POST /exercises - create a custom exercise
     app.post('/exercises', { preHandler: authenticate }, async (request, reply) => {
         const { userId } = request.user as { userId: string }

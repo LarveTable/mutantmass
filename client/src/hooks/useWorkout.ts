@@ -267,6 +267,15 @@ export function useMuscleStats(period: string) {
     })
 }
 
+export function useDeleteExercise() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async (exerciseId: string) => {
+            await api.delete(`/exercises/${exerciseId}`)
+        },
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['exercises'] }),
+    })
+}
 
 export function useConsistencyStats() {
     return useQuery({

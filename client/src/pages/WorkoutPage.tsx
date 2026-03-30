@@ -26,6 +26,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import api from '@/api/axios'
 import AddExerciseDialog from '@/components/workout/AddExerciseDialog'
 import LogPastWorkoutDialog from '@/components/workout/LogPastWorkoutDialog'
+import ListAddedExercisesDialog from '@/components/workout/ListAddedExercisesDialog'
 import ExerciseImage from '@/components/workout/ExerciseImage'
 
 // Main page for logging workouts
@@ -53,6 +54,7 @@ export default function WorkoutPage() {
     } | null>(null)
     const [addExerciseOpen, setAddExerciseOpen] = useState(false)
     const [logPastOpen, setLogPastOpen] = useState(false)
+    const [listAddedExercisesOpen, setListAddedExercisesOpen] = useState(false)
 
     const { data: workout, isLoading } = useActiveWorkout(workoutId)
     const createWorkout = useCreateWorkout()
@@ -177,6 +179,14 @@ export default function WorkoutPage() {
                     </Button>
                 </div>
 
+                <Button
+                    variant="secondary"
+                    className="w-full max-w-xs -mt-3"
+                    onClick={() => setListAddedExercisesOpen(true)}
+                >
+                    List Added Exercises
+                </Button>
+
                 <StartWorkoutDialog
                     open={startDialogOpen}
                     onClose={() => setStartDialogOpen(false)}
@@ -190,6 +200,10 @@ export default function WorkoutPage() {
                 <AddExerciseDialog
                     open={addExerciseOpen}
                     onClose={() => setAddExerciseOpen(false)}
+                />
+                <ListAddedExercisesDialog
+                    open={listAddedExercisesOpen}
+                    onClose={() => setListAddedExercisesOpen(false)}
                 />
             </div>
         )

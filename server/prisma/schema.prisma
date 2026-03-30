@@ -106,7 +106,7 @@ model WorkoutExercise {
   workoutId     String
   workout       Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   exerciseId    String
-  exercise      Exercise @relation(fields: [exerciseId], references: [id])
+  exercise      Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   order         Int
   supersetGroup Int?
   note          String?
