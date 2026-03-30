@@ -165,7 +165,14 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
                             {TYPES.map((t) => (
                                 <button
                                     key={t.value}
-                                    onClick={() => setType(t.value)}
+                                    onClick={() => {
+                                        setType(t.value)
+                                        if (t.value === 'CARDIO') {
+                                            setMuscleGroup('CARDIO')
+                                        } else if (muscleGroup === 'CARDIO') {
+                                            setMuscleGroup('CHEST')
+                                        }
+                                    }}
                                     className={`rounded-lg border py-2 text-sm font-medium transition-colors ${type === t.value
                                         ? 'border-primary bg-primary text-primary-foreground'
                                         : 'border-border bg-card hover:bg-accent'
@@ -181,18 +188,20 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
                     <div className="flex flex-col gap-2">
                         <Label>Muscle Group</Label>
                         <div className="grid grid-cols-3 gap-2">
-                            {MUSCLE_GROUPS.map((m) => (
-                                <button
-                                    key={m.value}
-                                    onClick={() => setMuscleGroup(m.value)}
-                                    className={`rounded-lg border py-2 text-xs font-medium transition-colors ${muscleGroup === m.value
-                                        ? 'border-primary bg-primary text-primary-foreground'
-                                        : 'border-border bg-card hover:bg-accent'
-                                        }`}
-                                >
-                                    {m.label}
-                                </button>
-                            ))}
+                            {MUSCLE_GROUPS
+                                .filter(m => type === 'CARDIO' ? m.value === 'CARDIO' : m.value !== 'CARDIO')
+                                .map((m) => (
+                                    <button
+                                        key={m.value}
+                                        onClick={() => setMuscleGroup(m.value)}
+                                        className={`rounded-lg border py-2 text-xs font-medium transition-colors ${muscleGroup === m.value
+                                            ? 'border-primary bg-primary text-primary-foreground'
+                                            : 'border-border bg-card hover:bg-accent'
+                                            }`}
+                                    >
+                                        {m.label}
+                                    </button>
+                                ))}
                         </div>
                     </div>
 
