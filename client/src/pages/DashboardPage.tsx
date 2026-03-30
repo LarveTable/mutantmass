@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import { useProfile, useWorkouts, useConsistencyStats, useOverviewStats } from '@/hooks/useWorkout'
+import { useProfile, useWorkouts, useWorkoutsRange, useConsistencyStats, useOverviewStats } from '@/hooks/useWorkout'
 import { Dumbbell, ChevronLeft, ChevronRight, Zap, Clock, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useMuscleStats } from '@/hooks/useWorkout'
@@ -63,14 +63,43 @@ function LiveClock() {
 }
 
 // --- Monthly calendar ---
-function MonthCalendar({
-    workoutDates,
-}: {
-    workoutDates: Record<string, number>
-}) {
+function MonthCalendar() {
     const [viewDate, setViewDate] = useState(new Date())
     const year = viewDate.getFullYear()
     const month = viewDate.getMonth()
+
+    const start = new Date(year, month, 1)
+    const end = new Date(year, month + 1, 1) // strictly before next month
+    const { data: workouts = [] } = useWorkoutsRange(start.toISOString(), end.toISOString())
+
+    const workoutStatsByDate = useMemo(() => {
+        const map: Record<string, { volume: number, altVolume: number }> = {}
+        for (const w of workouts) {
+            const dateStr = toDateString(new Date(w.date))
+            if (!map[dateStr]) map[dateStr] = { volume: 0, altVolume: 0 }
+
+            for (const we of w.workoutExercises) {
+                for (const set of we.sets) {
+                    if (set.weight && set.reps) {
+                        map[dateStr].volume += set.weight * set.reps
+                    } else if (set.reps) {
+                        map[dateStr].altVolume += set.reps
+                    } else if (set.duration) {
+                        map[dateStr].altVolume += set.duration / 60
+                    } else if (set.distance) {
+                        map[dateStr].altVolume += set.distance * 10
+                    } else {
+                        map[dateStr].altVolume += 1
+                    }
+                }
+            }
+            // Ensure even an empty workout gets marked
+            if (map[dateStr].volume === 0 && map[dateStr].altVolume === 0) {
+                map[dateStr].altVolume = 1
+            }
+        }
+        return map
+    }, [workouts])
 
     const days = getDaysInMonth(year, month)
     const startOffset = getMonthStart(year, month)
@@ -81,16 +110,26 @@ function MonthCalendar({
         year: 'numeric',
     })
 
-    const maxVolume = Math.max(...Object.values(workoutDates), 0)
+    const maxVolume = Math.max(...Object.values(workoutStatsByDate).map(s => s.volume), 0)
+    const maxAltVolume = Math.max(...Object.values(workoutStatsByDate).map(s => s.altVolume), 0)
 
     function getDotColor(dateStr: string): string | null {
-        const volume = workoutDates[dateStr]
-        if (!volume) return null
-        const ratio = volume / maxVolume
-        if (ratio > 0.75) return '#c084fc' // Light purple
-        if (ratio > 0.5) return '#a855f7'  // Medium purple
-        if (ratio > 0.25) return '#7c3aed' // Deep violet
-        return '#4c1d95'                  // Dark violet
+        const stats = workoutStatsByDate[dateStr]
+        if (!stats) return null
+
+        if (stats.volume > 0) {
+            const ratio = stats.volume / maxVolume
+            if (ratio > 0.75) return '#c084fc' // Light purple
+            if (ratio > 0.5) return '#a855f7'  // Medium purple
+            if (ratio > 0.25) return '#7c3aed' // Deep violet
+            return '#4c1d95'                  // Dark violet
+        } else {
+            const ratio = stats.altVolume / (maxAltVolume || 1)
+            if (ratio > 0.75) return '#fdba74' // Light orange
+            if (ratio > 0.5) return '#f97316'  // Medium orange
+            if (ratio > 0.25) return '#ea580c' // Deep orange
+            return '#9a3412'                  // Dark orange
+        }
     }
 
     return (
@@ -147,7 +186,7 @@ function MonthCalendar({
                             </div>
                             {hasWorkout && (
                                 <div
-                                    className="h-1 w-1 rounded-full mt-0.5"
+                                    className="h-2 w-2 rounded-full mt-0.5"
                                     style={{ background: dotColor }}
                                 />
                             )}
@@ -157,16 +196,27 @@ function MonthCalendar({
             </div>
 
             {/* Legend */}
-            <div className="flex items-center justify-end gap-2">
-                <span className="text-xs text-muted-foreground">Low intensity</span>
-                {['#4c1d95', '#7c3aed', '#a855f7', '#c084fc'].map((color) => (
-                    <div
-                        key={color}
-                        className="h-2.5 w-2.5 rounded-sm"
-                        style={{ background: color }}
-                    />
-                ))}
-                <span className="text-xs text-muted-foreground">High intensity</span>
+            <div className="flex flex-col gap-1.5 items-end mt-2">
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase font-semibold text-muted-foreground bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">Weights intensity</span>
+                    {['#4c1d95', '#7c3aed', '#a855f7', '#c084fc'].map((color) => (
+                        <div
+                            key={color}
+                            className="h-2.5 w-2.5 rounded-sm"
+                            style={{ background: color }}
+                        />
+                    ))}
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase font-semibold text-muted-foreground bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600">Cardio / Body intensity</span>
+                    {['#9a3412', '#ea580c', '#f97316', '#fdba74'].map((color) => (
+                        <div
+                            key={color}
+                            className="h-2.5 w-2.5 rounded-sm"
+                            style={{ background: color }}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     )
@@ -296,18 +346,6 @@ export default function DashboardPage() {
     }, [])
 
     const { data: workouts = [] } = useWorkouts(currentMonth)
-
-    const workoutDateVolumes = useMemo(() => {
-        const map: Record<string, number> = {}
-        for (const w of workouts) {
-            const dateStr = w.date.split('T')[0]
-            const volume = w.workoutExercises.reduce((t: number, we: any) =>
-                t + we.sets.reduce((s: number, set: any) =>
-                    s + (set.weight && set.reps ? set.weight * set.reps : 0), 0), 0)
-            map[dateStr] = (map[dateStr] ?? 0) + volume
-        }
-        return map
-    }, [workouts])
 
     const lastWorkout = workouts.length > 0
         ? [...workouts].sort((a: any, b: any) =>
@@ -452,9 +490,9 @@ export default function DashboardPage() {
             {/* Monthly calendar */}
             <div className="rounded-2xl border border-border bg-card p-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-                    This Month
+                    Activity
                 </p>
-                <MonthCalendar workoutDates={workoutDateVolumes} />
+                <MonthCalendar />
             </div>
         </div>
     )

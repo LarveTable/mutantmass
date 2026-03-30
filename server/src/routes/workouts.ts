@@ -5,11 +5,13 @@ export default async function workoutRoutes(app: FastifyInstance) {
     // GET /workouts - list all workouts for the logged in user
     app.get('/workouts', { preHandler: authenticate }, async (request) => {
         const { userId } = request.user as { userId: string }
-        const { month } = request.query as { month?: string }
+        const { month, start: startStr, end: endStr } = request.query as { month?: string; start?: string; end?: string }
 
         const where: any = { userId }
 
-        if (month) {
+        if (startStr && endStr) {
+            where.date = { gte: new Date(startStr), lt: new Date(endStr) }
+        } else if (month) {
             const start = new Date(`${month}-01`)
             const end = new Date(start)
             end.setMonth(end.getMonth() + 1)

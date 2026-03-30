@@ -108,6 +108,16 @@ export function useWorkouts(month: string) {
     })
 }
 
+export function useWorkoutsRange(start: string, end: string) {
+    return useQuery({
+        queryKey: ['workouts', 'range', start, end],
+        queryFn: async () => {
+            const res = await api.get(`/workouts?start=${start}&end=${end}`)
+            return res.data.workouts
+        },
+    })
+}
+
 export function useWorkout(id: string | null) {
     return useQuery({
         queryKey: ['workout', id],

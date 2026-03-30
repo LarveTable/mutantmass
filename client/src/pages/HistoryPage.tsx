@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useWorkouts, useDeleteWorkout } from '@/hooks/useWorkout'
+import { useWorkoutsRange, useDeleteWorkout } from '@/hooks/useWorkout'
 import WeeklyCalendar from '@/components/history/WeeklyCalendar'
 import WorkoutDetailModal from '@/components/history/WorkoutDetailModal'
 import { Dumbbell, Clock, Trash2 } from 'lucide-react'
@@ -15,8 +15,8 @@ function getMonday(date: Date): Date {
     return d
 }
 
-function toMonthString(date: Date): string {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+function toDateString(date: Date): string {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
 function formatDuration(seconds: number) {
@@ -31,17 +31,23 @@ export default function HistoryPage() {
     const [selectedDate, setSelectedDate] = useState<string | null>(null)
     const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null)
 
-    const month = toMonthString(weekStart)
-    const { data: workouts = [] } = useWorkouts(month)
+    const startDateIso = useMemo(() => weekStart.toISOString(), [weekStart])
+    const endDateIso = useMemo(() => {
+        const d = new Date(weekStart)
+        d.setDate(d.getDate() + 7)
+        return d.toISOString()
+    }, [weekStart])
+
+    const { data: workouts = [] } = useWorkoutsRange(startDateIso, endDateIso)
     const deleteWorkout = useDeleteWorkout()
 
     const workoutDates = useMemo(() =>
-        workouts.map((w: any) => w.date.split('T')[0]), [workouts])
+        workouts.map((w: any) => toDateString(new Date(w.date))), [workouts])
 
     const workoutsOnSelectedDate = useMemo(() => {
         if (!selectedDate) return []
         return workouts.filter((w: any) =>
-            w.date.split('T')[0] === selectedDate
+            toDateString(new Date(w.date)) === selectedDate
         )
     }, [workouts, selectedDate])
 
