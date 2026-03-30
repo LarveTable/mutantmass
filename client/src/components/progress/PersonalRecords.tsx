@@ -18,9 +18,21 @@ export default function PersonalRecords() {
         </div>
     )
 
+    const sortedPrs = [...prs].sort((a: any, b: any) => {
+        const scoreA = a.type === 'WEIGHTED' ? (a.estimatedOneRM || 0) :
+                       a.type === 'BODYWEIGHT' ? (a.bestReps || 0) :
+                       (a.bestDistance || a.bestDuration || 0)
+        
+        const scoreB = b.type === 'WEIGHTED' ? (b.estimatedOneRM || 0) :
+                       b.type === 'BODYWEIGHT' ? (b.bestReps || 0) :
+                       (b.bestDistance || b.bestDuration || 0)
+        
+        return scoreB - scoreA
+    })
+
     return (
         <div className="flex flex-col gap-2 overflow-y-auto h-full max-h-[500px] lg:max-h-none pr-2 custom-scrollbar transition-all">
-            {prs.map((pr: any, index: number) => {
+            {sortedPrs.map((pr: any, index: number) => {
                 const isWeighted = pr.type === 'WEIGHTED'
                 const isBodyweight = pr.type === 'BODYWEIGHT'
                 const isCardio = pr.type === 'CARDIO'
