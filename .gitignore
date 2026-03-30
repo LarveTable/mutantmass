@@ -30,3 +30,4 @@ dist-ssr
 server/uploads/**
 !server/uploads/**/
 !server/uploads/**/.gitkeep
+!server/uploads/exercises/base/**

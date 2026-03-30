@@ -8,7 +8,7 @@ import { randomUUID } from 'crypto'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-const UPLOADS_DIR = join(__dirname, '../../uploads/exercises')
+const UPLOADS_DIR = join(__dirname, '../../uploads/exercises/custom')
 
 // Ensure uploads directory exists
 mkdirSync(UPLOADS_DIR, { recursive: true })
@@ -92,7 +92,7 @@ export default async function exerciseRoutes(app: FastifyInstance) {
                 const filepath = join(UPLOADS_DIR, filename)
 
                 await pipeline(part.file, createWriteStream(filepath))
-                imageUrl = `/uploads/exercises/${filename}`
+                imageUrl = `/uploads/exercises/custom/${filename}`
             } else {
                 if (part.fieldname === 'name') name = part.value as string
                 if (part.fieldname === 'type') type = part.value as string
