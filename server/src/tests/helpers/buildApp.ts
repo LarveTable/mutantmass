@@ -2,10 +2,12 @@ import Fastify from 'fastify'
 import type { FastifyInstance } from 'fastify'
 import fastifyJwt from '@fastify/jwt'
 import fastifyCookie from '@fastify/cookie'
+import fastifyMultipart from '@fastify/multipart'
 import authRoutes from '../../routes/auth.js'
 import exerciseRoutes from '../../routes/exercises.js'
 import workoutRoutes from '../../routes/workouts.js'
 import setRoutes from '../../routes/sets.js'
+import statsRoutes from '../../routes/stats.js'
 import { type Mock, vi } from 'vitest'
 
 const JWT_SECRET = 'test-jwt-secret'
@@ -22,6 +24,7 @@ interface MockModel {
     create: Mock
     update: Mock
     delete: Mock
+    count: Mock
     [key: string]: Mock
 }
 
@@ -43,6 +46,7 @@ export function createMockPrisma(): MockPrisma {
             create: vi.fn(),
             update: vi.fn(),
             delete: vi.fn(),
+            count: vi.fn(),
         },
         refreshToken: {
             findUnique: vi.fn(),
@@ -51,6 +55,7 @@ export function createMockPrisma(): MockPrisma {
             create: vi.fn(),
             update: vi.fn(),
             delete: vi.fn(),
+            count: vi.fn(),
             deleteMany: vi.fn(),
         },
         exercise: {
@@ -60,6 +65,7 @@ export function createMockPrisma(): MockPrisma {
             create: vi.fn(),
             update: vi.fn(),
             delete: vi.fn(),
+            count: vi.fn(),
         },
         workout: {
             findUnique: vi.fn(),
@@ -68,6 +74,7 @@ export function createMockPrisma(): MockPrisma {
             create: vi.fn(),
             update: vi.fn(),
             delete: vi.fn(),
+            count: vi.fn(),
         },
         workoutExercise: {
             findUnique: vi.fn(),
@@ -76,6 +83,7 @@ export function createMockPrisma(): MockPrisma {
             create: vi.fn(),
             update: vi.fn(),
             delete: vi.fn(),
+            count: vi.fn(),
         },
         set: {
             findUnique: vi.fn(),
@@ -84,6 +92,7 @@ export function createMockPrisma(): MockPrisma {
             create: vi.fn(),
             update: vi.fn(),
             delete: vi.fn(),
+            count: vi.fn(),
         },
     }
 }
@@ -108,6 +117,8 @@ export async function buildApp(): Promise<{ app: FastifyInstance; mockPrisma: Mo
             signed: false,
         },
     })
+    
+    app.register(fastifyMultipart)
 
     // Decorate with mock prisma instead of the real plugin
     app.decorate('prisma', mockPrisma as any)
@@ -117,6 +128,7 @@ export async function buildApp(): Promise<{ app: FastifyInstance; mockPrisma: Mo
     app.register(exerciseRoutes)
     app.register(workoutRoutes)
     app.register(setRoutes)
+    app.register(statsRoutes)
 
     await app.ready()
 

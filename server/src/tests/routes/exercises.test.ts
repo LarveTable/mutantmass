@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { buildApp, generateAccessToken, type MockPrisma } from '../helpers/buildApp.js'
+import FormData from 'form-data'
 import type { FastifyInstance } from 'fastify'
 
 describe('Exercise Routes', () => {
@@ -81,6 +82,7 @@ describe('Exercise Routes', () => {
                 name: 'Deadlift',
                 type: 'WEIGHTED',
                 muscleGroup: 'BACK',
+                targetMuscle: [],
                 isPublic: false,
                 userId: 'user-1',
                 imageUrl: null,
@@ -88,15 +90,18 @@ describe('Exercise Routes', () => {
 
             mockPrisma.exercise.create.mockResolvedValue(created)
 
+            const form = new FormData()
+            form.append('name', 'Deadlift')
+            form.append('type', 'WEIGHTED')
+            form.append('muscleGroup', 'BACK')
+            form.append('targetMuscle', JSON.stringify(['lower-back']))
+
             const res = await app.inject({
                 method: 'POST',
                 url: '/exercises',
                 cookies: { access_token: token },
-                payload: {
-                    name: 'Deadlift',
-                    type: 'WEIGHTED',
-                    muscleGroup: 'BACK',
-                },
+                headers: form.getHeaders(),
+                payload: form,
             })
 
             expect(res.statusCode).toBe(201)
@@ -104,11 +109,15 @@ describe('Exercise Routes', () => {
         })
 
         it('should return 400 when required fields are missing', async () => {
+            const form = new FormData()
+            form.append('name', 'Deadlift')
+
             const res = await app.inject({
                 method: 'POST',
                 url: '/exercises',
                 cookies: { access_token: token },
-                payload: { name: 'Deadlift' }, // missing type and muscleGroup
+                headers: form.getHeaders(),
+                payload: form,
             })
 
             expect(res.statusCode).toBe(400)
@@ -116,15 +125,17 @@ describe('Exercise Routes', () => {
         })
 
         it('should return 400 for invalid exercise type', async () => {
+            const form = new FormData()
+            form.append('name', 'Deadlift')
+            form.append('type', 'INVALID_TYPE')
+            form.append('muscleGroup', 'BACK')
+
             const res = await app.inject({
                 method: 'POST',
                 url: '/exercises',
                 cookies: { access_token: token },
-                payload: {
-                    name: 'Deadlift',
-                    type: 'INVALID_TYPE',
-                    muscleGroup: 'BACK',
-                },
+                headers: form.getHeaders(),
+                payload: form,
             })
 
             expect(res.statusCode).toBe(400)
@@ -132,10 +143,16 @@ describe('Exercise Routes', () => {
         })
 
         it('should return 401 without auth', async () => {
+            const form = new FormData()
+            form.append('name', 'Deadlift')
+            form.append('type', 'WEIGHTED')
+            form.append('muscleGroup', 'BACK')
+
             const res = await app.inject({
                 method: 'POST',
                 url: '/exercises',
-                payload: { name: 'Deadlift', type: 'WEIGHTED', muscleGroup: 'BACK' },
+                headers: form.getHeaders(),
+                payload: form,
             })
 
             expect(res.statusCode).toBe(401)
