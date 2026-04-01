@@ -118,16 +118,19 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                                                     No workouts found
                                                 </p>
                                             )}
-                                            {filteredWorkouts.map((workout: any) => (
+                                            {filteredWorkouts.map((workout: any, index: number) => (
                                                 <button
                                                     key={workout.id}
                                                     onClick={() => handleSelectTemplate(workout)}
                                                     className="flex w-full flex-col gap-0.5 px-3 py-2.5 text-left hover:bg-accent transition-colors"
                                                 >
                                                     <p className="text-sm font-medium">{workout.name ?? 'Workout'}</p>
-                                                    <p className="text-xs text-muted-foreground">
+                                                    <p className="text-xs text-muted-foreground truncate w-full">
                                                         {workout.workoutExercises.map((we: any) => we.exercise.name).join(', ')}
                                                     </p>
+                                                    {index === 0 && (
+                                                        <p className="text-[11px] font-medium text-primary mt-0.5">Last workout</p>
+                                                    )}
                                                 </button>
                                             ))}
                                         </div>
