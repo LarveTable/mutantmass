@@ -1,20 +1,31 @@
 import type { FastifyInstance } from 'fastify'
 import { authenticate } from '../middleware/authenticate.js'
 
+function toLocalDateString(date: Date): string {
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const d = String(date.getDate()).padStart(2, '0')
+    return `${y}-${m}-${d}`
+}
+
 function getDateRange(period: string): { start: Date; end: Date } {
     const end = new Date()
+    // Limit to the end of the current day (no future bleeding)
+    end.setHours(23, 59, 59, 999)
+
     const start = new Date()
+    start.setHours(0, 0, 0, 0)
+    
     if (period === 'thisWeek') {
         const day = start.getDay()
         const diff = day === 0 ? -6 : 1 - day
         start.setDate(start.getDate() + diff)
-        start.setHours(0, 0, 0, 0)
     } else if (period === 'week') {
         start.setDate(start.getDate() - 7)
     } else if (period === 'month') {
-        start.setMonth(start.getMonth() - 1)
+        start.setDate(start.getDate() - 30)
     } else if (period === '3months') {
-        start.setMonth(start.getMonth() - 3)
+        start.setDate(start.getDate() - 90)
     } else {
         start.setFullYear(2000) // all time
     }
@@ -90,10 +101,7 @@ export default async function statsRoutes(app: FastifyInstance) {
             monday.setDate(date.getDate() + diff)
             monday.setHours(0, 0, 0, 0)
 
-            const y = monday.getFullYear()
-            const m = String(monday.getMonth() + 1).padStart(2, '0')
-            const d = String(monday.getDate()).padStart(2, '0')
-            const weekKey = `${y}-${m}-${d}`
+            const weekKey = toLocalDateString(monday)
 
             if (!weekMap.has(weekKey)) {
                 weekMap.set(weekKey, { weekStart: weekKey, total: 0, byMuscle: {} })
@@ -178,7 +186,7 @@ export default async function statsRoutes(app: FastifyInstance) {
                         : null
 
             return {
-                date: we.workout.date.toISOString().split('T')[0],
+                date: toLocalDateString(we.workout.date),
                 type,
                 bestWeight: bestSet?.weight ?? null,
                 bestReps: bestSet?.reps ?? null,
@@ -343,7 +351,7 @@ export default async function statsRoutes(app: FastifyInstance) {
             })
 
             weeks.push({
-                weekStart: weekStart.toISOString().split('T')[0]!,
+                weekStart: toLocalDateString(weekStart),
                 count,
                 goal: user?.weeklyGoal ?? 3,
                 met: count >= (user?.weeklyGoal ?? 3),
