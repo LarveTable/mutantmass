@@ -124,7 +124,16 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                                                     onClick={() => handleSelectTemplate(workout)}
                                                     className="flex w-full flex-col gap-0.5 px-3 py-2.5 text-left hover:bg-accent transition-colors"
                                                 >
-                                                    <p className="text-sm font-medium">{workout.name ?? 'Workout'}</p>
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <p className="text-sm font-medium">{workout.name ?? 'Workout'}</p>
+                                                        <p className="text-[10px] text-muted-foreground whitespace-nowrap">
+                                                            {new Date(workout.date).toLocaleDateString(undefined, {
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                year: 'numeric'
+                                                            })}
+                                                        </p>
+                                                    </div>
                                                     <p className="text-xs text-muted-foreground truncate w-full">
                                                         {workout.workoutExercises.map((we: any) => we.exercise.name).join(', ')}
                                                     </p>
