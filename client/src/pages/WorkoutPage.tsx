@@ -68,30 +68,41 @@ export default function WorkoutPage() {
     const updateSet = useUpdateSet(workoutId ?? '')
     const queryClient = useQueryClient()
 
-    const handleStart = async (name: string, rest: number | null, template: any | null) => {
-        const created = await createWorkout.mutateAsync({
-            name: name || undefined,
-            restTimer: rest ?? undefined
-        })
-        startWorkout(created.id)
-        setStartDialogOpen(false)
+    const [isStartingTemplate, setIsStartingTemplate] = useState(false)
 
-        if (template) {
-            for (const we of template.workoutExercises) {
-                const newWe = await api.post(`/workouts/${created.id}/exercises`, {
-                    exerciseId: we.exercise.id,
-                })
-                for (const set of we.sets) {
-                    await api.post(`/workouts/${created.id}/exercises/${newWe.data.workoutExercise.id}/sets`, {
-                        reps: set.reps ?? undefined,
-                        weight: set.weight ?? undefined,
-                        duration: set.duration ?? undefined,
-                        distance: set.distance ?? undefined,
+    const handleStart = async (name: string, rest: number | null, template: any | null) => {
+        setIsStartingTemplate(true)
+        try {
+            const created = await createWorkout.mutateAsync({
+                name: name || undefined,
+                restTimer: rest ?? undefined
+            })
+
+            if (template) {
+                // Add all exercises and sets from the template FIRST
+                for (const we of template.workoutExercises) {
+                    const newWe = await api.post(`/workouts/${created.id}/exercises`, {
+                        exerciseId: we.exercise.id,
                     })
+                    for (const set of we.sets) {
+                        await api.post(`/workouts/${created.id}/exercises/${newWe.data.workoutExercise.id}/sets`, {
+                            reps: set.reps ?? undefined,
+                            weight: set.weight ?? undefined,
+                            duration: set.duration ?? undefined,
+                            distance: set.distance ?? undefined,
+                        })
+                    }
                 }
+                // Invalidate the cache for this specific ID manually to be safe, 
+                // though it shouldn't have been fetched yet.
+                queryClient.invalidateQueries({ queryKey: ['workout', created.id] })
             }
-            // Refresh the workout data after all exercises and sets are added
-            queryClient.invalidateQueries({ queryKey: ['workout', created.id] })
+            
+            // NOW we set it as active, ensuring the first useActiveWorkout call sees the full data
+            startWorkout(created.id)
+            setStartDialogOpen(false)
+        } finally {
+            setIsStartingTemplate(false)
         }
     }
 
@@ -217,11 +228,13 @@ export default function WorkoutPage() {
         )
     }
 
-    // If still loading workout
-    if (isLoading) {
+    // If still loading workout or template
+    if (isLoading || isStartingTemplate) {
         return (
             <div className="flex min-h-[80vh] items-center justify-center">
-                <p className="text-muted-foreground">Loading workout...</p>
+                <p className="text-muted-foreground">
+                    {isStartingTemplate ? 'Creating workout from template...' : 'Loading workout...'}
+                </p>
             </div>
         )
     }
