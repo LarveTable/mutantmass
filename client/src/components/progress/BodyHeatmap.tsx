@@ -1,4 +1,4 @@
-import { useMuscleStats } from '@/hooks/useWorkout'
+import { useTargetMuscleStats } from '@/hooks/useWorkout'
 import Model, { type IExerciseData } from 'react-body-highlighter'
 
 interface Props {
@@ -20,7 +20,7 @@ const PRISMA_TO_BODY_HIGHLIGHTER: Record<string, string[]> = {
 // Component to show the most trained muscles in a visual way
 
 export default function BodyHeatmap({ period }: Props) {
-    const { data = {}, isLoading } = useMuscleStats(period)
+    const { data = {}, isLoading } = useTargetMuscleStats(period)
 
     if (isLoading) return (
         <div className="flex items-center justify-center py-8">
@@ -56,10 +56,13 @@ export default function BodyHeatmap({ period }: Props) {
     const highlightedData: IExerciseData[] = Object.entries(volumeData)
         .map(([muscle, volume]) => {
             const bucket = getRankBucket(volume)
-            if (bucket === 0 || !PRISMA_TO_BODY_HIGHLIGHTER[muscle]) return null
+            if (bucket === 0) return null
+            
+            const musclesToHighlight = PRISMA_TO_BODY_HIGHLIGHTER[muscle] || [muscle]
+
             return {
                 name: muscle,
-                muscles: PRISMA_TO_BODY_HIGHLIGHTER[muscle],
+                muscles: musclesToHighlight,
                 frequency: bucket
             }
         })

@@ -40,6 +40,18 @@ const MUSCLE_GROUPS = [
     { value: 'FULL_BODY', label: 'Full Body' },
 ] as const
 
+const PRISMA_TO_BODY_HIGHLIGHTER: Record<string, string[]> = {
+    CHEST: ['chest'],
+    BACK: ['trapezius', 'upper-back', 'lower-back'],
+    SHOULDERS: ['front-deltoids', 'back-deltoids'],
+    BICEPS: ['biceps'],
+    TRICEPS: ['triceps'],
+    FOREARMS: ['forearm'],
+    LEGS: ['quadriceps', 'hamstring', 'calves', 'adductor', 'abductors'],
+    GLUTES: ['gluteal'],
+    CORE: ['abs', 'obliques'],
+}
+
 export default function AddExerciseDialog({ open, onClose }: Props) {
     const queryClient = useQueryClient()
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -47,6 +59,7 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
     const [name, setName] = useState('')
     const [type, setType] = useState<string>('WEIGHTED')
     const [muscleGroup, setMuscleGroup] = useState<string>('CHEST')
+    const [targetMuscle, setTargetMuscle] = useState<string[]>([])
     const [isPublic, setIsPublic] = useState(false)
     const [imageFile, setImageFile] = useState<File | null>(null)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -76,6 +89,7 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
             formData.append('name', name.trim())
             formData.append('type', type)
             formData.append('muscleGroup', muscleGroup)
+            if (targetMuscle.length > 0) formData.append('targetMuscle', JSON.stringify(targetMuscle))
             formData.append('isPublic', String(isPublic))
             if (imageFile) formData.append('image', imageFile)
 
@@ -96,6 +110,7 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
         setName('')
         setType('WEIGHTED')
         setMuscleGroup('CHEST')
+        setTargetMuscle([])
         setIsPublic(false)
         setImageFile(null)
         setImagePreview(null)
@@ -193,7 +208,10 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
                                 .map((m) => (
                                     <button
                                         key={m.value}
-                                        onClick={() => setMuscleGroup(m.value)}
+                                        onClick={() => {
+                                            setMuscleGroup(m.value)
+                                            setTargetMuscle([])
+                                        }}
                                         className={`rounded-lg border py-2 text-xs font-medium transition-colors ${muscleGroup === m.value
                                             ? 'border-primary bg-primary text-primary-foreground'
                                             : 'border-border bg-card hover:bg-accent'
@@ -204,6 +222,27 @@ export default function AddExerciseDialog({ open, onClose }: Props) {
                                 ))}
                         </div>
                     </div>
+
+                    {/* Target Muscle */}
+                    {PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup] && PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup].length > 1 && (
+                        <div className="flex flex-col gap-2">
+                            <Label>Target Muscles (Optional)</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup].map((tm) => (
+                                    <button
+                                        key={tm}
+                                        onClick={() => setTargetMuscle(prev => prev.includes(tm) ? prev.filter(t => t !== tm) : [...prev, tm])}
+                                        className={`rounded-lg border py-2 text-xs font-medium transition-colors capitalize ${targetMuscle.includes(tm)
+                                            ? 'border-primary bg-primary text-primary-foreground'
+                                            : 'border-border bg-card hover:bg-accent'
+                                            }`}
+                                    >
+                                        {tm.replace('-', ' ')}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Public toggle */}
                     <div className="flex items-center justify-between">

@@ -272,7 +272,7 @@ export default async function statsRoutes(app: FastifyInstance) {
     // GET /stats/muscles
     app.get('/stats/muscles', { preHandler: authenticate }, async (request) => {
         const { userId } = request.user as { userId: string }
-        const { period = 'month' } = request.query as { period?: string }
+        const { period = 'month', target } = request.query as { period?: string, target?: string }
         const { start, end } = getDateRange(period)
 
         const workoutExercises = await app.prisma.workoutExercise.findMany({
@@ -286,10 +286,9 @@ export default async function statsRoutes(app: FastifyInstance) {
         const muscleStats: Record<string, { volume: number; reps: number; duration: number }> = {}
 
         for (const we of workoutExercises) {
-            const muscle = we.exercise.muscleGroup
-            if (!muscleStats[muscle]) {
-                muscleStats[muscle] = { volume: 0, reps: 0, duration: 0 }
-            }
+            const muscles = target === 'true' && we.exercise.targetMuscle.length > 0 
+                ? we.exercise.targetMuscle 
+                : [we.exercise.muscleGroup]
 
             const stats = we.sets.reduce((acc, s) => {
                 acc.volume += (s.weight && s.reps ? s.weight * s.reps : 0)
@@ -298,9 +297,15 @@ export default async function statsRoutes(app: FastifyInstance) {
                 return acc
             }, { volume: 0, reps: 0, duration: 0 })
 
-            muscleStats[muscle].volume += stats.volume
-            muscleStats[muscle].reps += stats.reps
-            muscleStats[muscle].duration += stats.duration
+            for (const muscle of muscles) {
+                if (!muscleStats[muscle]) {
+                    muscleStats[muscle] = { volume: 0, reps: 0, duration: 0 }
+                }
+
+                muscleStats[muscle].volume += stats.volume
+                muscleStats[muscle].reps += stats.reps
+                muscleStats[muscle].duration += stats.duration
+            }
         }
 
         return { data: muscleStats }

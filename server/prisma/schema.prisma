@@ -75,6 +75,7 @@ model Exercise {
   name             String
   type             ExerciseType
   muscleGroup      MuscleGroup
+  targetMuscle     String[]
   userId           String?
   user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
   imageUrl         String?

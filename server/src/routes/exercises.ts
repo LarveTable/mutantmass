@@ -78,6 +78,7 @@ export default async function exerciseRoutes(app: FastifyInstance) {
         let name: string | undefined
         let type: string | undefined
         let muscleGroup: string | undefined
+        let targetMuscle: string[] = []
         let isPublic = false
         let imageUrl: string | null = null
 
@@ -97,6 +98,9 @@ export default async function exerciseRoutes(app: FastifyInstance) {
                 if (part.fieldname === 'name') name = part.value as string
                 if (part.fieldname === 'type') type = part.value as string
                 if (part.fieldname === 'muscleGroup') muscleGroup = part.value as string
+                if (part.fieldname === 'targetMuscle') {
+                    try { targetMuscle = JSON.parse(part.value as string) } catch {}
+                }
                 if (part.fieldname === 'isPublic') isPublic = part.value === 'true'
             }
         }
@@ -118,6 +122,7 @@ export default async function exerciseRoutes(app: FastifyInstance) {
                 name,
                 type: type as any,
                 muscleGroup: muscleGroup as any,
+                targetMuscle,
                 isPublic,
                 userId,
                 imageUrl,

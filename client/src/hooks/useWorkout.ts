@@ -267,6 +267,16 @@ export function useMuscleStats(period: string) {
     })
 }
 
+export function useTargetMuscleStats(period: string) {
+    return useQuery({
+        queryKey: ['stats', 'muscles', 'target', period],
+        queryFn: async () => {
+            const res = await api.get(`/stats/muscles?period=${period}&target=true`)
+            return res.data.data
+        },
+    })
+}
+
 export function useDeleteExercise() {
     const queryClient = useQueryClient()
     return useMutation({
