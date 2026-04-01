@@ -324,7 +324,9 @@ export default function DashboardPage() {
     const { data: profile } = useProfile()
     const { data: consistency } = useConsistencyStats()
     const { data: weekStats } = useOverviewStats('thisWeek')
+    const { data: lastWeekStats } = useOverviewStats('lastWeek')
     const { data: muscleData = {} } = useMuscleStats('thisWeek')
+    const { data: lastMuscleData = {} } = useMuscleStats('lastWeek')
 
     const MUSCLE_COLORS: Record<string, string> = {
         CHEST: '#ef4444',
@@ -416,21 +418,42 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-2 gap-2">
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
                         <Trophy size={15} className="text-primary" />
-                        <span className="text-base font-bold">{weekStats.totalSets}</span>
+                        <div className="flex items-baseline gap-1.5">
+                            <span className="text-base font-bold">{weekStats.totalSets}</span>
+                            {lastWeekStats && (
+                                <span className={`text-[10px] font-medium ${weekStats.totalSets >= lastWeekStats.totalSets ? 'text-green-500' : 'text-red-500'}`}>
+                                    {weekStats.totalSets >= lastWeekStats.totalSets ? '+' : ''}{weekStats.totalSets - lastWeekStats.totalSets}
+                                </span>
+                            )}
+                        </div>
                         <span className="text-xs text-muted-foreground">Sets</span>
                     </div>
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
                         <Zap size={15} className="text-primary" />
-                        <span className="text-base font-bold">
-                            {weekStats.totalVolume > 0
-                                ? `${(weekStats.totalVolume / 1000).toFixed(1)}t`
-                                : '-'}
-                        </span>
+                        <div className="flex items-baseline gap-1.5">
+                            <span className="text-base font-bold">
+                                {weekStats.totalVolume > 0
+                                    ? `${(weekStats.totalVolume / 1000).toFixed(1)}t`
+                                    : '-'}
+                            </span>
+                            {lastWeekStats && weekStats.totalVolume > 0 && (
+                                <span className={`text-[10px] font-medium ${weekStats.totalVolume >= lastWeekStats.totalVolume ? 'text-green-500' : 'text-red-500'}`}>
+                                    {weekStats.totalVolume >= lastWeekStats.totalVolume ? '+' : ''}{((weekStats.totalVolume - lastWeekStats.totalVolume) / 1000).toFixed(1)}t
+                                </span>
+                            )}
+                        </div>
                         <span className="text-xs text-muted-foreground">Volume</span>
                     </div>
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
                         <Clock size={15} className="text-primary" />
-                        <span className="text-base font-bold">{formatDuration(weekStats.totalDuration ?? 0)}</span>
+                        <div className="flex items-baseline gap-1.5">
+                            <span className="text-base font-bold">{formatDuration(weekStats.totalDuration ?? 0)}</span>
+                            {lastWeekStats && (
+                                <span className={`text-[10px] font-medium ${(weekStats.totalDuration ?? 0) >= (lastWeekStats.totalDuration ?? 0) ? 'text-green-500' : 'text-red-500'}`}>
+                                    {(weekStats.totalDuration ?? 0) >= (lastWeekStats.totalDuration ?? 0) ? '+' : '-'}{formatDuration(Math.abs((weekStats.totalDuration ?? 0) - (lastWeekStats.totalDuration ?? 0)))}
+                                </span>
+                            )}
+                        </div>
                         <span className="text-xs text-muted-foreground">Time</span>
                     </div>
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
@@ -439,7 +462,15 @@ export default function DashboardPage() {
                             {Object.entries(muscleData as Record<string, { volume: number; reps: number; duration: number }>)
                                 .sort(([, a], [, b]) => (b.volume || b.duration) - (a.volume || a.duration))[0]?.[0].toLowerCase().replace('_', ' ') ?? '-'}
                         </span>
-                        <span className="text-xs text-muted-foreground">Most Trained</span>
+                        <div className="flex items-center gap-1">
+                            <span className="text-xs text-muted-foreground">Most Trained</span>
+                            {Object.keys(lastMuscleData).length > 0 && (
+                                <span className="text-[10px] text-muted-foreground italic border-l border-border pl-1.5">
+                                    Last: {Object.entries(lastMuscleData as Record<string, { volume: number; reps: number; duration: number }>)
+                                        .sort(([, a], [, b]) => (b.volume || b.duration) - (a.volume || a.duration))[0]?.[0].toLowerCase().replace('_', ' ') ?? '-'}
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
