@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { getDefaultWorkoutName } from '@/lib/utils'
 import {
     Dialog,
     DialogContent,
@@ -27,6 +28,7 @@ interface ExerciseEntry {
     exerciseId: string
     exerciseName: string
     exerciseType: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'
+    muscleGroup: string
     sets: SetEntry[]
 }
 
@@ -113,7 +115,7 @@ function SetRow({
 function ExercisePicker({
     onSelect,
 }: {
-    onSelect: (exercise: { id: string; name: string; type: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO' }) => void
+    onSelect: (exercise: { id: string; name: string; type: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'; muscleGroup: string }) => void
 }) {
     const [search, setSearch] = useState('')
     const { data: exercises = [] } = useExercises()
@@ -136,7 +138,7 @@ function ExercisePicker({
                 {filtered.map((e: any) => (
                     <button
                         key={e.id}
-                        onClick={() => onSelect({ id: e.id, name: e.name, type: e.type })}
+                        onClick={() => onSelect({ id: e.id, name: e.name, type: e.type, muscleGroup: e.muscleGroup })}
                         className="flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm hover:bg-accent transition-colors"
                     >
                         <span>{e.name}</span>
@@ -172,10 +174,11 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
         id: string
         name: string
         type: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'
+        muscleGroup: string
     }) => {
         setExercises((prev) => [
             ...prev,
-            { exerciseId: exercise.id, exerciseName: exercise.name, exerciseType: exercise.type, sets: [{}] },
+            { exerciseId: exercise.id, exerciseName: exercise.name, exerciseType: exercise.type, muscleGroup: exercise.muscleGroup, sets: [{}] },
         ])
         setShowPicker(false)
     }
@@ -221,9 +224,11 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                 ? (Number(durationHours || 0) * 3600) + (Number(durationMins || 0) * 60)
                 : undefined
 
+            const defaultName = name || getDefaultWorkoutName(exercises)
+            
             // Create workout
             const workoutRes = await api.post('/workouts', {
-                name: name || undefined,
+                name: defaultName,
                 date: new Date(date).toISOString(),
                 duration,
                 restTimer: restTimerEnabled ? Number(restDuration) : undefined,

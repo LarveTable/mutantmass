@@ -89,7 +89,7 @@ model Workout {
   id               String            @id @default(cuid())
   userId           String
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name             String?
+  name             String
   note             String?
   date             DateTime          @default(now())
   duration         Int?

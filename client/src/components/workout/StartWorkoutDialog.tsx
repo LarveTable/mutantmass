@@ -50,7 +50,8 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
     }
 
     const handleStart = () => {
-        onStart(name || '', restTimerEnabled ? restDuration : null, selectedTemplate)
+        const defaultName = selectedTemplate ? (selectedTemplate.name || 'Workout') : 'Workout'
+        onStart(name || defaultName, restTimerEnabled ? restDuration : null, selectedTemplate)
     }
 
     const handleClose = () => {

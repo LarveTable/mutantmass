@@ -28,8 +28,8 @@ export function useCreateWorkout() {
 export function useFinishWorkout() {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: async ({ id, duration, note }: { id: string; duration: number; note?: string }) => {
-            const res = await api.patch(`/workouts/${id}`, { duration, note })
+        mutationFn: async ({ id, duration, note, name }: { id: string; duration: number; note?: string; name?: string }) => {
+            const res = await api.patch(`/workouts/${id}`, { duration, note, name })
             return res.data.workout
         },
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workouts'] }),

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { getDefaultWorkoutName } from '@/lib/utils'
 import { Dumbbell, Plus, StopCircle } from 'lucide-react'
 import {
     useActiveWorkout,
@@ -113,8 +114,15 @@ export default function WorkoutPage() {
     const handleFinish = async (note: string) => {
         if (!workoutId) return
         const duration = Math.floor((Date.now() - startTime) / 1000)
-        await finishWorkout.mutateAsync({ id: workoutId, duration, note: note || undefined })
-        setFinishedWorkout({ ...workout, duration, note })
+        
+        let newName = undefined
+        if (workout?.name === 'Workout') {
+            const exercises = workout?.workoutExercises?.map((we: any) => we.exercise) || []
+            newName = getDefaultWorkoutName(exercises)
+        }
+        
+        await finishWorkout.mutateAsync({ id: workoutId, duration, note: note || undefined, name: newName })
+        setFinishedWorkout({ ...workout, duration, note, name: newName || workout?.name })
         endWorkout()
         setRestTimerActive(false)
         setFinishDialogOpen(false)
