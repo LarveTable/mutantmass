@@ -131,4 +131,76 @@ export default async function exerciseRoutes(app: FastifyInstance) {
 
         return reply.status(201).send({ exercise })
     })
+
+    // PATCH /exercises/:id - update an exercise
+    app.patch('/exercises/:id', { preHandler: authenticate }, async (request, reply) => {
+        const { userId } = request.user as { userId: string }
+        const { id } = request.params as { id: string }
+
+        const existing = await app.prisma.exercise.findFirst({
+            where: { id, userId }
+        })
+
+        if (!existing) {
+            return reply.status(404).send({ error: 'Exercise not found or not yours to edit' })
+        }
+
+        const parts = request.parts()
+        let name: string | undefined
+        let type: string | undefined
+        let muscleGroup: string | undefined
+        let targetMuscle: string[] | undefined
+        let isPublic: boolean | undefined
+        let imageUrl: string | undefined
+        let removeImage = false
+
+        for await (const part of parts) {
+            if (part.type === 'file') {
+                if (!ALLOWED_MIME_TYPES.includes(part.mimetype)) {
+                    return reply.status(400).send({ error: 'Invalid file type.' })
+                }
+
+                const ext = part.filename.split('.').pop()
+                const filename = `${randomUUID()}.${ext}`
+                const filepath = join(UPLOADS_DIR, filename)
+
+                await pipeline(part.file, createWriteStream(filepath))
+                imageUrl = `/uploads/exercises/custom/${filename}`
+            } else {
+                if (part.fieldname === 'name') name = part.value as string
+                if (part.fieldname === 'type') type = part.value as string
+                if (part.fieldname === 'muscleGroup') muscleGroup = part.value as string
+                if (part.fieldname === 'targetMuscle') {
+                    try { targetMuscle = JSON.parse(part.value as string) } catch { }
+                }
+                if (part.fieldname === 'isPublic') isPublic = part.value === 'true'
+                if (part.fieldname === 'removeImage') removeImage = part.value === 'true'
+            }
+        }
+
+        const updateData: any = {}
+
+        if (existing.isPublic) {
+            // Only imageUrl is editable for public exercises
+            if (imageUrl) updateData.imageUrl = imageUrl
+            else if (removeImage) updateData.imageUrl = null
+        } else {
+            // All fields editable for private exercises
+            if (name) updateData.name = name
+            if (type) updateData.type = type as any
+            if (muscleGroup) updateData.muscleGroup = muscleGroup as any
+            if (targetMuscle !== undefined) updateData.targetMuscle = targetMuscle
+            if (isPublic !== undefined) updateData.isPublic = isPublic
+            
+            if (imageUrl) updateData.imageUrl = imageUrl
+            else if (removeImage) updateData.imageUrl = null
+        }
+
+        const updated = await app.prisma.exercise.update({
+            where: { id },
+            data: updateData
+        })
+
+        return { exercise: updated }
+    })
 }

@@ -158,4 +158,104 @@ describe('Exercise Routes', () => {
             expect(res.statusCode).toBe(401)
         })
     })
+
+    // ─── PATCH /exercises/:id ────────────────────────────────────
+    describe('PATCH /exercises/:id', () => {
+        it('should update all fields for private exercises', async () => {
+            const exercise = { id: 'ex-1', name: 'Old Name', isPublic: false, userId: 'user-1' }
+            mockPrisma.exercise.findFirst.mockResolvedValue(exercise)
+            mockPrisma.exercise.update.mockResolvedValue({ ...exercise, name: 'New Name' })
+
+            const form = new FormData()
+            form.append('name', 'New Name')
+
+            const res = await app.inject({
+                method: 'PATCH',
+                url: '/exercises/ex-1',
+                cookies: { access_token: token },
+                headers: form.getHeaders(),
+                payload: form,
+            })
+
+            expect(res.statusCode).toBe(200)
+            expect(res.json().exercise.name).toBe('New Name')
+            expect(mockPrisma.exercise.update).toHaveBeenCalledWith({
+                where: { id: 'ex-1' },
+                data: expect.objectContaining({ name: 'New Name' }),
+            })
+        })
+
+        it('should only update imageUrl for public exercises', async () => {
+            const exercise = { id: 'ex-1', name: 'Public Exercise', isPublic: true, userId: 'user-1' }
+            mockPrisma.exercise.findFirst.mockResolvedValue(exercise)
+            mockPrisma.exercise.update.mockResolvedValue(exercise)
+
+            const form = new FormData()
+            form.append('name', 'Hacked Name')
+
+            const res = await app.inject({
+                method: 'PATCH',
+                url: '/exercises/ex-1',
+                cookies: { access_token: token },
+                headers: form.getHeaders(),
+                payload: form,
+            })
+
+            expect(res.statusCode).toBe(200)
+            // Name should NOT be in update data
+            const updateCallData = mockPrisma.exercise.update.mock.calls[0]![0].data
+            expect(updateCallData.name).toBeUndefined()
+        })
+
+        it('should remove imageUrl if removeImage is sent', async () => {
+            const exercise = { id: 'ex-1', userId: 'user-1', imageUrl: '/some/path.jpg' }
+            mockPrisma.exercise.findFirst.mockResolvedValue(exercise)
+            mockPrisma.exercise.update.mockResolvedValue({ ...exercise, imageUrl: null })
+
+            const form = new FormData()
+            form.append('removeImage', 'true')
+
+            const res = await app.inject({
+                method: 'PATCH',
+                url: '/exercises/ex-1',
+                cookies: { access_token: token },
+                headers: form.getHeaders(),
+                payload: form,
+            })
+
+            expect(res.statusCode).toBe(200)
+            const updateCallData = mockPrisma.exercise.update.mock.calls[0]![0].data
+            expect(updateCallData.imageUrl).toBeNull()
+        })
+    })
+
+    // ─── DELETE /exercises/:id ───────────────────────────────────
+    describe('DELETE /exercises/:id', () => {
+        it('should delete own exercise', async () => {
+            mockPrisma.exercise.findFirst.mockResolvedValue({ id: 'ex-1', userId: 'user-1' })
+            mockPrisma.exercise.delete.mockResolvedValue({})
+
+            const res = await app.inject({
+                method: 'DELETE',
+                url: '/exercises/ex-1',
+                cookies: { access_token: token },
+            })
+
+            expect(res.statusCode).toBe(204)
+            expect(mockPrisma.exercise.delete).toHaveBeenCalledWith({ where: { id: 'ex-1' } })
+        })
+
+        it('should return 404 for non-existent or other user exercise', async () => {
+            mockPrisma.exercise.findFirst.mockResolvedValue(null)
+
+            const res = await app.inject({
+                method: 'DELETE',
+                url: '/exercises/ex-1',
+                cookies: { access_token: token },
+            })
+
+            expect(res.statusCode).toBe(404)
+            expect(mockPrisma.exercise.delete).not.toHaveBeenCalled()
+        })
+    })
 })
