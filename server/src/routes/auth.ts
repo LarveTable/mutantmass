@@ -26,6 +26,11 @@ export default async function authRoutes(app: FastifyInstance) {
             data: { email, password: hashed }
         })
 
+        // Clean up expired tokens globally
+        await app.prisma.refreshToken.deleteMany({
+            where: { expiresAt: { lt: new Date() } }
+        })
+
         // Generate tokens
         const accessToken = app.jwt.sign(
             { userId: user.id },
@@ -79,6 +84,11 @@ export default async function authRoutes(app: FastifyInstance) {
         if (!valid) {
             return reply.status(401).send({ error: 'Invalid credentials' })
         }
+
+        // Clean up expired tokens globally
+        await app.prisma.refreshToken.deleteMany({
+            where: { expiresAt: { lt: new Date() } }
+        })
 
         // Generate tokens
         const accessToken = app.jwt.sign(
@@ -139,28 +149,18 @@ export default async function authRoutes(app: FastifyInstance) {
             return reply.status(401).send({ error: 'Refresh token expired or not found' })
         }
 
-        // Rotate refresh token
-        await app.prisma.refreshToken.deleteMany({ where: { token: refreshToken } })
+        // Clean up expired tokens globally to prevent DB bloat
+        await app.prisma.refreshToken.deleteMany({
+            where: { expiresAt: { lt: new Date() } }
+        })
 
-        // Generate new tokens
+        // Generate new access token
         const newAccessToken = app.jwt.sign(
             { userId: payload.userId },
             { expiresIn: ACCESS_TOKEN_EXPIRY }
         )
-        const newRefreshToken = app.jwt.sign(
-            { userId: payload.userId },
-            { key: process.env.JWT_REFRESH_SECRET!, expiresIn: REFRESH_TOKEN_EXPIRY }
-        )
 
-        await app.prisma.refreshToken.create({
-            data: {
-                token: newRefreshToken,
-                userId: payload.userId,
-                expiresAt: new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS)
-            }
-        })
-
-        // Set new cookies
+        // Set new cookies (we only refresh the access token, leaving the refresh token's absolute 7-day expiration ticking)
         reply
             .setCookie('access_token', newAccessToken, {
                 httpOnly: true,
@@ -168,13 +168,6 @@ export default async function authRoutes(app: FastifyInstance) {
                 sameSite: 'strict',
                 path: '/',
                 maxAge: 60 * 15
-            })
-            .setCookie('refresh_token', newRefreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                path: '/',
-                maxAge: 60 * 60 * 24 * 7
             })
             .send({ success: true })
     })

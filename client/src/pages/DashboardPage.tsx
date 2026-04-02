@@ -232,9 +232,9 @@ function LastWorkoutCard({ workout }: { workout: any }) {
             t + we.sets.reduce((s: number, set: any) =>
                 s + (set.weight && set.reps ? set.weight * set.reps : 0), 0), 0
     )
-    const daysAgo = Math.floor(
+    const daysAgo = Math.abs(Math.floor(
         (Date.now() - new Date(workout.date).getTime()) / (1000 * 60 * 60 * 24)
-    )
+    ))
 
     return (
         <div className="rounded-2xl border border-border bg-card p-4 flex flex-col gap-3">

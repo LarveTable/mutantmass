@@ -145,7 +145,6 @@ describe('Auth Routes', () => {
                 expiresAt: new Date(Date.now() + 1000 * 60 * 60), // 1 hour from now
             })
             mockPrisma.refreshToken.deleteMany.mockResolvedValue({ count: 1 })
-            mockPrisma.refreshToken.create.mockResolvedValue({})
 
             const res = await app.inject({
                 method: 'POST',
@@ -156,18 +155,18 @@ describe('Auth Routes', () => {
             expect(res.statusCode).toBe(200)
             expect(res.json().success).toBe(true)
 
-            // Should set new cookies
+            // Should set ONLY the new access cookie (refresh cookie maintains its original absolute expiry)
             const cookies = res.cookies as Array<{ name: string; value: string }>
             const cookieNames = cookies.map((c) => c.name)
             expect(cookieNames).toContain('access_token')
-            expect(cookieNames).toContain('refresh_token')
+            expect(cookieNames).not.toContain('refresh_token')
 
-            // Old token should have been deleted
+            // Expired tokens should be collected globally
             expect(mockPrisma.refreshToken.deleteMany).toHaveBeenCalledWith({
-                where: { token: refreshToken },
+                where: { expiresAt: { lt: expect.any(Date) } },
             })
-            // New token should have been stored
-            expect(mockPrisma.refreshToken.create).toHaveBeenCalledOnce()
+            // Current token is NOT updated in DB so its expiration remains strictly 7 days from original creation
+            expect(mockPrisma.refreshToken.update).not.toHaveBeenCalled()
         })
 
         it('should return 401 when no refresh cookie is present', async () => {
