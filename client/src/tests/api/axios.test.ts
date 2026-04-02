@@ -34,7 +34,7 @@ describe('Axios interceptor', () => {
         const res = await api.get('/workouts')
 
         expect(axiosPostSpy).toHaveBeenCalledWith(
-            'http://localhost:3000/auth/refresh',
+            '/auth/refresh',
             {},
             { withCredentials: true }
         )
@@ -59,7 +59,7 @@ describe('Axios interceptor', () => {
 
         // Should NOT have called refresh
         expect(axiosPostSpy).not.toHaveBeenCalledWith(
-            'http://localhost:3000/auth/refresh',
+            '/auth/refresh',
             expect.anything(),
             expect.anything()
         )

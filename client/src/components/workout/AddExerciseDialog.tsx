@@ -76,7 +76,7 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
             setMuscleGroup(exercise.muscleGroup || 'CHEST')
             setTargetMuscle(exercise.targetMuscle || [])
             setIsPublic(exercise.isPublic || false)
-            setImagePreview(exercise.imageUrl ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${exercise.imageUrl}` : null)
+            setImagePreview(exercise.imageUrl ? `${import.meta.env.VITE_API_URL || ''}${exercise.imageUrl}` : null)
             setShouldRemoveImage(false)
         } else {
             handleReset()

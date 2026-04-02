@@ -6,7 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const apiUrl = env.VITE_API_URL || 'http://localhost:3000'
+  const apiUrl = env.VITE_API_URL || ''
   const apiRegex = new RegExp(`^${apiUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\/(?!uploads).*`, 'i')
   const uploadsRegex = new RegExp(`^${apiUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\/uploads\\/.*`, 'i')
 

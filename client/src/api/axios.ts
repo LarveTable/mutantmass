@@ -3,7 +3,7 @@ import axios from 'axios'
 // Axios instance used for every api calls, attaches cookies with request and handles token refresh
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+    baseURL: import.meta.env.VITE_API_URL || '',
     withCredentials: true,
 })
 
@@ -32,7 +32,7 @@ api.interceptors.response.use(
             try {
                 // If a refresh is already in progress, wait for it instead of firing a new one
                 if (!refreshPromise) {
-                    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+                    const baseUrl = import.meta.env.VITE_API_URL || ''
                     refreshPromise = axios.post(
                         `${baseUrl}/auth/refresh`,
                         {},
