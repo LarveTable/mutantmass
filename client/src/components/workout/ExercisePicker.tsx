@@ -79,7 +79,7 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
 
     return (
         <Sheet open={open} onOpenChange={handleClose}>
-            <SheetContent side="bottom" className="h-[80vh] flex flex-col">
+            <SheetContent side="bottom" className="h-[80vh] flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
                 <SheetHeader>
                     <SheetTitle>
                         {step === 'type' && 'Select Type'}
