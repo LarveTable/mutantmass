@@ -22,7 +22,14 @@ const app = Fastify({ logger: true })
 
 // CORS
 app.register(cors, {
-  origin: process.env.CORS_ORIGIN!, // set the env variable to the url of the client
+  origin: (origin, cb) => {
+    const allowed = (process.env.CORS_ORIGIN ?? '').split(',').map(o => o.trim())
+    if (!origin || allowed.includes(origin)) {
+      cb(null, true)
+    } else {
+      cb(new Error('Not allowed by CORS'), false)
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 })
