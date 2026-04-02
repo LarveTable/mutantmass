@@ -12,7 +12,7 @@ const SIZES = {
     lg: { container: 'h-12 w-12', icon: 22 },
 }
 
-const BASE_URL = 'http://localhost:3000'
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
 export default function ExerciseImage({ imageUrl, name, size = 'md' }: Props) {
     const { container, icon } = SIZES[size]
