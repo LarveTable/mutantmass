@@ -36,7 +36,10 @@ export default function RestTimer({ duration, onComplete, onDismiss }: Props) {
     }
 
     return (
-        <div className="fixed bottom-20 left-4 right-4 z-50 rounded-2xl border border-border bg-card p-4 shadow-lg">
+        <div
+            className="fixed left-4 right-4 z-50 rounded-2xl border border-border bg-card p-4 shadow-lg"
+            style={{ bottom: 'calc(5rem + env(safe-area-inset-bottom))' }}
+        >
             <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium text-muted-foreground">Rest Timer</p>
                 <button onClick={onDismiss} className="text-muted-foreground hover:text-foreground">
