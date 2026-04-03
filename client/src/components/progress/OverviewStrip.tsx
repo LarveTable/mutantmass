@@ -49,10 +49,10 @@ export default function OverviewStrip({ period }: Props) {
             {stats.map(({ icon: Icon, label, value }) => (
                 <div
                     key={label}
-                    className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3"
+                    className="flex flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card p-3 h-full"
                 >
-                    <Icon size={16} className="text-primary" />
-                    <span className="text-base font-bold tabular-nums">{value}</span>
+                    <Icon size={16} className="text-primary shrink-0" />
+                    <span className="text-base font-bold tabular-nums text-center leading-tight">{value}</span>
                     <span className="text-xs text-muted-foreground text-center leading-tight">{label}</span>
                 </div>
             ))}

@@ -349,11 +349,12 @@ export default function DashboardPage() {
 
     const { data: workouts = [] } = useWorkouts(currentMonth)
 
-    const lastWorkout = workouts.length > 0
-        ? [...workouts].sort((a: any, b: any) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime()
-        )[0]
-        : null
+    const lastWorkout = useMemo(() => {
+        const now = new Date()
+        return workouts
+            .filter((w: any) => new Date(w.date) <= now)
+            .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] ?? null
+    }, [workouts])
 
     const currentWeek = consistency?.weeks?.[consistency.weeks.length - 1]
     const streak = useMemo(() => {
