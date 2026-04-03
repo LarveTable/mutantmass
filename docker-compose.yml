@@ -23,7 +23,7 @@ services:
       DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/mutantmass
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      CORS_ORIGIN: https://mutantmassapp.com
+      CORS_ORIGIN: https://mutantmassapp.fr
       NODE_ENV: production
     volumes:
       - uploads_data:/app/uploads
