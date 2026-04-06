@@ -36,7 +36,11 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="flex min-h-screen flex-col items-center justify-center px-4 gap-6">
+            <div className="flex flex-col items-center gap-2">
+                <img src="/icons/icon-512.png" alt="Mutant Mass Logo" className="h-16 w-16 rounded-2xl drop-shadow-lg" />
+                <h1 className="text-3xl font-black tracking-tight">Mutant Mass</h1>
+            </div>
             <Card className="w-full max-w-sm">
                 <CardHeader>
                     <CardTitle className="text-2xl">Welcome back</CardTitle>

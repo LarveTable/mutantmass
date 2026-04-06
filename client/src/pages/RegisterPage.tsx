@@ -11,9 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 export default function RegisterPage() {
     const { register, user, loading: authLoading } = useAuth()
     const navigate = useNavigate()
+    const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirm, setConfirm] = useState('')
+    const [betaCode, setBetaCode] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -35,7 +37,7 @@ export default function RegisterPage() {
         }
         setLoading(true)
         try {
-            await register(email, password)
+            await register(email, password, name, betaCode)
             navigate('/dashboard')
         } catch (error: any) {
             setError(error.response?.data?.error ?? 'Something went wrong, please try again')
@@ -45,7 +47,11 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="flex min-h-screen flex-col items-center justify-center px-4 gap-6">
+            <div className="flex flex-col items-center gap-2">
+                <img src="/icons/icon-512.png" alt="Mutant Mass Logo" className="h-16 w-16 rounded-2xl drop-shadow-lg" />
+                <h1 className="text-3xl font-black tracking-tight">Mutant Mass</h1>
+            </div>
             <Card className="w-full max-w-sm">
                 <CardHeader>
                     <CardTitle className="text-2xl">Create an account</CardTitle>
@@ -53,6 +59,17 @@ export default function RegisterPage() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="name">Name</Label>
+                            <Input
+                                id="name"
+                                type="text"
+                                placeholder="Your Name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                        </div>
                         <div className="flex flex-col gap-1.5">
                             <Label htmlFor="email">Email</Label>
                             <Input
@@ -83,6 +100,17 @@ export default function RegisterPage() {
                                 placeholder="••••••••"
                                 value={confirm}
                                 onChange={(e) => setConfirm(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                            <Label htmlFor="betaCode">Beta Access Code</Label>
+                            <Input
+                                id="betaCode"
+                                type="text"
+                                placeholder="Enter your invite code"
+                                value={betaCode}
+                                onChange={(e) => setBetaCode(e.target.value)}
                                 required
                             />
                         </div>

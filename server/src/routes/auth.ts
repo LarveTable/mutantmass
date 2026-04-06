@@ -10,8 +10,17 @@ const REFRESH_TOKEN_EXPIRY = '7d'
 export default async function authRoutes(app: FastifyInstance) {
     // REGISTER
     app.post('/auth/register', async (request, reply) => {
-        // User sends email and pass
-        const { email, password } = request.body as { email: string; password: string }
+        // User sends email, pass, name, betaCode
+        const { email, password, name, betaCode } = request.body as { email: string; password: string; name: string; betaCode: string }
+        
+        // Beta Code validation
+        const requiredBetaCode = process.env.BETA_CODE
+        if (!requiredBetaCode) {
+            return reply.status(500).send({ error: 'Server misconfiguration: Beta code not set' })
+        }
+        if (betaCode !== requiredBetaCode) {
+            return reply.status(403).send({ error: 'Invalid beta code' })
+        }
 
         // Check if email already exists
         const existing = await app.prisma.user.findUnique({ where: { email } })
@@ -23,7 +32,7 @@ export default async function authRoutes(app: FastifyInstance) {
         const hashed = await bcrypt.hash(password, SALT_ROUNDS)
         // Create user
         const user = await app.prisma.user.create({
-            data: { email, password: hashed }
+            data: { email, password: hashed, name }
         })
 
         // Clean up expired tokens globally
