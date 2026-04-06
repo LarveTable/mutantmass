@@ -374,15 +374,20 @@ export default function DashboardPage() {
     return (
         <div className="flex flex-col gap-5 px-4 py-6 pb-24">
             {/* Top bar */}
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between relative">
                 <div>
                     <p className="text-sm text-muted-foreground">Good {
                         new Date().getHours() < 12 ? 'morning' :
                             new Date().getHours() < 18 ? 'afternoon' : 'evening'
                     },</p>
-                    <h1 className="text-2xl font-bold">{displayName} 👋</h1>
+                    <h1 className="text-2xl font-bold relative z-10">{displayName} 👋</h1>
                 </div>
-                <LiveClock />
+                <div className="absolute left-1/2 -translate-x-1/2 top-0">
+                    <img src="/icons/icon-512.png" alt="App Icon" className="h-12 w-12 rounded-xl drop-shadow-md" />
+                </div>
+                <div className="relative z-10">
+                    <LiveClock />
+                </div>
             </div>
 
             {/* Streak + weekly goal */}

@@ -20,6 +20,13 @@ function getDateRange(period: string): { start: Date; end: Date } {
         const day = start.getDay()
         const diff = day === 0 ? -6 : 1 - day
         start.setDate(start.getDate() + diff)
+    } else if (period === 'lastWeek') {
+        const day = start.getDay()
+        const diff = day === 0 ? -6 : 1 - day
+        start.setDate(start.getDate() + diff - 7)
+        end.setTime(start.getTime())
+        end.setDate(end.getDate() + 6)
+        end.setHours(23, 59, 59, 999)
     } else if (period === 'week') {
         start.setDate(start.getDate() - 7)
     } else if (period === 'month') {
