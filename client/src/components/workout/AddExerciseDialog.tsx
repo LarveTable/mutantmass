@@ -68,6 +68,7 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
     const [shouldRemoveImage, setShouldRemoveImage] = useState(false)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+    const [showPublicWarning, setShowPublicWarning] = useState(false)
 
     useEffect(() => {
         if (exercise) {
@@ -98,27 +99,27 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
         if (fileInputRef.current) fileInputRef.current.value = ''
     }
 
-    const handleSubmit = async () => {
+    const handleInitialSubmit = () => {
         setError('')
         if (!name.trim()) return setError('Exercise name is required')
 
+        if (isPublic && (!isEdit || (isEdit && !exercise.isPublic))) {
+            setShowPublicWarning(true)
+        } else {
+            performSubmit()
+        }
+    }
+
+    const performSubmit = async () => {
         setLoading(true)
+        setShowPublicWarning(false)
         try {
             const formData = new FormData()
-            // If it's a public exercise belonging to user, only image is editable according to requirement
-            if (isEdit && !exercise.isPublic) {
-                formData.append('name', name.trim())
-                formData.append('type', type)
-                formData.append('muscleGroup', muscleGroup)
-                formData.append('targetMuscle', JSON.stringify(targetMuscle))
-                formData.append('isPublic', String(isPublic))
-            } else if (!isEdit) {
-                formData.append('name', name.trim())
-                formData.append('type', type)
-                formData.append('muscleGroup', muscleGroup)
-                if (targetMuscle.length > 0) formData.append('targetMuscle', JSON.stringify(targetMuscle))
-                formData.append('isPublic', String(isPublic))
-            }
+            formData.append('name', name.trim())
+            formData.append('type', type)
+            formData.append('muscleGroup', muscleGroup)
+            if (targetMuscle.length > 0) formData.append('targetMuscle', JSON.stringify(targetMuscle))
+            formData.append('isPublic', String(isPublic))
 
             if (imageFile) {
                 formData.append('image', imageFile)
@@ -155,6 +156,7 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
         setImagePreview(null)
         setShouldRemoveImage(false)
         setError('')
+        setShowPublicWarning(false)
     }
 
     const handleClose = () => {
@@ -162,14 +164,15 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
         onClose()
     }
 
-    const isFieldDisabled = isEdit && exercise.isPublic
+    const isPublicSwitchDisabled = isEdit && exercise?.isPublic
 
 
     return (
+        <>
         <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>{isEdit ? (exercise.isPublic ? 'Edit Exercise Image' : 'Edit Exercise') : 'Add Custom Exercise'}</DialogTitle>
+                    <DialogTitle>{isEdit ? 'Edit Exercise' : 'Add Custom Exercise'}</DialogTitle>
                     <DialogDescription />
                 </DialogHeader>
 
@@ -217,7 +220,6 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
                             placeholder="e.g. Cable Lateral Raise"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            disabled={isFieldDisabled}
                         />
                     </div>
 
@@ -228,7 +230,6 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
                             {TYPES.map((t) => (
                                 <button
                                     key={t.value}
-                                    disabled={isFieldDisabled}
                                     onClick={() => {
                                         setType(t.value)
                                         if (t.value === 'CARDIO') {
@@ -240,7 +241,7 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
                                     className={`rounded-lg border py-2 text-sm font-medium transition-colors ${type === t.value
                                         ? 'border-primary bg-primary text-primary-foreground'
                                         : 'border-border bg-card hover:bg-accent'
-                                        } ${isFieldDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        }`}
                                 >
                                     {t.label}
                                 </button>
@@ -257,7 +258,6 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
                                 .map((m) => (
                                     <button
                                         key={m.value}
-                                        disabled={isFieldDisabled}
                                         onClick={() => {
                                             setMuscleGroup(m.value)
                                             setTargetMuscle([])
@@ -265,7 +265,7 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
                                         className={`rounded-lg border py-2 text-xs font-medium transition-colors ${muscleGroup === m.value
                                             ? 'border-primary bg-primary text-primary-foreground'
                                             : 'border-border bg-card hover:bg-accent'
-                                            } ${isFieldDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            }`}
                                     >
                                         {m.label}
                                     </button>
@@ -281,12 +281,11 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
                                 {PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup].map((tm) => (
                                     <button
                                         key={tm}
-                                        disabled={isFieldDisabled}
                                         onClick={() => setTargetMuscle(prev => prev.includes(tm) ? prev.filter(t => t !== tm) : [...prev, tm])}
                                         className={`rounded-lg border py-2 text-xs font-medium transition-colors capitalize ${targetMuscle.includes(tm)
                                             ? 'border-primary bg-primary text-primary-foreground'
                                             : 'border-border bg-card hover:bg-accent'
-                                            } ${isFieldDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            }`}
                                     >
                                         {tm.replace('-', ' ')}
                                     </button>
@@ -301,7 +300,7 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
                             <p className="text-sm font-medium">Make public</p>
                             <p className="text-xs text-muted-foreground">Share with other users</p>
                         </div>
-                        <Switch checked={isPublic} onCheckedChange={setIsPublic} disabled={isFieldDisabled} />
+                        <Switch checked={isPublic} onCheckedChange={setIsPublic} disabled={isPublicSwitchDisabled} />
                     </div>
 
                     {error && <p className="text-sm text-destructive">{error}</p>}
@@ -309,11 +308,31 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
 
                 <DialogFooter>
                     <Button variant="outline" onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleSubmit} disabled={loading}>
+                    <Button onClick={handleInitialSubmit} disabled={loading}>
                         {loading ? (isEdit ? 'Saving...' : 'Adding...') : (isEdit ? 'Save Changes' : 'Add Exercise')}
                     </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+
+        <Dialog open={showPublicWarning} onOpenChange={setShowPublicWarning}>
+            <DialogContent className="max-w-sm">
+                <DialogHeader>
+                    <DialogTitle>Make Exercise Public?</DialogTitle>
+                </DialogHeader>
+                <div className="py-2">
+                    <p className="text-sm text-muted-foreground">
+                        You are about to make this exercise public. Once public, it will be visible to all users and <strong className="text-foreground">cannot be deleted</strong>. Are you sure you want to continue?
+                    </p>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setShowPublicWarning(false)}>Cancel</Button>
+                    <Button onClick={performSubmit} disabled={loading}>
+                        {loading ? 'Saving...' : 'Yes, Make Public'}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+        </>
     )
 }

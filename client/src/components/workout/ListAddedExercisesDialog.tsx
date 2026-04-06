@@ -67,15 +67,13 @@ export default function ListAddedExercisesDialog({ open, onClose }: Props) {
                                     </div>
                                     
                                     <div className="flex items-center gap-1">
-                                        {!exercise.isPublic && (
-                                            <button
-                                                onClick={() => setEditingExercise(exercise)}
-                                                className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                                                title="Edit exercise"
-                                            >
-                                                <Edit2 size={16} />
-                                            </button>
-                                        )}
+                                        <button
+                                            onClick={() => setEditingExercise(exercise)}
+                                            className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                            title="Edit exercise"
+                                        >
+                                            <Edit2 size={16} />
+                                        </button>
                                         
                                         {!exercise.isPublic && (
                                             <button
