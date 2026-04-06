@@ -442,6 +442,13 @@ export default function ProfilePage() {
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleDeleteAccount}
             />
+
+            {/* Version number */}
+            <div className="mt-8 text-center">
+                <p className="text-[10px] font-medium text-muted-foreground/40 uppercase tracking-[0.2em]">
+                    MutantMass v0.1.0-beta
+                </p>
+            </div>
         </div>
     )
 }
