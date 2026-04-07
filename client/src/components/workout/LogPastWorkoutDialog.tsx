@@ -16,6 +16,7 @@ import { Trash2, Plus, ChevronRight, ChevronLeft } from 'lucide-react'
 import { useExercises } from '@/hooks/useWorkout'
 import api from '@/api/axios'
 import { useQueryClient } from '@tanstack/react-query'
+import AddExerciseDialog from './AddExerciseDialog'
 
 interface SetEntry {
     reps?: number
@@ -118,6 +119,7 @@ function ExercisePicker({
     onSelect: (exercise: { id: string; name: string; type: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'; muscleGroup: string }) => void
 }) {
     const [search, setSearch] = useState('')
+    const [addExerciseOpen, setAddExerciseOpen] = useState(false)
     const { data: exercises = [] } = useExercises()
 
     const filtered = exercises
@@ -126,14 +128,23 @@ function ExercisePicker({
 
     return (
         <div className="flex flex-col gap-2">
-            <input
-                type="text"
-                placeholder="Search exercises..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                autoFocus
-                className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-primary transition-colors"
-            />
+            <div className="flex gap-2">
+                <input
+                    type="text"
+                    placeholder="Search exercises..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    autoFocus
+                    className="flex-1 rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-primary transition-colors"
+                />
+                <button
+                    onClick={() => setAddExerciseOpen(true)}
+                    className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-lg border border-border bg-card text-primary hover:bg-accent hover:border-primary transition-all active:scale-95"
+                    title="Add custom exercise"
+                >
+                    <Plus size={18} />
+                </button>
+            </div>
             <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
                 {filtered.map((e: any) => (
                     <button
@@ -148,6 +159,19 @@ function ExercisePicker({
                     </button>
                 ))}
             </div>
+
+            <AddExerciseDialog
+                open={addExerciseOpen}
+                onClose={() => setAddExerciseOpen(false)}
+                onSuccess={(exercise) => {
+                    onSelect({
+                        id: exercise.id,
+                        name: exercise.name,
+                        type: exercise.type,
+                        muscleGroup: exercise.muscleGroup
+                    })
+                }}
+            />
         </div>
     )
 }
@@ -186,9 +210,12 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
     const handleAddSet = (exerciseIndex: number) => {
         setExercises((prev) => {
             const updated = [...prev]
+            const currentExercise = updated[exerciseIndex]
+            const lastSet = currentExercise.sets[currentExercise.sets.length - 1]
+            
             updated[exerciseIndex] = {
-                ...updated[exerciseIndex],
-                sets: [...updated[exerciseIndex].sets, {}],
+                ...currentExercise,
+                sets: [...currentExercise.sets, lastSet ? { ...lastSet } : {}],
             }
             return updated
         })

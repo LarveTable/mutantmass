@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import { useExercises } from '@/hooks/useWorkout'
-import { Dumbbell, PersonStanding, Timer, ChevronRight } from 'lucide-react'
+import { Dumbbell, PersonStanding, Timer, ChevronRight, Plus } from 'lucide-react'
 import ExerciseImage from './ExerciseImage'
+import AddExerciseDialog from './AddExerciseDialog'
 
 // Component to pick an exercise to add to the workout
 
@@ -39,6 +40,7 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
     const [selectedType, setSelectedType] = useState<string | null>(null)
     const [selectedMuscle, setSelectedMuscle] = useState<string | null>(null)
     const [search, setSearch] = useState('')
+    const [addExerciseOpen, setAddExerciseOpen] = useState(false)
 
     const { data: exercises, isLoading } = useExercises(
         search ? undefined : (selectedType ?? undefined),
@@ -104,18 +106,28 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                 </SheetHeader>
 
                 <div className="flex-1 overflow-y-auto mt-4 flex flex-col gap-4">
-                    {/* Search bar — always visible */}
-                    <input
-                        type="text"
-                        placeholder="Search exercises..."
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value)
-                            if (e.target.value) setStep('exercise')
-                            else setStep('type')
-                        }}
-                        className="w-full rounded-lg border border-border bg-card px-4 py-2.5 text-sm outline-none focus:border-primary transition-colors placeholder:text-muted-foreground"
-                    />
+                    <div className="flex gap-2">
+                        <div className="relative flex-1">
+                            <input
+                                type="text"
+                                placeholder="Search exercises..."
+                                value={search}
+                                onChange={(e) => {
+                                    setSearch(e.target.value)
+                                    if (e.target.value) setStep('exercise')
+                                    else setStep('type')
+                                }}
+                                className="w-full rounded-lg border border-border bg-card px-4 py-2.5 text-sm outline-none focus:border-primary transition-colors placeholder:text-muted-foreground"
+                            />
+                        </div>
+                        <button
+                            onClick={() => setAddExerciseOpen(true)}
+                            className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg border border-border bg-card text-primary hover:bg-accent hover:border-primary transition-all active:scale-95"
+                            title="Add custom exercise"
+                        >
+                            <Plus size={20} />
+                        </button>
+                    </div>
                     {/* Step 1: Type */}
                     {step === 'type' && (
                         <div className="flex flex-col gap-3">
@@ -185,6 +197,14 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                     )}
                 </div>
             </SheetContent>
+
+            <AddExerciseDialog
+                open={addExerciseOpen}
+                onClose={() => setAddExerciseOpen(false)}
+                onSuccess={(exercise) => {
+                    handleExerciseSelect(exercise.id)
+                }}
+            />
         </Sheet>
     )
 }

@@ -19,6 +19,7 @@ interface Props {
     open: boolean
     onClose: () => void
     exercise?: any // Optional: if present, the dialog is in edit mode
+    onSuccess?: (exercise: any) => void
 }
 
 const TYPES = [
@@ -53,7 +54,7 @@ const PRISMA_TO_BODY_HIGHLIGHTER: Record<string, string[]> = {
     CORE: ['abs', 'obliques'],
 }
 
-export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
+export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }: Props) {
     const isEdit = !!exercise
     const queryClient = useQueryClient()
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -127,17 +128,19 @@ export default function AddExerciseDialog({ open, onClose, exercise }: Props) {
                 formData.append('removeImage', 'true')
             }
 
+            let response
             if (isEdit) {
-                await api.patch(`/exercises/${exercise.id}`, formData, {
+                response = await api.patch(`/exercises/${exercise.id}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 })
             } else {
-                await api.post('/exercises', formData, {
+                response = await api.post('/exercises', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 })
             }
 
             queryClient.invalidateQueries({ queryKey: ['exercises'] })
+            if (onSuccess) onSuccess(response.data.exercise)
             handleClose()
         } catch (err: any) {
             setError(err.response?.data?.error ?? 'Something went wrong')
