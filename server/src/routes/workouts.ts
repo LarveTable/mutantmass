@@ -115,7 +115,7 @@ export default async function workoutRoutes(app: FastifyInstance) {
     app.post('/workouts', { preHandler: authenticate }, async (request, reply) => {
         const { userId } = request.user as { userId: string }
         const { name, note, date, duration, restTimer } = request.body as {
-            name?: string
+            name: string
             note?: string
             date?: string
             duration?: number
@@ -125,7 +125,7 @@ export default async function workoutRoutes(app: FastifyInstance) {
         const workout = await app.prisma.workout.create({
             data: {
                 userId,
-                name: name ?? null,
+                name: name,
                 note: note ?? null,
                 date: date ? new Date(date) : new Date(),
                 duration: duration ?? null,

@@ -46,12 +46,14 @@ describe('RegisterPage', () => {
         vi.clearAllMocks()
     })
 
-    it('should render email, password, and confirm fields', () => {
+    it('should render all register fields', () => {
         renderRegisterPage()
 
+        expect(screen.getByLabelText('Name')).toBeInTheDocument()
         expect(screen.getByLabelText('Email')).toBeInTheDocument()
         expect(screen.getByLabelText('Password')).toBeInTheDocument()
         expect(screen.getByLabelText('Confirm password')).toBeInTheDocument()
+        expect(screen.getByLabelText('Beta Access Code')).toBeInTheDocument()
         expect(screen.getByRole('button', { name: 'Create account' })).toBeInTheDocument()
     })
 
@@ -59,9 +61,11 @@ describe('RegisterPage', () => {
         renderRegisterPage()
 
         const user = userEvent.setup()
+        await user.type(screen.getByLabelText('Name'), 'Test User')
         await user.type(screen.getByLabelText('Email'), 'test@test.com')
         await user.type(screen.getByLabelText('Password'), 'password123')
         await user.type(screen.getByLabelText('Confirm password'), 'different')
+        await user.type(screen.getByLabelText('Beta Access Code'), 'BETACODE')
         await user.click(screen.getByRole('button', { name: 'Create account' }))
 
         await waitFor(() => {
@@ -75,9 +79,11 @@ describe('RegisterPage', () => {
         renderRegisterPage()
 
         const user = userEvent.setup()
+        await user.type(screen.getByLabelText('Name'), 'Test User')
         await user.type(screen.getByLabelText('Email'), 'test@test.com')
         await user.type(screen.getByLabelText('Password'), 'short')
         await user.type(screen.getByLabelText('Confirm password'), 'short')
+        await user.type(screen.getByLabelText('Beta Access Code'), 'BETACODE')
         await user.click(screen.getByRole('button', { name: 'Create account' }))
 
         await waitFor(() => {
@@ -92,13 +98,15 @@ describe('RegisterPage', () => {
         renderRegisterPage()
 
         const user = userEvent.setup()
+        await user.type(screen.getByLabelText('Name'), 'Test User')
         await user.type(screen.getByLabelText('Email'), 'new@test.com')
         await user.type(screen.getByLabelText('Password'), 'password123')
         await user.type(screen.getByLabelText('Confirm password'), 'password123')
+        await user.type(screen.getByLabelText('Beta Access Code'), 'BETACODE')
         await user.click(screen.getByRole('button', { name: 'Create account' }))
 
         await waitFor(() => {
-            expect(mockRegister).toHaveBeenCalledWith('new@test.com', 'password123')
+            expect(mockRegister).toHaveBeenCalledWith('new@test.com', 'password123', 'Test User', 'BETACODE')
         })
     })
 
@@ -109,9 +117,11 @@ describe('RegisterPage', () => {
         renderRegisterPage()
 
         const user = userEvent.setup()
+        await user.type(screen.getByLabelText('Name'), 'Test User')
         await user.type(screen.getByLabelText('Email'), 'taken@test.com')
         await user.type(screen.getByLabelText('Password'), 'password123')
         await user.type(screen.getByLabelText('Confirm password'), 'password123')
+        await user.type(screen.getByLabelText('Beta Access Code'), 'BETACODE')
         await user.click(screen.getByRole('button', { name: 'Create account' }))
 
         await waitFor(() => {

@@ -37,7 +37,7 @@ describe('Auth Routes', () => {
             const res = await app.inject({
                 method: 'POST',
                 url: '/auth/register',
-                payload: { email: 'test@example.com', password: 'Password123' },
+                payload: { email: 'test@example.com', password: 'Password123', name: 'Test User', betaCode: 'test-beta-code' },
             })
 
             expect(res.statusCode).toBe(200)
@@ -68,7 +68,7 @@ describe('Auth Routes', () => {
             const res = await app.inject({
                 method: 'POST',
                 url: '/auth/register',
-                payload: { email: 'taken@example.com', password: 'Password123' },
+                payload: { email: 'taken@example.com', password: 'Password123', name: 'Existing User', betaCode: 'test-beta-code' },
             })
 
             expect(res.statusCode).toBe(400)

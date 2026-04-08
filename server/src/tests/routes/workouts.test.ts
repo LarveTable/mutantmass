@@ -57,6 +57,47 @@ describe('Workout Routes', () => {
 
             expect(res.statusCode).toBe(401)
         })
+
+        it('should filter workouts by start and end date range', async () => {
+            mockPrisma.workout.findMany.mockResolvedValue([])
+
+            const startStr = '2026-04-01T00:00:00Z'
+            const endStr = '2026-04-30T23:59:59Z'
+
+            const res = await app.inject({
+                method: 'GET',
+                url: `/workouts?start=${startStr}&end=${endStr}`,
+                cookies: { access_token: token },
+            })
+
+            expect(res.statusCode).toBe(200)
+
+            const call = mockPrisma.workout.findMany.mock.calls[0]![0] as any
+            expect(call.where.date.gte.toISOString()).toBe(new Date(startStr).toISOString())
+            expect(call.where.date.lt.toISOString()).toBe(new Date(endStr).toISOString())
+        })
+
+        it('should filter workouts using different timezones correctly', async () => {
+            mockPrisma.workout.findMany.mockResolvedValue([])
+
+            // Europe/Paris (CET)
+            const startStr = encodeURIComponent('2026-04-01T00:00:00+02:00')
+            // America/New_York (EST)
+            const endStr = encodeURIComponent('2026-04-30T23:59:59-05:00')
+
+            const res = await app.inject({
+                method: 'GET',
+                url: `/workouts?start=${startStr}&end=${endStr}`,
+                cookies: { access_token: token },
+            })
+
+            expect(res.statusCode).toBe(200)
+
+            const call = mockPrisma.workout.findMany.mock.calls[0]![0] as any
+            // The boundaries should correctly parse to their absolute UTC equivalent
+            expect(call.where.date.gte.toISOString()).toBe('2026-03-31T22:00:00.000Z')
+            expect(call.where.date.lt.toISOString()).toBe('2026-05-01T04:59:59.000Z')
+        })
     })
 
     // ─── GET /workouts/:id ───────────────────────────────────────
@@ -139,14 +180,36 @@ describe('Workout Routes', () => {
 
             mockPrisma.workout.create.mockResolvedValue(created)
 
+            const before = Date.now()
             const res = await app.inject({
                 method: 'POST',
                 url: '/workouts',
                 cookies: { access_token: token },
                 payload: {},
             })
+            const after = Date.now()
 
             expect(res.statusCode).toBe(201)
+
+            // Should fallback to Date.now() internally
+            const call = mockPrisma.workout.create.mock.calls[0]![0] as any
+            const insertedDate = new Date(call.data.date).getTime()
+            expect(insertedDate).toBeGreaterThanOrEqual(before)
+            expect(insertedDate).toBeLessThanOrEqual(after)
+        })
+
+        it('should create a workout using a specific timezone date', async () => {
+            mockPrisma.workout.create.mockResolvedValue({ id: 'w-1', date: new Date() })
+
+            await app.inject({
+                method: 'POST',
+                url: '/workouts',
+                cookies: { access_token: token },
+                payload: { name: 'Late TZ Workout', date: '2026-04-15T23:00:00-08:00' }, // PST
+            })
+
+            const call = mockPrisma.workout.create.mock.calls[0]![0] as any
+            expect(call.data.date.toISOString()).toBe('2026-04-16T07:00:00.000Z') // +8h in UTC
         })
 
         it('should return 401 without auth', async () => {

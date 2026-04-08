@@ -44,7 +44,11 @@ describe('Exercise Routes', () => {
 
             expect(res.statusCode).toBe(200)
             expect(res.json().exercises).toHaveLength(2)
-            expect(mockPrisma.exercise.findMany).toHaveBeenCalledOnce()
+
+            const call = mockPrisma.exercise.findMany.mock.calls[0]![0] as any
+            expect(call.where.OR).toContainEqual({ userId: null })
+            expect(call.where.OR).toContainEqual({ isPublic: true })
+            expect(call.where.OR).toContainEqual({ userId: 'user-1' })
         })
 
         it('should pass query filters to Prisma', async () => {

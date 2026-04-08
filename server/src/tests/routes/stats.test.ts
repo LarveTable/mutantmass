@@ -142,6 +142,103 @@ describe('Stats Routes', () => {
         })
     })
 
+    describe('GET /stats/exercise/:exerciseId', () => {
+        it('should return exercise stats including estimated One RM', async () => {
+            mockPrisma.workoutExercise.findMany.mockResolvedValue([
+                {
+                    workout: { date: new Date('2026-04-08T10:00:00Z') },
+                    exercise: { type: 'WEIGHTED' },
+                    sets: [
+                        { weight: 100, reps: 10 }, // 100 * (1 + 10/30) = 133
+                        { weight: 100, reps: 5 }
+                    ]
+                }
+            ])
+
+            const res = await app.inject({
+                method: 'GET',
+                url: '/stats/exercise/ex-1',
+                cookies: { access_token: token },
+            })
+
+            expect(res.statusCode).toBe(200)
+            const json = res.json()
+            expect(json.data).toHaveLength(1)
+            expect(json.data[0].date).toBe('2026-04-08')
+            expect(json.data[0].volume).toBe(1500) // 100*10 + 100*5
+            expect(json.data[0].estimatedOneRM).toBe(133)
+            expect(json.data[0].primaryValue).toBe(133) // for WEIGHTED
+            expect(json.data[0].bestWeight).toBe(100)
+            expect(json.data[0].bestReps).toBe(10)
+        })
+
+        it('should compute bodyweight max reps correctly', async () => {
+            mockPrisma.workoutExercise.findMany.mockResolvedValue([
+                {
+                    workout: { date: new Date() },
+                    exercise: { type: 'BODYWEIGHT' },
+                    sets: [
+                        { reps: 15 },
+                        { reps: 20 },
+                        { reps: null }
+                    ]
+                }
+            ])
+
+            const res = await app.inject({
+                method: 'GET',
+                url: '/stats/exercise/ex-2',
+                cookies: { access_token: token },
+            })
+
+            expect(res.statusCode).toBe(200)
+            const json = res.json()
+            expect(json.data[0].bestReps).toBe(20)
+            expect(json.data[0].primaryValue).toBe(20)
+            expect(json.data[0].estimatedOneRM).toBeNull()
+        })
+    })
+
+    describe('GET /stats/prs', () => {
+        it('should return personal records prioritized and sorted correctly', async () => {
+            mockPrisma.workoutExercise.findMany.mockResolvedValue([
+                {
+                    exerciseId: 'ex-1',
+                    exercise: { name: 'Deadlift', type: 'WEIGHTED', muscleGroup: 'LEGS' },
+                    sets: [
+                        { weight: 200, reps: 5 }, // 200 * (1 + 5/30) = 233
+                        { weight: 220, reps: 1 }  // 220 * (1 + 1/30) = 227
+                    ]
+                },
+                {
+                    exerciseId: 'ex-2',
+                    exercise: { name: 'Pullups', type: 'BODYWEIGHT', muscleGroup: 'BACK' },
+                    sets: [
+                        { reps: 12 },
+                        { reps: 15 }
+                    ]
+                }
+            ])
+
+            const res = await app.inject({
+                method: 'GET',
+                url: '/stats/prs',
+                cookies: { access_token: token },
+            })
+
+            expect(res.statusCode).toBe(200)
+            const json = res.json()
+            expect(json.prs).toHaveLength(2)
+            // Weight PRs first, bodyweight second
+            expect(json.prs[0].exerciseId).toBe('ex-1')
+            expect(json.prs[0].estimatedOneRM).toBe(233)
+            expect(json.prs[0].bestWeight).toBe(200)
+            
+            expect(json.prs[1].exerciseId).toBe('ex-2')
+            expect(json.prs[1].bestReps).toBe(15)
+        })
+    })
+
     describe('GET /stats/consistency', () => {
         it('should format all week boundaries strictly natively matching local time', async () => {
             mockPrisma.user.findUnique.mockResolvedValue({ weeklyGoal: 4 })

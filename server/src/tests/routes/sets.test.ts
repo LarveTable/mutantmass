@@ -65,6 +65,31 @@ describe('Set Routes', () => {
             expect(res.json().error).toBe('Workout not found')
         })
 
+        it('should assign correct order when exercises already exist', async () => {
+            mockPrisma.workout.findFirst.mockResolvedValue({ id: 'w-1', userId: 'user-1' })
+            mockPrisma.exercise.findFirst.mockResolvedValue({ id: 'ex-1', name: 'Bench Press' })
+            mockPrisma.workoutExercise.findFirst.mockResolvedValue({ id: 'we-old', order: 2 }) // previous exercise had order 2
+            mockPrisma.workoutExercise.create.mockResolvedValue({
+                id: 'we-1',
+                workoutId: 'w-1',
+                exerciseId: 'ex-1',
+                order: 3,
+                exercise: { id: 'ex-1', name: 'Bench Press' },
+                sets: [],
+            })
+
+            const res = await app.inject({
+                method: 'POST',
+                url: '/workouts/w-1/exercises',
+                cookies: { access_token: token },
+                payload: { exerciseId: 'ex-1' },
+            })
+
+            expect(res.statusCode).toBe(201)
+            const call = mockPrisma.workoutExercise.create.mock.calls[0]![0] as any
+            expect(call.data.order).toBe(3) // 2 + 1
+        })
+
         it('should return 404 if exercise not found', async () => {
             mockPrisma.workout.findFirst.mockResolvedValue({ id: 'w-1', userId: 'user-1' })
             mockPrisma.exercise.findFirst.mockResolvedValue(null)
@@ -179,6 +204,33 @@ describe('Set Routes', () => {
 
             expect(res.statusCode).toBe(404)
             expect(res.json().error).toBe('Workout not found')
+        })
+
+        it('should accurately compute sequential order for new sets', async () => {
+            mockPrisma.workout.findFirst.mockResolvedValue({ id: 'w-1', userId: 'user-1' })
+            mockPrisma.workoutExercise.findFirst.mockResolvedValue({ id: 'we-1', workoutId: 'w-1' })
+            mockPrisma.set.findFirst.mockResolvedValue({ id: 's-old', order: 1 }) // previous set has order 1
+            mockPrisma.set.create.mockResolvedValue({
+                id: 's-new',
+                workoutExerciseId: 'we-1',
+                order: 2,
+                reps: 8,
+                weight: 65,
+                duration: null,
+                distance: null,
+                restTime: null,
+            })
+
+            const res = await app.inject({
+                method: 'POST',
+                url: '/workouts/w-1/exercises/we-1/sets',
+                cookies: { access_token: token },
+                payload: { reps: 8, weight: 65 },
+            })
+
+            expect(res.statusCode).toBe(201)
+            const call = mockPrisma.set.create.mock.calls[0]![0] as any
+            expect(call.data.order).toBe(2)
         })
 
         it('should return 404 if exercise not in workout', async () => {

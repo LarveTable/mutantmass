@@ -105,6 +105,7 @@ export async function buildApp(): Promise<{ app: FastifyInstance; mockPrisma: Mo
     // Set env vars the routes expect
     process.env.JWT_REFRESH_SECRET = JWT_REFRESH_SECRET
     process.env.NODE_ENV = 'test'
+    process.env.BETA_CODE = 'test-beta-code'
 
     const app = Fastify({ logger: false })
     const mockPrisma = createMockPrisma()
