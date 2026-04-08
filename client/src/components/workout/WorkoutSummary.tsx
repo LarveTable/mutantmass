@@ -150,7 +150,7 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
                         >
                             {/* Exercise header */}
                             <div className="flex items-center gap-3">
-                                <ExerciseImage imageUrl={we.exercise.imageUrl} name={we.exercise.name} size="md" />
+                                <ExerciseImage imageUrl={we.exercise.imageUrl} name={we.exercise.name} size="md" zoomable />
                                 <div className="flex-1">
                                     <p className="font-semibold">{we.exercise.name}</p>
                                     <p className="text-xs text-muted-foreground">
