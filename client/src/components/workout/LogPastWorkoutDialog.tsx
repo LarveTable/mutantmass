@@ -17,6 +17,7 @@ import { useExercises } from '@/hooks/useWorkout'
 import api from '@/api/axios'
 import { useQueryClient } from '@tanstack/react-query'
 import AddExerciseDialog from './AddExerciseDialog'
+import ExerciseImage from './ExerciseImage'
 
 interface SetEntry {
     reps?: number
@@ -29,6 +30,7 @@ interface ExerciseEntry {
     exerciseId: string
     exerciseName: string
     exerciseType: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'
+    imageUrl?: string | null
     muscleGroup: string
     sets: SetEntry[]
 }
@@ -116,7 +118,7 @@ function SetRow({
 function ExercisePicker({
     onSelect,
 }: {
-    onSelect: (exercise: { id: string; name: string; type: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'; muscleGroup: string }) => void
+    onSelect: (exercise: { id: string; name: string; type: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'; muscleGroup: string; imageUrl?: string | null }) => void
 }) {
     const [search, setSearch] = useState('')
     const [addExerciseOpen, setAddExerciseOpen] = useState(false)
@@ -149,13 +151,16 @@ function ExercisePicker({
                 {filtered.map((e: any) => (
                     <button
                         key={e.id}
-                        onClick={() => onSelect({ id: e.id, name: e.name, type: e.type, muscleGroup: e.muscleGroup })}
-                        className="flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm hover:bg-accent transition-colors"
+                        onClick={() => onSelect({ id: e.id, name: e.name, type: e.type, muscleGroup: e.muscleGroup, imageUrl: e.imageUrl })}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm hover:bg-accent transition-colors"
                     >
-                        <span>{e.name}</span>
-                        <span className="text-xs text-muted-foreground capitalize">
-                            {e.type.toLowerCase()}
-                        </span>
+                        <ExerciseImage imageUrl={e.imageUrl} name={e.name} size="sm" />
+                        <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{e.name}</p>
+                            <span className="text-xs text-muted-foreground capitalize">
+                                {e.type.toLowerCase()}
+                            </span>
+                        </div>
                     </button>
                 ))}
             </div>
@@ -199,10 +204,18 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
         name: string
         type: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'
         muscleGroup: string
+        imageUrl?: string | null
     }) => {
         setExercises((prev) => [
             ...prev,
-            { exerciseId: exercise.id, exerciseName: exercise.name, exerciseType: exercise.type, muscleGroup: exercise.muscleGroup, sets: [{}] },
+            {
+                exerciseId: exercise.id,
+                exerciseName: exercise.name,
+                exerciseType: exercise.type,
+                imageUrl: exercise.imageUrl,
+                muscleGroup: exercise.muscleGroup,
+                sets: [{}]
+            },
         ])
         setShowPicker(false)
     }
@@ -212,7 +225,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
             const updated = [...prev]
             const currentExercise = updated[exerciseIndex]
             const lastSet = currentExercise.sets[currentExercise.sets.length - 1]
-            
+
             updated[exerciseIndex] = {
                 ...currentExercise,
                 sets: [...currentExercise.sets, lastSet ? { ...lastSet } : {}],
@@ -252,7 +265,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                 : undefined
 
             const defaultName = name || getDefaultWorkoutName(exercises)
-            
+
             // Create workout
             const workoutRes = await api.post('/workouts', {
                 name: defaultName,
@@ -402,13 +415,16 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                         <div className="flex flex-col gap-4 py-2">
                             {exercises.map((ex, ei) => (
                                 <div key={ei} className="flex flex-col gap-2 rounded-xl border border-border bg-card p-3">
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-sm font-semibold">{ex.exerciseName}</p>
+                                    <div className="flex items-center gap-3">
+                                        <ExerciseImage imageUrl={ex.imageUrl} name={ex.exerciseName} size="md" zoomable />
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-semibold truncate">{ex.exerciseName}</p>
+                                        </div>
                                         <button
                                             onClick={() => handleDeleteExercise(ei)}
-                                            className="text-muted-foreground hover:text-destructive transition-colors"
+                                            className="text-muted-foreground hover:text-destructive transition-colors p-1"
                                         >
-                                            <Trash2 size={14} />
+                                            <Trash2 size={16} />
                                         </button>
                                     </div>
 
