@@ -4,6 +4,7 @@ import { useExercises, useDeleteExercise } from '@/hooks/useWorkout'
 import ExerciseImage from './ExerciseImage'
 import { Trash2, Globe, Lock, Edit2 } from 'lucide-react'
 import AddExerciseDialog from './AddExerciseDialog'
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog'
 
 interface Props {
     open: boolean
@@ -14,6 +15,8 @@ export default function ListAddedExercisesDialog({ open, onClose }: Props) {
     const { data: exercises, isLoading } = useExercises()
     const deleteExercise = useDeleteExercise()
     const [editingExercise, setEditingExercise] = useState<any>(null)
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+    const [exerciseToDelete, setExerciseToDelete] = useState<string | null>(null)
 
     // Filter to only show custom exercises created by the user
     const customExercises = exercises?.filter((e: any) => e.userId) || []
@@ -41,7 +44,7 @@ export default function ListAddedExercisesDialog({ open, onClose }: Props) {
                                     className="flex items-center justify-between p-3 rounded-xl border border-border bg-card"
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div 
+                                        <div
                                             className="relative group cursor-pointer"
                                             onClick={() => setEditingExercise(exercise)}
                                         >
@@ -65,7 +68,7 @@ export default function ListAddedExercisesDialog({ open, onClose }: Props) {
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="flex items-center gap-1">
                                         <button
                                             onClick={() => setEditingExercise(exercise)}
@@ -74,13 +77,12 @@ export default function ListAddedExercisesDialog({ open, onClose }: Props) {
                                         >
                                             <Edit2 size={16} />
                                         </button>
-                                        
+
                                         {!exercise.isPublic && (
                                             <button
                                                 onClick={() => {
-                                                    if (confirm('Are you sure you want to delete this custom exercise?')) {
-                                                        deleteExercise.mutate(exercise.id)
-                                                    }
+                                                    setExerciseToDelete(exercise.id)
+                                                    setDeleteConfirmOpen(true)
                                                 }}
                                                 disabled={deleteExercise.isPending}
                                                 className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors disabled:opacity-50"
@@ -97,10 +99,25 @@ export default function ListAddedExercisesDialog({ open, onClose }: Props) {
                 </DialogContent>
             </Dialog>
 
-            <AddExerciseDialog 
-                open={!!editingExercise} 
-                onClose={() => setEditingExercise(null)} 
+            <AddExerciseDialog
+                open={!!editingExercise}
+                onClose={() => setEditingExercise(null)}
                 exercise={editingExercise}
+            />
+
+            <ConfirmationDialog
+                open={deleteConfirmOpen}
+                onClose={() => setDeleteConfirmOpen(false)}
+                onConfirm={() => {
+                    if (exerciseToDelete) {
+                        deleteExercise.mutate(exerciseToDelete)
+                        setExerciseToDelete(null)
+                    }
+                }}
+                title="Delete Custom Exercise?"
+                description={<>Are you sure you want to delete this custom exercise? This will <strong className="text-foreground">remove it from your library and workouts</strong>.</>}
+                confirmText="Delete"
+                variant="destructive"
             />
         </>
     )

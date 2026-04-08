@@ -14,6 +14,7 @@ import { Switch } from '@/components/ui/switch'
 import { ImagePlus, X } from 'lucide-react'
 import api from '@/api/axios'
 import { useQueryClient } from '@tanstack/react-query'
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog'
 
 interface Props {
     open: boolean
@@ -172,170 +173,161 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
 
     return (
         <>
-        <Dialog open={open} onOpenChange={handleClose}>
-            <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>{isEdit ? 'Edit Exercise' : 'Add Custom Exercise'}</DialogTitle>
-                    <DialogDescription />
-                </DialogHeader>
+            <Dialog open={open} onOpenChange={handleClose}>
+                <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>{isEdit ? 'Edit Exercise' : 'Add Custom Exercise'}</DialogTitle>
+                        <DialogDescription />
+                    </DialogHeader>
 
-                <div className="flex flex-col gap-5 py-2">
-                    {/* Image picker */}
-                    <div className="flex flex-col gap-1.5">
-                        <Label>Image (optional)</Label>
-                        {imagePreview ? (
-                            <div className="relative w-full h-36 rounded-xl overflow-hidden border border-border">
-                                <img
-                                    src={imagePreview}
-                                    alt="Preview"
-                                    className="w-full h-full object-cover"
-                                />
-                                <button
-                                    onClick={handleRemoveImage}
-                                    className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background transition-colors"
-                                >
-                                    <X size={14} />
-                                </button>
-                            </div>
-                        ) : (
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className="flex flex-col items-center justify-center gap-2 w-full h-36 rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-accent transition-colors"
-                            >
-                                <ImagePlus size={24} className="text-muted-foreground" />
-                                <p className="text-sm text-muted-foreground">Tap to upload image</p>
-                                <p className="text-xs text-muted-foreground">JPEG, PNG, WebP — max 5MB</p>
-                            </button>
-                        )}
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp,image/gif"
-                            className="hidden"
-                            onChange={handleImageChange}
-                        />
-                    </div>
-
-                    {/* Name */}
-                    <div className="flex flex-col gap-1.5">
-                        <Label>Exercise name</Label>
-                        <Input
-                            placeholder="e.g. Cable Lateral Raise"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-                    </div>
-
-                    {/* Type */}
-                    <div className="flex flex-col gap-2">
-                        <Label>Type</Label>
-                        <div className="grid grid-cols-3 gap-2">
-                            {TYPES.map((t) => (
-                                <button
-                                    key={t.value}
-                                    onClick={() => {
-                                        setType(t.value)
-                                        if (t.value === 'CARDIO') {
-                                            setMuscleGroup('CARDIO')
-                                        } else if (muscleGroup === 'CARDIO') {
-                                            setMuscleGroup('CHEST')
-                                        }
-                                    }}
-                                    className={`rounded-lg border py-2 text-sm font-medium transition-colors ${type === t.value
-                                        ? 'border-primary bg-primary text-primary-foreground'
-                                        : 'border-border bg-card hover:bg-accent'
-                                        }`}
-                                >
-                                    {t.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Muscle group */}
-                    <div className="flex flex-col gap-2">
-                        <Label>Muscle Group</Label>
-                        <div className="grid grid-cols-3 gap-2">
-                            {MUSCLE_GROUPS
-                                .filter(m => type === 'CARDIO' ? m.value === 'CARDIO' : m.value !== 'CARDIO')
-                                .map((m) => (
+                    <div className="flex flex-col gap-5 py-2">
+                        {/* Image picker */}
+                        <div className="flex flex-col gap-1.5">
+                            <Label>Image (optional)</Label>
+                            {imagePreview ? (
+                                <div className="relative w-full h-36 rounded-xl overflow-hidden border border-border">
+                                    <img
+                                        src={imagePreview}
+                                        alt="Preview"
+                                        className="w-full h-full object-cover"
+                                    />
                                     <button
-                                        key={m.value}
-                                        onClick={() => {
-                                            setMuscleGroup(m.value)
-                                            setTargetMuscle([])
-                                        }}
-                                        className={`rounded-lg border py-2 text-xs font-medium transition-colors ${muscleGroup === m.value
-                                            ? 'border-primary bg-primary text-primary-foreground'
-                                            : 'border-border bg-card hover:bg-accent'
-                                            }`}
+                                        onClick={handleRemoveImage}
+                                        className="absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full bg-background/80 text-foreground hover:bg-background transition-colors"
                                     >
-                                        {m.label}
+                                        <X size={14} />
                                     </button>
-                                ))}
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="flex flex-col items-center justify-center gap-2 w-full h-36 rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-accent transition-colors"
+                                >
+                                    <ImagePlus size={24} className="text-muted-foreground" />
+                                    <p className="text-sm text-muted-foreground">Tap to upload image</p>
+                                    <p className="text-xs text-muted-foreground">JPEG, PNG, WebP — max 5MB</p>
+                                </button>
+                            )}
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                className="hidden"
+                                onChange={handleImageChange}
+                            />
                         </div>
-                    </div>
 
-                    {/* Target Muscle */}
-                    {PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup] && PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup].length > 1 && (
+                        {/* Name */}
+                        <div className="flex flex-col gap-1.5">
+                            <Label>Exercise name</Label>
+                            <Input
+                                placeholder="e.g. Cable Lateral Raise"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Type */}
                         <div className="flex flex-col gap-2">
-                            <Label>Target Muscles (Optional)</Label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup].map((tm) => (
+                            <Label>Type</Label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {TYPES.map((t) => (
                                     <button
-                                        key={tm}
-                                        onClick={() => setTargetMuscle(prev => prev.includes(tm) ? prev.filter(t => t !== tm) : [...prev, tm])}
-                                        className={`rounded-lg border py-2 text-xs font-medium transition-colors capitalize ${targetMuscle.includes(tm)
+                                        key={t.value}
+                                        onClick={() => {
+                                            setType(t.value)
+                                            if (t.value === 'CARDIO') {
+                                                setMuscleGroup('CARDIO')
+                                            } else if (muscleGroup === 'CARDIO') {
+                                                setMuscleGroup('CHEST')
+                                            }
+                                        }}
+                                        className={`rounded-lg border py-2 text-sm font-medium transition-colors ${type === t.value
                                             ? 'border-primary bg-primary text-primary-foreground'
                                             : 'border-border bg-card hover:bg-accent'
                                             }`}
                                     >
-                                        {tm.replace('-', ' ')}
+                                        {t.label}
                                     </button>
                                 ))}
                             </div>
                         </div>
-                    )}
 
-                    {/* Public toggle */}
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm font-medium">Make public</p>
-                            <p className="text-xs text-muted-foreground">Share with other users</p>
+                        {/* Muscle group */}
+                        <div className="flex flex-col gap-2">
+                            <Label>Muscle Group</Label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {MUSCLE_GROUPS
+                                    .filter(m => type === 'CARDIO' ? m.value === 'CARDIO' : m.value !== 'CARDIO')
+                                    .map((m) => (
+                                        <button
+                                            key={m.value}
+                                            onClick={() => {
+                                                setMuscleGroup(m.value)
+                                                setTargetMuscle([])
+                                            }}
+                                            className={`rounded-lg border py-2 text-xs font-medium transition-colors ${muscleGroup === m.value
+                                                ? 'border-primary bg-primary text-primary-foreground'
+                                                : 'border-border bg-card hover:bg-accent'
+                                                }`}
+                                        >
+                                            {m.label}
+                                        </button>
+                                    ))}
+                            </div>
                         </div>
-                        <Switch checked={isPublic} onCheckedChange={setIsPublic} disabled={isPublicSwitchDisabled} />
+
+                        {/* Target Muscle */}
+                        {PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup] && PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup].length > 1 && (
+                            <div className="flex flex-col gap-2">
+                                <Label>Target Muscles (Optional)</Label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup].map((tm) => (
+                                        <button
+                                            key={tm}
+                                            onClick={() => setTargetMuscle(prev => prev.includes(tm) ? prev.filter(t => t !== tm) : [...prev, tm])}
+                                            className={`rounded-lg border py-2 text-xs font-medium transition-colors capitalize ${targetMuscle.includes(tm)
+                                                ? 'border-primary bg-primary text-primary-foreground'
+                                                : 'border-border bg-card hover:bg-accent'
+                                                }`}
+                                        >
+                                            {tm.replace('-', ' ')}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Public toggle */}
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium">Make public</p>
+                                <p className="text-xs text-muted-foreground">Share with other users</p>
+                            </div>
+                            <Switch checked={isPublic} onCheckedChange={setIsPublic} disabled={isPublicSwitchDisabled} />
+                        </div>
+
+                        {error && <p className="text-sm text-destructive">{error}</p>}
                     </div>
 
-                    {error && <p className="text-sm text-destructive">{error}</p>}
-                </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={handleClose}>Cancel</Button>
+                        <Button onClick={handleInitialSubmit} disabled={loading}>
+                            {loading ? (isEdit ? 'Saving...' : 'Adding...') : (isEdit ? 'Save Changes' : 'Add Exercise')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
-                <DialogFooter>
-                    <Button variant="outline" onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleInitialSubmit} disabled={loading}>
-                        {loading ? (isEdit ? 'Saving...' : 'Adding...') : (isEdit ? 'Save Changes' : 'Add Exercise')}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-
-        <Dialog open={showPublicWarning} onOpenChange={setShowPublicWarning}>
-            <DialogContent className="max-w-sm">
-                <DialogHeader>
-                    <DialogTitle>Make Exercise Public?</DialogTitle>
-                </DialogHeader>
-                <div className="py-2">
-                    <p className="text-sm text-muted-foreground">
-                        You are about to make this exercise public. Once public, it will be visible to all users and <strong className="text-foreground">cannot be deleted</strong>. Are you sure you want to continue?
-                    </p>
-                </div>
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => setShowPublicWarning(false)}>Cancel</Button>
-                    <Button onClick={performSubmit} disabled={loading}>
-                        {loading ? 'Saving...' : 'Yes, Make Public'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+            <ConfirmationDialog
+                open={showPublicWarning}
+                onClose={() => setShowPublicWarning(false)}
+                onConfirm={performSubmit}
+                loading={loading}
+                title="Make Exercise Public?"
+                description={<>You are about to make this exercise public. Once public, it will be visible to all users and <strong className="text-foreground">cannot be deleted</strong>. Are you sure you want to continue?</>}
+                confirmText="Yes, Make Public"
+            />
         </>
     )
 }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Trash2, Plus, Pencil } from 'lucide-react'
 import LogSetDialog from './LogSetDialog'
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog'
 
 interface Set {
     id: string
@@ -38,6 +39,8 @@ export default function SetLogger({
     onEditSet,
 }: Props) {
     const [dialogOpen, setDialogOpen] = useState(false)
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+    const [setToDelete, setSetToDelete] = useState<string | null>(null)
 
     const lastSet = sets.length > 0 ? sets[sets.length - 1] : undefined
 
@@ -124,9 +127,8 @@ export default function SetLogger({
                             </button>
                             <button
                                 onClick={() => {
-                                    if (confirm('Delete this set?')) {
-                                        onDeleteSet(workoutExerciseId, set.id)
-                                    }
+                                    setSetToDelete(set.id)
+                                    setDeleteConfirmOpen(true)
                                 }}
                                 className="flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
                             >
@@ -154,6 +156,21 @@ export default function SetLogger({
                 exerciseType={exerciseType}
                 lastSet={lastSet}
                 onConfirm={handleConfirm}
+            />
+
+            <ConfirmationDialog
+                open={deleteConfirmOpen}
+                onClose={() => setDeleteConfirmOpen(false)}
+                onConfirm={() => {
+                    if (setToDelete) {
+                        onDeleteSet(workoutExerciseId, setToDelete)
+                        setSetToDelete(null)
+                    }
+                }}
+                title="Delete Set?"
+                description="Are you sure you want to delete this set? This action cannot be undone."
+                confirmText="Delete"
+                variant="destructive"
             />
         </div>
     )

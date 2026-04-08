@@ -16,6 +16,7 @@ import ExercisePicker from '@/components/workout/ExercisePicker'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import ExerciseImage from '@/components/workout/ExerciseImage'
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog'
 
 // Component to show and edit a past workout's details in the history page
 
@@ -95,6 +96,13 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
         exerciseType: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'
         currentSet?: any
     } | null>(null)
+    
+    const [confirmDialog, setConfirmDialog] = useState<{
+        open: boolean
+        type: 'exercise' | 'set' | null
+        workoutExerciseId: string
+        setId?: string
+    }>({ open: false, type: null, workoutExerciseId: '' })
 
     const [editingNote, setEditingNote] = useState(false)
     const [noteText, setNoteText] = useState('')
@@ -318,11 +326,11 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                             <StickyNote size={16} />
                                         </button>
                                         <button
-                                            onClick={() => {
-                                                if (confirm('Remove this exercise?')) {
-                                                    removeExercise.mutate(we.id)
-                                                }
-                                            }}
+                                            onClick={() => setConfirmDialog({
+                                                open: true,
+                                                type: 'exercise',
+                                                workoutExerciseId: we.id,
+                                            })}
                                             className="text-muted-foreground hover:text-destructive transition-colors"
                                         >
                                             <Trash2 size={16} />
@@ -406,11 +414,12 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                                 <Pencil size={13} />
                                             </button>
                                             <button
-                                                onClick={() => {
-                                                    if (confirm('Delete this set?')) {
-                                                        deleteSet.mutate({ workoutExerciseId: we.id, setId: set.id })
-                                                    }
-                                                }}
+                                                onClick={() => setConfirmDialog({
+                                                    open: true,
+                                                    type: 'set',
+                                                    workoutExerciseId: we.id,
+                                                    setId: set.id,
+                                                })}
                                                 className="flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
                                             >
                                                 <Trash2 size={13} />
@@ -493,6 +502,27 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                     onConfirm={handleSetConfirm}
                 />
             )}
+
+            <ConfirmationDialog
+                open={confirmDialog.open}
+                onClose={() => setConfirmDialog(prev => ({ ...prev, open: false }))}
+                onConfirm={() => {
+                    if (confirmDialog.type === 'exercise') {
+                        removeExercise.mutate(confirmDialog.workoutExerciseId)
+                    } else if (confirmDialog.type === 'set' && confirmDialog.setId) {
+                        deleteSet.mutate({ 
+                            workoutExerciseId: confirmDialog.workoutExerciseId, 
+                            setId: confirmDialog.setId 
+                        })
+                    }
+                }}
+                title={confirmDialog.type === 'exercise' ? 'Remove Exercise?' : 'Delete Set?'}
+                description={confirmDialog.type === 'exercise' 
+                    ? 'Are you sure you want to remove this exercise and all its sets from this workout?' 
+                    : 'Are you sure you want to delete this set? This action cannot be undone.'}
+                confirmText={confirmDialog.type === 'exercise' ? 'Remove' : 'Delete'}
+                variant="destructive"
+            />
         </div>
     )
 }

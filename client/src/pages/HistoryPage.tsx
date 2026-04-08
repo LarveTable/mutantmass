@@ -3,6 +3,7 @@ import { useWorkoutsRange, useDeleteWorkout } from '@/hooks/useWorkout'
 import WeeklyCalendar from '@/components/history/WeeklyCalendar'
 import WorkoutDetailModal from '@/components/history/WorkoutDetailModal'
 import { Dumbbell, Clock, Trash2 } from 'lucide-react'
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog'
 
 // Page used to access the past workouts and maybe edit them
 
@@ -30,6 +31,8 @@ export default function HistoryPage() {
     const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
     const [selectedDate, setSelectedDate] = useState<string | null>(null)
     const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null)
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+    const [workoutToDelete, setWorkoutToDelete] = useState<string | null>(null)
 
     const startDateIso = useMemo(() => weekStart.toISOString(), [weekStart])
     const endDateIso = useMemo(() => {
@@ -119,9 +122,8 @@ export default function HistoryPage() {
                                             role="button"
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                if (confirm('Delete this workout?')) {
-                                                    deleteWorkout.mutate(workout.id)
-                                                }
+                                                setWorkoutToDelete(workout.id)
+                                                setDeleteConfirmOpen(true)
                                             }}
                                             className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                                         >
@@ -176,6 +178,21 @@ export default function HistoryPage() {
                     onClose={() => setSelectedWorkoutId(null)}
                 />
             )}
+
+            <ConfirmationDialog
+                open={deleteConfirmOpen}
+                onClose={() => setDeleteConfirmOpen(false)}
+                onConfirm={() => {
+                    if (workoutToDelete) {
+                        deleteWorkout.mutate(workoutToDelete)
+                        setWorkoutToDelete(null)
+                    }
+                }}
+                title="Delete Workout?"
+                description="Are you sure you want to delete this workout? This will remove all exercises and sets recorded for this session. This action cannot be undone."
+                confirmText="Delete"
+                variant="destructive"
+            />
         </div>
     )
 }

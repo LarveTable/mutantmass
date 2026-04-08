@@ -29,6 +29,7 @@ import AddExerciseDialog from '@/components/workout/AddExerciseDialog'
 import LogPastWorkoutDialog from '@/components/workout/LogPastWorkoutDialog'
 import ListAddedExercisesDialog from '@/components/workout/ListAddedExercisesDialog'
 import ExerciseImage from '@/components/workout/ExerciseImage'
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog'
 
 // Main page for logging workouts
 
@@ -56,6 +57,8 @@ export default function WorkoutPage() {
     const [addExerciseOpen, setAddExerciseOpen] = useState(false)
     const [logPastOpen, setLogPastOpen] = useState(false)
     const [listAddedExercisesOpen, setListAddedExercisesOpen] = useState(false)
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+    const [exerciseToDelete, setExerciseToDelete] = useState<string | null>(null)
 
     const { data: workout, isLoading } = useActiveWorkout(workoutId)
     const createWorkout = useCreateWorkout()
@@ -291,9 +294,8 @@ export default function WorkoutPage() {
                                 </button>
                                 <button
                                     onClick={() => {
-                                        if (confirm('Delete this exercise?')) {
-                                            removeExercise.mutate(we.id)
-                                        }
+                                        setExerciseToDelete(we.id)
+                                        setDeleteConfirmOpen(true)
                                     }}
                                     className="text-muted-foreground hover:text-destructive transition-colors"
                                 >
@@ -389,6 +391,21 @@ export default function WorkoutPage() {
                 onClose={() => setFinishDialogOpen(false)}
                 onConfirm={handleFinish}
                 isLoading={finishWorkout.isPending}
+            />
+
+            <ConfirmationDialog
+                open={deleteConfirmOpen}
+                onClose={() => setDeleteConfirmOpen(false)}
+                onConfirm={() => {
+                    if (exerciseToDelete) {
+                        removeExercise.mutate(exerciseToDelete)
+                        setExerciseToDelete(null)
+                    }
+                }}
+                title="Delete Exercise?"
+                description="Are you sure you want to remove this exercise from your workout? All sets recorded for this exercise will be lost."
+                confirmText="Delete"
+                variant="destructive"
             />
         </div>
     )
