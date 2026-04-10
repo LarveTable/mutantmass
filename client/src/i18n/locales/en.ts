@@ -205,6 +205,12 @@ export const en = {
             cardioIntensity: "Cardio / Body intensity",
             days: ["M", "T", "W", "T", "F", "S", "S"]
         }
+    },
+    common: {
+        loading: "Loading...",
+        processing: "Processing...",
+        confirm: "Confirm",
+        cancel: "Cancel"
     }
 }
 

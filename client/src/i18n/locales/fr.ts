@@ -207,5 +207,11 @@ export const fr: Dictionary = {
             cardioIntensity: "Intensité Cardio / PDC",
             days: ["L", "M", "M", "J", "V", "S", "D"]
         }
+    },
+    common: {
+        loading: "Chargement...",
+        processing: "Traitement...",
+        confirm: "Confirmer",
+        cancel: "Annuler"
     }
 }
