@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { Button } from '@/components/ui/button'
@@ -20,9 +20,11 @@ export default function RegisterPage() {
     const [loading, setLoading] = useState(false)
 
     // If user logged in
-    if (!authLoading && user) {
-        navigate('/dashboard')
-    }
+    useEffect(() => {
+        if (!authLoading && user) {
+            navigate('/dashboard')
+        }
+    }, [authLoading, user, navigate])
 
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault()
