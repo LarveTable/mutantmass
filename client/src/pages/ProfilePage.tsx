@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { useTranslation } from '@/context/LanguageContext'
+import type { Language } from '@/context/LanguageContext'
 import {
     useProfile,
     useUpdateProfile,
@@ -15,6 +17,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription,
 } from '@/components/ui/dialog'
 import {
     User,
@@ -29,6 +32,7 @@ import {
     Scale,
     Ruler,
     Calendar,
+    Globe,
 } from 'lucide-react'
 
 // Profile page, basic informations, settings and logout
@@ -163,6 +167,7 @@ function ChangePasswordDialog({
             <DialogContent className="max-w-sm">
                 <DialogHeader>
                     <DialogTitle>Change Password</DialogTitle>
+                    <DialogDescription />
                 </DialogHeader>
                 {success ? (
                     <div className="flex flex-col items-center gap-2 py-4">
@@ -211,6 +216,7 @@ function DeleteAccountDialog({
     onClose: () => void
     onConfirm: (password: string) => void
 }) {
+    const { t } = useTranslation()
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
 
@@ -224,17 +230,18 @@ function DeleteAccountDialog({
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-sm">
                 <DialogHeader>
-                    <DialogTitle className="text-destructive">Delete Account</DialogTitle>
+                    <DialogTitle className="text-destructive">{t.profile.deleteDialog.title}</DialogTitle>
+                    <DialogDescription />
                 </DialogHeader>
                 <div className="flex flex-col gap-4 py-2">
                     <p className="text-sm text-muted-foreground">
-                        This will permanently delete your account and all associated data including workouts, exercises, and progress. This action cannot be undone.
+                        {t.profile.deleteDialog.description}
                     </p>
                     <div className="flex flex-col gap-1.5">
-                        <Label>Enter your password to confirm</Label>
+                        <Label>{t.profile.deleteDialog.confirmLabel}</Label>
                         <Input
                             type="password"
-                            placeholder="Your password"
+                            placeholder={t.profile.deleteDialog.placeholder}
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                         />
@@ -242,11 +249,59 @@ function DeleteAccountDialog({
                     {error && <p className="text-sm text-destructive">{error}</p>}
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>Cancel</Button>
+                    <Button variant="outline" onClick={onClose}>{t.profile.deleteDialog.cancel}</Button>
                     <Button variant="destructive" onClick={handleConfirm}>
-                        Delete Everything
+                        {t.profile.deleteDialog.confirm}
                     </Button>
                 </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+const AVAILABLE_LANGUAGES = [
+    { code: 'en', label: 'English', flag: '🇺🇸' },
+    { code: 'fr', label: 'Français', flag: '🇫🇷' },
+]
+
+function LanguageDialog({
+    open,
+    onClose,
+}: {
+    open: boolean
+    onClose: () => void
+}) {
+    const { t, lang, setLang } = useTranslation()
+
+    return (
+        <Dialog open={open} onOpenChange={onClose}>
+            <DialogContent className="max-w-xs sm:max-w-sm rounded-[24px]">
+                <DialogHeader>
+                    <DialogTitle>{t.profile.account.language}</DialogTitle>
+                    <DialogDescription />
+                </DialogHeader>
+                <div className="flex flex-col gap-2 py-4 max-h-[60vh] overflow-y-auto pr-1">
+                    {AVAILABLE_LANGUAGES.map((l) => {
+                        const isActive = lang === l.code
+                        return (
+                            <button
+                                key={l.code}
+                                onClick={() => {
+                                    setLang(l.code as Language)
+                                    setTimeout(onClose, 200)
+                                }}
+                                className={`flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border transition-all ${isActive
+                                    ? 'border-primary bg-primary/10 text-primary'
+                                    : 'border-border bg-card hover:bg-accent hover:border-accent-foreground/20 text-foreground'
+                                    }`}
+                            >
+                                <span className="text-xl leading-none">{l.flag}</span>
+                                <span className="font-medium flex-1 text-left">{l.label}</span>
+                                {isActive && <Check size={18} className="text-primary" />}
+                            </button>
+                        )
+                    })}
+                </div>
             </DialogContent>
         </Dialog>
     )
@@ -272,9 +327,11 @@ export default function ProfilePage() {
     const { data: profile, isLoading } = useProfile()
     const updateProfile = useUpdateProfile()
     const deleteAccount = useDeleteAccount()
+    const { t, lang } = useTranslation()
 
     const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [languageDialogOpen, setLanguageDialogOpen] = useState(false)
 
     const handleUpdate = (field: string) => (value: string) => {
         const numericFields = ['age', 'weight', 'height', 'weeklyGoal']
@@ -404,14 +461,26 @@ export default function ProfilePage() {
             {/* Account actions */}
             <section className="rounded-xl border border-border bg-card overflow-hidden">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-4 pt-4 pb-2">
-                    Account
+                    {t.profile.account.title}
                 </p>
+                <button
+                    onClick={() => setLanguageDialogOpen(true)}
+                    className="flex w-full items-center gap-3 px-4 py-3.5 border-b border-border hover:bg-accent transition-colors"
+                >
+                    <Globe size={16} className="text-muted-foreground" />
+                    <span className="text-sm flex-1 text-left">{t.profile.account.language}</span>
+                    <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                        <span className="text-[14px] leading-none">{AVAILABLE_LANGUAGES.find(l => l.code === lang)?.flag}</span>
+                        <span>{AVAILABLE_LANGUAGES.find(l => l.code === lang)?.label}</span>
+                    </span>
+                    <ChevronRight size={16} className="text-muted-foreground" />
+                </button>
                 <button
                     onClick={() => setPasswordDialogOpen(true)}
                     className="flex w-full items-center gap-3 px-4 py-3.5 border-b border-border hover:bg-accent transition-colors"
                 >
                     <Lock size={16} className="text-muted-foreground" />
-                    <span className="text-sm flex-1 text-left">Change Password</span>
+                    <span className="text-sm flex-1 text-left">{t.profile.account.changePassword}</span>
                     <ChevronRight size={16} className="text-muted-foreground" />
                 </button>
                 <button
@@ -419,7 +488,7 @@ export default function ProfilePage() {
                     className="flex w-full items-center gap-3 px-4 py-3.5 border-b border-border hover:bg-accent transition-colors"
                 >
                     <LogOut size={16} className="text-muted-foreground" />
-                    <span className="text-sm flex-1 text-left">Log Out</span>
+                    <span className="text-sm flex-1 text-left">{t.profile.account.logout}</span>
                     <ChevronRight size={16} className="text-muted-foreground" />
                 </button>
                 <button
@@ -427,7 +496,7 @@ export default function ProfilePage() {
                     className="flex w-full items-center gap-3 px-4 py-3.5 hover:bg-accent transition-colors"
                 >
                     <Trash2 size={16} className="text-destructive" />
-                    <span className="text-sm flex-1 text-left text-destructive">Delete Account</span>
+                    <span className="text-sm flex-1 text-left text-destructive">{t.profile.account.deleteAccount}</span>
                     <ChevronRight size={16} className="text-muted-foreground" />
                 </button>
             </section>
@@ -435,6 +504,11 @@ export default function ProfilePage() {
             <ChangePasswordDialog
                 open={passwordDialogOpen}
                 onClose={() => setPasswordDialogOpen(false)}
+            />
+
+            <LanguageDialog
+                open={languageDialogOpen}
+                onClose={() => setLanguageDialogOpen(false)}
             />
 
             <DeleteAccountDialog

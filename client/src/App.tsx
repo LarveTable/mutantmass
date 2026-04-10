@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './context/AuthContext'
+import { LanguageProvider } from './context/LanguageContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import ScrollToTop from './components/ScrollToTop'
 import AppShell from './components/layout/AppShell'
@@ -19,8 +20,9 @@ const queryClient = new QueryClient()
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrowserRouter>
+      <LanguageProvider>
+        <AuthProvider>
+          <BrowserRouter>
           <ScrollToTop />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -52,8 +54,9 @@ function App() {
             } />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+          </BrowserRouter>
+        </AuthProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   )
 }
