@@ -139,6 +139,25 @@ export const en = {
             records: "Personal Records (top 10)",
             consistency: "Consistency"
         }
+    },
+    history: {
+        title: "History",
+        empty: {
+            selectDay: "Select a day to see your workout"
+        },
+        stats: {
+            sets: "sets",
+            volume: "kg volume"
+        },
+        duration: {
+            hourAbbr: "h",
+            minAbbr: "m"
+        },
+        deleteConfirm: {
+            title: "Delete Workout?",
+            description: "Are you sure you want to delete this workout? This will remove all exercises and sets recorded for this session. This action cannot be undone.",
+            confirm: "Delete"
+        }
     }
 }
 

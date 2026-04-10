@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import { useWorkoutsRange, useDeleteWorkout } from '@/hooks/useWorkout'
 import WeeklyCalendar from '@/components/history/WeeklyCalendar'
 import WorkoutDetailModal from '@/components/history/WorkoutDetailModal'
@@ -20,19 +21,21 @@ function toDateString(date: Date): string {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-function formatDuration(seconds: number) {
-    const h = Math.floor(seconds / 3600)
-    const m = Math.floor((seconds % 3600) / 60)
-    if (h > 0) return `${h}h ${m}m`
-    return `${m}m`
-}
 
 export default function HistoryPage() {
+    const { t, lang } = useTranslation()
     const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
     const [selectedDate, setSelectedDate] = useState<string | null>(null)
     const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null)
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
     const [workoutToDelete, setWorkoutToDelete] = useState<string | null>(null)
+
+    const formatDuration = (seconds: number) => {
+        const h = Math.floor(seconds / 3600)
+        const m = Math.floor((seconds % 3600) / 60)
+        if (h > 0) return `${h}${t.history.duration.hourAbbr} ${m}${t.history.duration.minAbbr}`
+        return `${m}${t.history.duration.minAbbr}`
+    }
 
     const startDateIso = useMemo(() => weekStart.toISOString(), [weekStart])
     const endDateIso = useMemo(() => {
@@ -74,7 +77,7 @@ export default function HistoryPage() {
 
     return (
         <div className="flex flex-col gap-6 px-4 py-6">
-            <h1 className="text-xl font-bold">History</h1>
+            <h1 className="text-xl font-bold">{t.history.title}</h1>
 
             {/* Calendar */}
             <WeeklyCalendar
@@ -90,7 +93,7 @@ export default function HistoryPage() {
             {selectedDate && workoutsOnSelectedDate.length > 0 && (
                 <div className="flex flex-col gap-3">
                     <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                        {new Date(selectedDate).toLocaleDateString('en-US', {
+                        {new Date(selectedDate).toLocaleDateString(lang, {
                             weekday: 'long',
                             month: 'long',
                             day: 'numeric',
@@ -110,7 +113,7 @@ export default function HistoryPage() {
                                 className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 text-left hover:bg-accent transition-colors"
                             >
                                 <div className="flex items-center justify-between">
-                                    <p className="font-semibold">{workout.name ?? 'Workout'}</p>
+                                    <p className="font-semibold">{workout.name ?? t.workout.active.defaultName}</p>
                                     <div className="flex items-center gap-2">
                                         {workout.duration && (
                                             <div className="flex items-center gap-1 text-muted-foreground">
@@ -147,11 +150,11 @@ export default function HistoryPage() {
 
                                 {/* Stats */}
                                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                                    <span>{totalSets} sets</span>
+                                    <span>{totalSets} {t.history.stats.sets}</span>
                                     {totalVolume > 0 && (
                                         <>
                                             <span>·</span>
-                                            <span>{totalVolume.toLocaleString()} kg volume</span>
+                                            <span>{totalVolume.toLocaleString()} {t.history.stats.volume}</span>
                                         </>
                                     )}
                                 </div>
@@ -166,7 +169,7 @@ export default function HistoryPage() {
                 <div className="flex flex-col items-center gap-2 py-12 text-center">
                     <Dumbbell size={32} className="text-muted-foreground/40" />
                     <p className="text-muted-foreground text-sm">
-                        Select a day to see your workout
+                        {t.history.empty.selectDay}
                     </p>
                 </div>
             )}
@@ -188,9 +191,9 @@ export default function HistoryPage() {
                         setWorkoutToDelete(null)
                     }
                 }}
-                title="Delete Workout?"
-                description="Are you sure you want to delete this workout? This will remove all exercises and sets recorded for this session. This action cannot be undone."
-                confirmText="Delete"
+                title={t.history.deleteConfirm.title}
+                description={t.history.deleteConfirm.description}
+                confirmText={t.history.deleteConfirm.confirm}
                 variant="destructive"
             />
         </div>

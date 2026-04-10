@@ -141,5 +141,24 @@ export const fr: Dictionary = {
             records: "Records personnels (top 10)",
             consistency: "Régularité"
         }
+    },
+    history: {
+        title: "Historique",
+        empty: {
+            selectDay: "Sélectionne un jour pour voir ton entraînement"
+        },
+        stats: {
+            sets: "séries",
+            volume: "kg de volume"
+        },
+        duration: {
+            hourAbbr: "h",
+            minAbbr: "m"
+        },
+        deleteConfirm: {
+            title: "Supprimer l'entraînement ?",
+            description: "Es-tu sûr de vouloir supprimer cet entraînement ? Cela retirera tous les exercices et séries enregistrées pour cette séance. Cette action est irréversible.",
+            confirm: "Supprimer"
+        }
     }
 }
