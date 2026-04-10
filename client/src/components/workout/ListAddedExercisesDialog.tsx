@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { useExercises, useDeleteExercise } from '@/hooks/useWorkout'
+import { useMyExercises, useDeleteExercise } from '@/hooks/useWorkout'
 import ExerciseImage from './ExerciseImage'
 import { Trash2, Globe, Lock, Edit2 } from 'lucide-react'
 import AddExerciseDialog from './AddExerciseDialog'
@@ -12,14 +12,12 @@ interface Props {
 }
 
 export default function ListAddedExercisesDialog({ open, onClose }: Props) {
-    const { data: exercises, isLoading } = useExercises()
+    const { data: exercises, isLoading } = useMyExercises()
     const deleteExercise = useDeleteExercise()
     const [editingExercise, setEditingExercise] = useState<any>(null)
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
     const [exerciseToDelete, setExerciseToDelete] = useState<string | null>(null)
 
-    // Filter to only show custom exercises created by the user
-    const customExercises = exercises?.filter((e: any) => e.userId) || []
 
     return (
         <>
@@ -35,10 +33,10 @@ export default function ListAddedExercisesDialog({ open, onClose }: Props) {
                     <div className="flex-1 overflow-y-auto pr-2 flex flex-col gap-3 py-2">
                         {isLoading ? (
                             <p className="text-center text-muted-foreground py-4">Loading exercises...</p>
-                        ) : customExercises.length === 0 ? (
+                        ) : !exercises || exercises.length === 0 ? (
                             <p className="text-center text-muted-foreground py-4">No custom exercises added yet.</p>
                         ) : (
-                            customExercises.map((exercise: any) => (
+                            exercises.map((exercise: any) => (
                                 <div
                                     key={exercise.id}
                                     className="flex items-center justify-between p-3 rounded-xl border border-border bg-card"

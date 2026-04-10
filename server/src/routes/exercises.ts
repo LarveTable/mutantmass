@@ -40,6 +40,16 @@ export default async function exerciseRoutes(app: FastifyInstance) {
         return { exercises }
     })
 
+    // GET /exercises/me - list only exercises created by the current user
+    app.get('/exercises/me', { preHandler: authenticate }, async (request) => {
+        const { userId } = request.user as { userId: string }
+        const exercises = await app.prisma.exercise.findMany({
+            where: { userId },
+            orderBy: { name: 'asc' },
+        })
+        return { exercises }
+    })
+
     // DELETE /exercises/:id
     app.delete('/exercises/:id', { preHandler: authenticate }, async (request, reply) => {
         const { userId } = request.user as { userId: string }

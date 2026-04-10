@@ -216,6 +216,16 @@ export function useExercises(type?: string, muscleGroup?: string) {
     })
 }
 
+export function useMyExercises() {
+    return useQuery({
+        queryKey: ['exercises', 'me'],
+        queryFn: async () => {
+            const res = await api.get('/exercises/me')
+            return res.data.exercises
+        },
+    })
+}
+
 export function useOverviewStats(period: string) {
     return useQuery({
         queryKey: ['stats', 'overview', period],

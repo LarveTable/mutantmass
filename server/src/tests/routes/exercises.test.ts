@@ -77,6 +77,40 @@ describe('Exercise Routes', () => {
         })
     })
 
+    // ─── GET /exercises/me ───────────────────────────────────────
+    describe('GET /exercises/me', () => {
+        it('should return only exercises created by the current user', async () => {
+            const myExercises = [
+                { id: 'ex-1', name: 'My Exercise', userId: 'user-1' },
+            ]
+
+            mockPrisma.exercise.findMany.mockResolvedValue(myExercises)
+
+            const res = await app.inject({
+                method: 'GET',
+                url: '/exercises/me',
+                cookies: { access_token: token },
+            })
+
+            expect(res.statusCode).toBe(200)
+            expect(res.json().exercises).toHaveLength(1)
+            expect(res.json().exercises[0].name).toBe('My Exercise')
+
+            const call = mockPrisma.exercise.findMany.mock.calls[0]![0] as any
+            expect(call.where.userId).toBe('user-1')
+            expect(call.where.OR).toBeUndefined()
+        })
+
+        it('should return 401 without auth', async () => {
+            const res = await app.inject({
+                method: 'GET',
+                url: '/exercises/me',
+            })
+
+            expect(res.statusCode).toBe(401)
+        })
+    })
+
     // ─── POST /exercises ─────────────────────────────────────────
 
     describe('POST /exercises', () => {
