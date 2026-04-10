@@ -137,7 +137,24 @@ export const fr: Dictionary = {
         sections: {
             muscleGroups: "Muscles travaillés (volume)",
             volume: "Évolution du volume",
-            exercises: "Progrès par exercice",
+            exercises: {
+                title: "Progrès par exercice",
+                trackExercise: "Suivre un exercice",
+                best: "Record",
+                current: "Actuel",
+                periodDelta: "Δ Période",
+                sessions: "Séances",
+                chooseExercise: "Choisir un exercice",
+                removeSlot: "Retirer cet emplacement",
+                hint: "Appuyez sur une carte pour les détails · ✏️ pour changer",
+                repsMax: "reps max",
+                volume: "Vol",
+                labels: {
+                    maxReps: "Max Reps",
+                    distance: "Distance",
+                    e1rm: "e1RM"
+                }
+            },
             records: {
                 title: "Records personnels (top 10)",
                 empty: "Pas encore de records — au boulot !",
@@ -252,6 +269,8 @@ export const fr: Dictionary = {
         loading: "Chargement...",
         processing: "Traitement...",
         confirm: "Confirmer",
-        cancel: "Annuler"
+        cancel: "Annuler",
+        search: "Rechercher...",
+        noData: "Aucune donnée"
     }
 }

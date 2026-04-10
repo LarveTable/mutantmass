@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import {
     ResponsiveContainer,
     LineChart,
@@ -29,9 +30,10 @@ interface Props {
 
 // --- Sparkline ---
 function Sparkline({ data }: { data: any[] }) {
+    const { t } = useTranslation()
     if (!data || data.length === 0) return (
         <div className="flex h-16 items-center justify-center">
-            <p className="text-xs text-muted-foreground">No data</p>
+            <p className="text-xs text-muted-foreground">{t.common.noData}</p>
         </div>
     )
 
@@ -60,28 +62,29 @@ function Sparkline({ data }: { data: any[] }) {
 
 // --- Full chart tooltip ---
 const FullTooltip = ({ active, payload }: any) => {
+    const { t } = useTranslation()
     if (!active || !payload?.length) return null
     const d = payload[0].payload
     return (
         <div className="rounded-lg border border-border bg-card px-3 py-2 text-sm shadow">
             <p className="text-muted-foreground text-xs mb-1">{d.date}</p>
             <p className="text-primary font-bold">
-                {d.type === 'WEIGHTED' && `${d.primaryValue} kg e1RM`}
-                {d.type === 'BODYWEIGHT' && `${d.primaryValue} reps max`}
-                {d.type === 'CARDIO' && (d.primaryValue ? `${d.primaryValue} km` : `${Math.floor((d.bestDuration || 0) / 60)} min`)}
+                {d.type === 'WEIGHTED' && `${d.primaryValue} kg ${t.progress.sections.records.e1rm}`}
+                {d.type === 'BODYWEIGHT' && `${d.primaryValue} ${t.progress.sections.exercises.repsMax}`}
+                {d.type === 'CARDIO' && (d.primaryValue ? `${d.primaryValue} km` : `${Math.floor((d.bestDuration || 0) / 60)} ${t.history.duration.minAbbr}`)}
             </p>
             {d.type === 'WEIGHTED' && (
                 <p className="text-xs text-muted-foreground">
-                    {d.bestWeight}kg × {d.bestReps} reps
+                    {d.bestWeight}kg × {d.bestReps} {t.dashboard.muscleStats.reps}
                 </p>
             )}
             {d.type === 'CARDIO' && d.bestDistance > 0 && d.bestDuration > 0 && (
                 <p className="text-xs text-muted-foreground">
-                    in {Math.floor(d.bestDuration / 60)}m
+                    {t.progress.sections.records.in} {Math.floor(d.bestDuration / 60)}{t.history.duration.minAbbr}
                 </p>
             )}
             <p className="text-xs text-muted-foreground mt-1">
-                Vol: {d.volume.toLocaleString()} kg
+                {t.progress.sections.exercises.volume}: {d.volume.toLocaleString()} kg
             </p>
         </div>
     )
@@ -99,6 +102,7 @@ function ExerciseCard({
     period: string
     onEdit: (index: number) => void
 }) {
+    const { t } = useTranslation()
     const { data = [], isLoading } = useExerciseStats(slot?.id ?? null, period)
     const [expanded, setExpanded] = useState(false)
 
@@ -109,12 +113,12 @@ function ExerciseCard({
     const bestEver = values.length > 0 ? Math.max(...values) : null
 
     const exerciseType = data.length > 0 ? data[data.length - 1].type : 'WEIGHTED'
-    const unit = exerciseType === 'BODYWEIGHT' ? 'reps' : exerciseType === 'CARDIO' ? 'km' : 'kg'
-    const label = exerciseType === 'BODYWEIGHT' ? 'Max Reps' : exerciseType === 'CARDIO' ? 'Distance' : 'e1RM'
+    const unit = exerciseType === 'BODYWEIGHT' ? ` ${t.dashboard.muscleStats.reps}` : exerciseType === 'CARDIO' ? 'km' : 'kg'
+    const label = exerciseType === 'BODYWEIGHT' ? t.progress.sections.exercises.labels.maxReps : exerciseType === 'CARDIO' ? t.progress.sections.exercises.labels.distance : t.progress.sections.exercises.labels.e1rm
 
     const TrendIcon = trend === null ? null : trend > 0 ? TrendingUp : trend < 0 ? TrendingDown : Minus
     const trendColor = trend === null ? '' : trend > 0 ? 'text-green-500' : trend < 0 ? 'text-red-500' : 'text-muted-foreground'
-    const formatValue = (v: any) => `${v}${exerciseType === 'BODYWEIGHT' ? '' : unit}`
+    const formatValue = (v: any) => `${v}${unit}`
 
     // Empty slot
     if (!slot) {
@@ -126,7 +130,7 @@ function ExerciseCard({
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                     <Plus size={20} className="text-primary" />
                 </div>
-                <p className="text-sm text-muted-foreground">Track exercise</p>
+                <p className="text-sm text-muted-foreground">{t.progress.sections.exercises.trackExercise}</p>
             </button>
         )
     }
@@ -158,7 +162,7 @@ function ExerciseCard({
                 {/* Sparkline */}
                 {isLoading ? (
                     <div className="h-16 flex items-center justify-center">
-                        <p className="text-xs text-muted-foreground">Loading...</p>
+                        <p className="text-xs text-muted-foreground">{t.common.loading}</p>
                     </div>
                 ) : (
                     <Sparkline data={data} />
@@ -176,7 +180,7 @@ function ExerciseCard({
                     )}
                     {bestEver !== null && (
                         <p className="text-xs text-muted-foreground ml-auto">
-                            Best: <span className="font-medium text-foreground">{formatValue(bestEver)}</span>
+                            {t.progress.sections.exercises.best}: <span className="font-medium text-foreground">{formatValue(bestEver)}</span>
                         </p>
                     )}
                 </div>
@@ -199,17 +203,17 @@ function ExerciseCard({
                                 <span className="text-base font-bold text-primary">
                                     {latest !== null ? latest : '-'}
                                 </span>
-                                <span className="text-xs text-muted-foreground text-center">Current {label}</span>
+                                <span className="text-xs text-muted-foreground text-center">{t.progress.sections.exercises.current} {label}</span>
                             </div>
                             <div className="flex flex-col items-center gap-0.5 rounded-xl bg-muted/50 p-3">
                                 <span className="text-base font-bold">{bestEver !== null ? bestEver : '-'}</span>
-                                <span className="text-xs text-muted-foreground text-center">Best {label}</span>
+                                <span className="text-xs text-muted-foreground text-center">{t.progress.sections.exercises.best} {label}</span>
                             </div>
                             <div className={`flex flex-col items-center gap-0.5 rounded-xl bg-muted/50 p-3 ${trendColor}`}>
                                 <span className="text-base font-bold">
                                     {trend !== null ? `${trend > 0 ? '+' : ''}${trend}` : '-'}
                                 </span>
-                                <span className="text-xs text-muted-foreground text-center">Period Δ</span>
+                                <span className="text-xs text-muted-foreground text-center">{t.progress.sections.exercises.periodDelta}</span>
                             </div>
                         </div>
 
@@ -254,7 +258,7 @@ function ExerciseCard({
                             </ResponsiveContainer>
                         ) : (
                             <div className="h-48 flex items-center justify-center">
-                                <p className="text-muted-foreground text-sm">No data for this period</p>
+                                <p className="text-muted-foreground text-sm">{t.progress.charts.noData}</p>
                             </div>
                         )}
 
@@ -262,7 +266,7 @@ function ExerciseCard({
                         {data.length > 0 && (
                             <div className="flex flex-col gap-1.5">
                                 <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">
-                                    Sessions
+                                    {t.progress.sections.exercises.sessions}
                                 </p>
                                 <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">
                                     {[...data].reverse().map((d: any, i: number) => (
@@ -272,9 +276,9 @@ function ExerciseCard({
                                         >
                                             <span className="text-xs text-muted-foreground">{d.date}</span>
                                             <span className="text-xs font-medium">
-                                                {d.type === 'WEIGHTED' && `${d.bestWeight}kg × ${d.bestReps} reps`}
-                                                {d.type === 'BODYWEIGHT' && `${d.bestReps} reps`}
-                                                {d.type === 'CARDIO' && (d.bestDistance ? `${d.bestDistance} km` : `${Math.floor((d.bestDuration || 0) / 60)} min`)}
+                                                {d.type === 'WEIGHTED' && `${d.bestWeight}kg × ${d.bestReps} ${t.dashboard.muscleStats.reps}`}
+                                                {d.type === 'BODYWEIGHT' && `${d.bestReps} ${t.dashboard.muscleStats.reps}`}
+                                                {d.type === 'CARDIO' && (d.bestDistance ? `${d.bestDistance} km` : `${Math.floor((d.bestDuration || 0) / 60)} ${t.history.duration.minAbbr}`)}
                                             </span>
                                             <span className="text-xs text-primary font-semibold">
                                                 {d.primaryValue ? formatValue(d.primaryValue) : '-'}
@@ -301,6 +305,7 @@ function ExercisePicker({
     onClose: () => void
     onSelect: (exercise: { id: string; name: string } | null) => void
 }) {
+    const { t } = useTranslation()
     const [search, setSearch] = useState('')
     const { data: exercises = [] } = useExercises()
 
@@ -312,13 +317,13 @@ function ExercisePicker({
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-sm">
                 <DialogHeader>
-                    <DialogTitle>Choose Exercise</DialogTitle>
+                    <DialogTitle>{t.progress.sections.exercises.chooseExercise}</DialogTitle>
                     <DialogDescription />
                 </DialogHeader>
                 <div className="flex flex-col gap-3">
                     <input
                         type="text"
-                        placeholder="Search..."
+                        placeholder={t.common.search}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         autoFocus
@@ -340,7 +345,7 @@ function ExercisePicker({
                         className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-destructive transition-colors"
                     >
                         <X size={14} />
-                        Remove this slot
+                        {t.progress.sections.exercises.removeSlot}
                     </button>
                 </div>
             </DialogContent>
@@ -350,13 +355,14 @@ function ExercisePicker({
 
 // --- Main component ---
 export default function ExerciseProgress({ period }: Props) {
+    const { t } = useTranslation()
     const { tracked, setSlot } = useTrackedExercises()
     const [editingSlot, setEditingSlot] = useState<number | null>(null)
 
     return (
         <div className="flex flex-col gap-3">
             <p className="text-xs text-muted-foreground">
-                Tap a card to see full details · tap ✏️ to change exercise
+                {t.progress.sections.exercises.hint}
             </p>
 
             <div className="flex flex-col gap-3">

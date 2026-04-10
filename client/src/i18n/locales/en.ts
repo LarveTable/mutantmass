@@ -135,7 +135,24 @@ export const en = {
         sections: {
             muscleGroups: "Muscle Groups Ranked (volume)",
             volume: "Volume Over Time",
-            exercises: "Exercise Progress",
+            exercises: {
+                title: "Exercise Progress",
+                trackExercise: "Track exercise",
+                best: "Best",
+                current: "Current",
+                periodDelta: "Period Δ",
+                sessions: "Sessions",
+                chooseExercise: "Choose Exercise",
+                removeSlot: "Remove this slot",
+                hint: "Tap a card to see full details · tap ✏️ to change exercise",
+                repsMax: "reps max",
+                volume: "Vol",
+                labels: {
+                    maxReps: "Max Reps",
+                    distance: "Distance",
+                    e1rm: "e1RM"
+                }
+            },
             records: {
                 title: "Personal Records (top 10)",
                 empty: "No PRs yet — start lifting!",
@@ -250,7 +267,9 @@ export const en = {
         loading: "Loading...",
         processing: "Processing...",
         confirm: "Confirm",
-        cancel: "Cancel"
+        cancel: "Cancel",
+        search: "Search...",
+        noData: "No data"
     }
 }
 
