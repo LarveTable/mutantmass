@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import { Button } from '@/components/ui/button'
 import { getDefaultWorkoutName } from '@/lib/utils'
 import { Dumbbell, Plus, StopCircle } from 'lucide-react'
@@ -34,6 +35,7 @@ import ConfirmationDialog from '@/components/ui/ConfirmationDialog'
 // Main page for logging workouts
 
 export default function WorkoutPage() {
+    const { t } = useTranslation()
     const { workoutId, startTime, startWorkout, endWorkout } = useActiveWorkoutState()
     const [startDialogOpen, setStartDialogOpen] = useState(false)
     const [exercisePickerOpen, setExercisePickerOpen] = useState(false)
@@ -100,7 +102,7 @@ export default function WorkoutPage() {
                 // though it shouldn't have been fetched yet.
                 queryClient.invalidateQueries({ queryKey: ['workout', created.id] })
             }
-            
+
             // NOW we set it as active, ensuring the first useActiveWorkout call sees the full data
             startWorkout(created.id)
             setStartDialogOpen(false)
@@ -128,13 +130,13 @@ export default function WorkoutPage() {
     const handleFinish = async (note: string) => {
         if (!workoutId) return
         const duration = Math.floor((Date.now() - startTime) / 1000)
-        
+
         let newName = undefined
         if (workout?.name === 'Workout') {
             const exercises = workout?.workoutExercises?.map((we: any) => we.exercise) || []
             newName = getDefaultWorkoutName(exercises)
         }
-        
+
         await finishWorkout.mutateAsync({ id: workoutId, duration, note: note || undefined, name: newName })
         setFinishedWorkout({ ...workout, duration, note, name: newName || workout?.name })
         endWorkout()
@@ -169,9 +171,9 @@ export default function WorkoutPage() {
                     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
                         <Dumbbell size={36} className="text-primary" />
                     </div>
-                    <h1 className="text-2xl font-bold">Ready to train?</h1>
+                    <h1 className="text-2xl font-bold">{t.workout.empty.title}</h1>
                     <p className="text-muted-foreground text-sm">
-                        Start a new workout or log a previous session
+                        {t.workout.empty.description}
                     </p>
                 </div>
 
@@ -181,7 +183,7 @@ export default function WorkoutPage() {
                     onClick={() => setStartDialogOpen(true)}
                 >
                     <Dumbbell size={18} className="mr-2" />
-                    Start Workout
+                    {t.workout.empty.start}
                 </Button>
 
                 <div className="flex gap-3 w-full max-w-xs">
@@ -190,14 +192,14 @@ export default function WorkoutPage() {
                         className="flex-1"
                         onClick={() => setLogPastOpen(true)}
                     >
-                        Log Past Workout
+                        {t.workout.empty.logPast}
                     </Button>
                     <Button
                         variant="outline"
                         className="flex-1"
                         onClick={() => setAddExerciseOpen(true)}
                     >
-                        Add Exercise
+                        {t.workout.empty.addExercise}
                     </Button>
                 </div>
 
@@ -206,7 +208,7 @@ export default function WorkoutPage() {
                     className="w-full max-w-xs -mt-3"
                     onClick={() => setListAddedExercisesOpen(true)}
                 >
-                    List Added Exercises
+                    {t.workout.empty.listAdded}
                 </Button>
 
                 <StartWorkoutDialog
@@ -236,7 +238,7 @@ export default function WorkoutPage() {
         return (
             <div className="flex min-h-[80vh] items-center justify-center">
                 <p className="text-muted-foreground">
-                    {isStartingTemplate ? 'Creating workout from template...' : 'Loading workout...'}
+                    {isStartingTemplate ? t.workout.loading.template : t.workout.loading.workout}
                 </p>
             </div>
         )
@@ -248,10 +250,9 @@ export default function WorkoutPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-xl font-bold">{workout?.name ?? 'Workout'}</h1>
+                    <h1 className="text-xl font-bold">{workout?.name ?? t.workout.active.defaultName}</h1>
                     <p className="text-sm text-muted-foreground">
-                        {workout?.workoutExercises?.length ?? 0} exercise
-                        {workout?.workoutExercises?.length !== 1 ? 's' : ''}
+                        {workout?.workoutExercises?.length ?? 0} {workout?.workoutExercises?.length !== 1 ? t.workout.active.exerciseCount.other : t.workout.active.exerciseCount.one}
                     </p>
                 </div>
                 <Button
@@ -260,7 +261,7 @@ export default function WorkoutPage() {
                     onClick={() => setFinishDialogOpen(true)}
                 >
                     <StopCircle size={16} className="mr-1" />
-                    Finish
+                    {t.workout.active.finish}
                 </Button>
             </div>
 
@@ -368,7 +369,7 @@ export default function WorkoutPage() {
                 onClick={() => setExercisePickerOpen(true)}
             >
                 <Plus size={18} className="mr-2" />
-                Add Exercise
+                {t.workout.active.addExercise}
             </Button>
 
             {/* Exercise picker */}
@@ -402,9 +403,9 @@ export default function WorkoutPage() {
                         setExerciseToDelete(null)
                     }
                 }}
-                title="Delete Exercise?"
-                description="Are you sure you want to remove this exercise from your workout? All sets recorded for this exercise will be lost."
-                confirmText="Delete"
+                title={t.workout.active.deleteConfirm.title}
+                description={t.workout.active.deleteConfirm.description}
+                confirmText={t.workout.active.deleteConfirm.confirm}
                 variant="destructive"
             />
         </div>

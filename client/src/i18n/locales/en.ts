@@ -95,6 +95,34 @@ export const en = {
             errorMatch: "Passwords do not match",
             errorMinChars: "Password must be at least 8 characters"
         }
+    },
+    workout: {
+        empty: {
+            title: "Ready to train?",
+            description: "Start a new workout or log a previous session",
+            start: "Start Workout",
+            logPast: "Log Past Workout",
+            addExercise: "Add Exercise",
+            listAdded: "List Added Exercises"
+        },
+        loading: {
+            template: "Creating workout from template...",
+            workout: "Loading workout..."
+        },
+        active: {
+            defaultName: "Workout",
+            exerciseCount: {
+                one: "exercise",
+                other: "exercises"
+            },
+            finish: "Finish",
+            addExercise: "Add Exercise",
+            deleteConfirm: {
+                title: "Remove Exercise?",
+                description: "Are you sure you want to remove this exercise from your workout? All recorded sets will be lost.",
+                confirm: "Remove"
+            }
+        }
     }
 }
 

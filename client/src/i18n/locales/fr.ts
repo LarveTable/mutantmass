@@ -74,7 +74,7 @@ export const fr: Dictionary = {
             logoAlt: "Logo Mutant Mass"
         },
         login: {
-            title: "Bon retour",
+            title: "Bon retour !",
             description: "Connecte-toi à ton compte",
             submit: "Se connecter",
             signingIn: "Connexion...",
@@ -96,6 +96,34 @@ export const fr: Dictionary = {
             loginLink: "Se connecter",
             errorMatch: "Les mots de passe ne correspondent pas",
             errorMinChars: "Le mot de passe doit faire au moins 8 caractères"
+        }
+    },
+    workout: {
+        empty: {
+            title: "Prêt à s'entraîner ?",
+            description: "Commence une nouvelle séance ou enregistre un entraînement passé",
+            start: "Commencer l'entraînement",
+            logPast: "Saisir une séance",
+            addExercise: "Ajouter un exercice",
+            listAdded: "Exercices ajoutés"
+        },
+        loading: {
+            template: "Création de l'entraînement depuis le template...",
+            workout: "Chargement de l'entraînement..."
+        },
+        active: {
+            defaultName: "Entraînement",
+            exerciseCount: {
+                one: "exercice",
+                other: "exercices"
+            },
+            finish: "Terminer",
+            addExercise: "Ajouter un exercice",
+            deleteConfirm: {
+                title: "Supprimer l'exercice ?",
+                description: "Es-tu sûr de vouloir retirer cet exercice de ton entraînement ? Toutes les séries enregistrées seront perdues.",
+                confirm: "Retirer"
+            }
         }
     }
 }
