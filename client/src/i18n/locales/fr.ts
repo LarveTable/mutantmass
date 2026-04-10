@@ -125,5 +125,21 @@ export const fr: Dictionary = {
                 confirm: "Retirer"
             }
         }
+    },
+    progress: {
+        title: "Progrès",
+        periods: {
+            all: "Tout",
+            week: "7J",
+            month: "1M",
+            threeMonths: "3M"
+        },
+        sections: {
+            muscleGroups: "Muscles travaillés (volume)",
+            volume: "Évolution du volume",
+            exercises: "Progrès par exercice",
+            records: "Records personnels (top 10)",
+            consistency: "Régularité"
+        }
     }
 }

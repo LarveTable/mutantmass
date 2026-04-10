@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import PeriodSelector from '@/components/progress/PeriodSelector'
 import OverviewStrip from '@/components/progress/OverviewStrip'
 import VolumeChart from '@/components/progress/VolumeChart'
@@ -10,13 +11,14 @@ import ConsistencyTracker from '@/components/progress/ConsistencyTracker'
 // Page to display the progress of the user
 
 export default function ProgressPage() {
+    const { t } = useTranslation()
     const [period, setPeriod] = useState('month')
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 px-4 py-6 pb-24 max-w-7xl mx-auto w-full">
             <div className="md:col-span-12 flex flex-col gap-4">
                 <div className="flex items-center justify-between shadow-sm">
-                    <h1 className="text-2xl font-bold tracking-tight">Progress</h1>
+                    <h1 className="text-2xl font-bold tracking-tight">{t.progress.title}</h1>
                 </div>
                 <PeriodSelector value={period} onChange={setPeriod} />
             </div>
@@ -29,7 +31,7 @@ export default function ProgressPage() {
             {/* Muscle heatmap - HIGHER UP */}
             <section className="flex flex-col gap-3 md:col-span-6 lg:col-span-5">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Muscle Groups Ranked (volume)
+                    {t.progress.sections.muscleGroups}
                 </h2>
                 <div className="rounded-xl border border-border bg-card p-4 h-full flex items-center justify-center">
                     <BodyHeatmap period={period} />
@@ -39,7 +41,7 @@ export default function ProgressPage() {
             {/* Volume over time */}
             <section className="flex flex-col gap-3 md:col-span-6 lg:col-span-7">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Volume Over Time
+                    {t.progress.sections.volume}
                 </h2>
                 <div className="rounded-xl border border-border bg-card p-4 h-full min-h-[300px]">
                     <VolumeChart period={period} />
@@ -49,7 +51,7 @@ export default function ProgressPage() {
             {/* Exercise progress */}
             <section className="flex flex-col gap-3 md:col-span-12 lg:col-span-6">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Exercise Progress
+                    {t.progress.sections.exercises}
                 </h2>
                 <div className="rounded-xl border border-border bg-card p-4 h-full min-h-[300px]">
                     <ExerciseProgress period={period} />
@@ -59,7 +61,7 @@ export default function ProgressPage() {
             {/* Personal records */}
             <section className="flex flex-col gap-3 md:col-span-12 lg:col-span-6">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Personal Records (top 10)
+                    {t.progress.sections.records}
                 </h2>
                 {/* Make this wrapper relative and take up remaining space */}
                 <div className="flex-1 relative">
@@ -73,7 +75,7 @@ export default function ProgressPage() {
             {/* Consistency */}
             <section className="flex flex-col gap-3 md:col-span-12">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    Consistency
+                    {t.progress.sections.consistency}
                 </h2>
                 <div className="h-full">
                     <ConsistencyTracker />

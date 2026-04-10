@@ -123,6 +123,22 @@ export const en = {
                 confirm: "Remove"
             }
         }
+    },
+    progress: {
+        title: "Progress",
+        periods: {
+            all: "All",
+            week: "7D",
+            month: "1M",
+            threeMonths: "3M"
+        },
+        sections: {
+            muscleGroups: "Muscle Groups Ranked (volume)",
+            volume: "Volume Over Time",
+            exercises: "Exercise Progress",
+            records: "Personal Records (top 10)",
+            consistency: "Consistency"
+        }
     }
 }
 
