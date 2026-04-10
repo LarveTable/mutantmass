@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useTranslation } from '@/context/LanguageContext'
 
 // Component to show a weekly calendar for the history page
 
@@ -11,7 +12,6 @@ interface Props {
     onNextWeek: () => void
 }
 
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 function getWeekDays(weekStart: Date): Date[] {
     return Array.from({ length: 7 }, (_, i) => {
@@ -40,10 +40,11 @@ export default function WeeklyCalendar({
     onPrevWeek,
     onNextWeek,
 }: Props) {
+    const { t, lang } = useTranslation()
     const days = getWeekDays(currentWeekStart)
     const workoutDateSet = new Set(workoutDates.map(d => d.split('T')[0]))
 
-    const monthLabel = currentWeekStart.toLocaleDateString('en-US', {
+    const monthLabel = currentWeekStart.toLocaleDateString(lang, {
         month: 'long',
         year: 'numeric',
     })
@@ -88,7 +89,7 @@ export default function WeeklyCalendar({
                                 } ${hasWorkout && !isSelected ? 'hover:bg-accent cursor-pointer' : ''} ${!hasWorkout ? 'opacity-40 cursor-default' : ''
                                 }`}
                         >
-                            <span className="text-xs">{DAYS[i]}</span>
+                            <span className="text-xs">{t.history.calendar.days[i]}</span>
                             <span className="text-sm font-semibold">{day.getDate()}</span>
                             {hasWorkout && (
                                 <div className={`h-1.5 w-1.5 rounded-full ${isSelected ? 'bg-primary-foreground' : 'bg-primary'

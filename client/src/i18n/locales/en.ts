@@ -1,4 +1,11 @@
 export const en = {
+    nav: {
+        home: "Home",
+        workout: "Workout",
+        history: "History",
+        progress: "Progress",
+        profile: "Profile"
+    },
     profile: {
         common: {
             notSet: "Not set",
@@ -209,6 +216,9 @@ export const en = {
         duration: {
             hourAbbr: "h",
             minAbbr: "m"
+        },
+        calendar: {
+            days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         },
         deleteConfirm: {
             title: "Delete Workout?",

@@ -1,6 +1,13 @@
 import { type Dictionary } from './en'
 
 export const fr: Dictionary = {
+    nav: {
+        home: "Accueil",
+        workout: "Entraînement",
+        history: "Historique",
+        progress: "Progrès",
+        profile: "Profil"
+    },
     profile: {
         common: {
             notSet: "Non défini",
@@ -210,7 +217,10 @@ export const fr: Dictionary = {
         },
         duration: {
             hourAbbr: "h",
-            minAbbr: "m"
+            minAbbr: "min"
+        },
+        calendar: {
+            days: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
         },
         deleteConfirm: {
             title: "Supprimer l'entraînement ?",
