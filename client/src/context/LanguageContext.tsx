@@ -2,12 +2,13 @@ import React, { createContext, useContext, useState, useMemo } from 'react'
 import { en, type Dictionary } from '../i18n/locales/en'
 import { fr } from '../i18n/locales/fr'
 
-export type Language = 'en' | 'fr'
-
-export const AVAILABLE_LANGUAGES: { code: Language; label: string; flag: string }[] = [
+export const AVAILABLE_LANGUAGES = [
     { code: 'en', label: 'English', flag: '🇺🇸' },
     { code: 'fr', label: 'Français', flag: '🇫🇷' },
-]
+] as const
+
+export type Language = (typeof AVAILABLE_LANGUAGES)[number]['code']
+export const DEFAULT_LANGUAGE: Language = 'en'
 
 const dictionaries: Record<Language, Dictionary> = {
     en,
@@ -22,25 +23,27 @@ interface LanguageContextType {
 }
 
 const LanguageContext = createContext<LanguageContextType>({
-    lang: 'en',
+    lang: DEFAULT_LANGUAGE,
     setLang: () => { },
     t: en,
     availableLanguages: AVAILABLE_LANGUAGES
 })
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
-    // Initialize from localStorage or fallback to browser language ('fr' if French, else 'en')
+    // Initialize from localStorage or fallback to browser language
     const [lang, setLangState] = useState<Language>(() => {
-        const stored = localStorage.getItem('language')
-        if (stored === 'en' || stored === 'fr') return stored
-        
+        const stored = localStorage.getItem('language') as Language
+        const isValid = AVAILABLE_LANGUAGES.some(l => l.code === stored)
+        if (isValid) return stored
+
         // Check browser
         if (typeof window !== 'undefined' && window.navigator) {
-            const browserLang = navigator.language.split('-')[0]
-            if (browserLang === 'fr') return 'fr'
+            const browserLang = navigator.language.split('-')[0] as Language
+            const isSupported = AVAILABLE_LANGUAGES.some(l => l.code === browserLang)
+            if (isSupported) return browserLang
         }
-        
-        return 'en'
+
+        return DEFAULT_LANGUAGE
     })
 
     const setLang = (newLang: Language) => {
