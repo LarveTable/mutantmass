@@ -1,20 +1,22 @@
 import { usePRs } from '@/hooks/useWorkout'
 import { Trophy } from 'lucide-react'
+import { useTranslation } from '@/context/LanguageContext'
 
 // Component to display personal records
 
 export default function PersonalRecords() {
+    const { t } = useTranslation()
     const { data: prs = [], isLoading } = usePRs()
 
     if (isLoading) return (
         <div className="flex items-center justify-center py-8">
-            <p className="text-muted-foreground text-sm">Loading...</p>
+            <p className="text-muted-foreground text-sm">{t.common.loading}</p>
         </div>
     )
 
     if (prs.length === 0) return (
         <div className="flex items-center justify-center py-8">
-            <p className="text-muted-foreground text-sm">No PRs yet — start lifting!</p>
+            <p className="text-muted-foreground text-sm">{t.progress.sections.records.empty}</p>
         </div>
     )
 
@@ -52,23 +54,23 @@ export default function PersonalRecords() {
                         <div className="flex-1">
                             <p className="text-sm font-semibold">{pr.exerciseName}</p>
                             <p className="text-xs text-muted-foreground">
-                                {isWeighted && `${pr.bestWeight}kg × ${pr.bestReps} reps`}
-                                {isBodyweight && `${pr.bestReps} reps`}
+                                {isWeighted && `${pr.bestWeight}kg × ${pr.bestReps} ${t.dashboard.muscleStats.reps}`}
+                                {isBodyweight && `${pr.bestReps} ${t.dashboard.muscleStats.reps}`}
                                 {isCardio && (
                                     pr.bestDistance
-                                        ? `${pr.bestDistance} km ${pr.bestDuration ? `in ${Math.floor(pr.bestDuration / 60)}m` : ''}`
-                                        : `${Math.floor(pr.bestDuration / 60)} min`
+                                        ? `${pr.bestDistance} km ${pr.bestDuration ? `${t.progress.sections.records.in} ${Math.floor(pr.bestDuration / 60)}${t.history.duration.minAbbr}` : ''}`
+                                        : `${Math.floor(pr.bestDuration / 60)} ${t.history.duration.minAbbr}`
                                 )}
                             </p>
                         </div>
                         <div className="text-right">
                             <p className="text-sm font-bold text-primary">
                                 {isWeighted && `${pr.estimatedOneRM}kg`}
-                                {isBodyweight && `${pr.bestReps} reps`}
-                                {isCardio && (pr.bestDistance ? `${pr.bestDistance}km` : `${Math.floor(pr.bestDuration / 60)}m`)}
+                                {isBodyweight && `${pr.bestReps} ${t.dashboard.muscleStats.reps}`}
+                                {isCardio && (pr.bestDistance ? `${pr.bestDistance}km` : `${Math.floor(pr.bestDuration / 60)}${t.history.duration.minAbbr}`)}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                                {isWeighted ? 'e1RM' : isBodyweight ? 'Max Reps' : 'Best'}
+                                {isWeighted ? t.progress.sections.records.e1rm : isBodyweight ? t.progress.sections.records.maxReps : t.progress.sections.records.best}
                             </p>
                         </div>
                     </div>

@@ -136,8 +136,27 @@ export const en = {
             muscleGroups: "Muscle Groups Ranked (volume)",
             volume: "Volume Over Time",
             exercises: "Exercise Progress",
-            records: "Personal Records (top 10)",
+            records: {
+                title: "Personal Records (top 10)",
+                empty: "No PRs yet — start lifting!",
+                in: "in",
+                e1rm: "e1RM",
+                maxReps: "Max Reps",
+                best: "Best"
+            },
             consistency: "Consistency"
+        },
+        charts: {
+            noData: "No data for this period",
+            volume: {
+                weekOf: "Week of",
+                total: "total",
+                avg: "avg",
+                toggle: {
+                    total: "Total",
+                    muscle: "By Muscle"
+                }
+            }
         }
     },
     history: {

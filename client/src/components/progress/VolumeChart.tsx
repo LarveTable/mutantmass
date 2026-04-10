@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import {
     Bar,
     XAxis,
@@ -32,17 +33,18 @@ const MUSCLE_COLORS: Record<string, string> = {
 const MUSCLES = Object.keys(MUSCLE_COLORS)
 
 const CustomTooltip = ({ active, payload, mode }: any) => {
+    const { t } = useTranslation()
     if (!active || !payload?.length) return null
     const week = payload[0].payload
 
     return (
         <div className="rounded-lg border border-border bg-card px-3 py-2 text-sm shadow max-w-[200px]">
-            <p className="font-medium mb-1">Week of {week.weekStart}</p>
+            <p className="font-medium mb-1">{t.progress.charts.volume.weekOf} {week.weekStart}</p>
             <p className="text-primary font-semibold">
-                {week.total.toLocaleString()} kg total
+                {week.total.toLocaleString()} kg {t.progress.charts.volume.total}
             </p>
             <p className="text-muted-foreground text-xs mb-1">
-                ~{week.total >= 1000 ? (week.total / 1000).toFixed(1) + 't' : week.total + 'kg'} · avg {week.rollingAvg >= 1000 ? (week.rollingAvg / 1000).toFixed(1) + 't' : week.rollingAvg + 'kg'}
+                ~{week.total >= 1000 ? (week.total / 1000).toFixed(1) + 't' : week.total + 'kg'} · {t.progress.charts.volume.avg} {week.rollingAvg >= 1000 ? (week.rollingAvg / 1000).toFixed(1) + 't' : week.rollingAvg + 'kg'}
             </p>
             {mode === 'muscle' && (
                 <div className="flex flex-col gap-0.5 mt-1 border-t border-border pt-1">
@@ -66,18 +68,19 @@ const CustomTooltip = ({ active, payload, mode }: any) => {
 }
 
 export default function VolumeChart({ period }: Props) {
+    const { t } = useTranslation()
     const { data = [], isLoading } = useVolumeStats(period)
     const [mode, setMode] = useState<'total' | 'muscle'>('muscle')
 
     if (isLoading) return (
         <div className="h-full min-h-[200px] flex items-center justify-center">
-            <p className="text-muted-foreground text-sm">Loading...</p>
+            <p className="text-muted-foreground text-sm">{t.common.loading}</p>
         </div>
     )
 
     if (data.length === 0) return (
         <div className="h-full min-h-[200px] flex items-center justify-center">
-            <p className="text-muted-foreground text-sm">No data for this period</p>
+            <p className="text-muted-foreground text-sm">{t.progress.charts.noData}</p>
         </div>
     )
 
@@ -92,7 +95,7 @@ export default function VolumeChart({ period }: Props) {
                         : 'text-muted-foreground'
                         }`}
                 >
-                    Total
+                    {t.progress.charts.volume.toggle.total}
                 </button>
                 <button
                     onClick={() => setMode('muscle')}
@@ -101,7 +104,7 @@ export default function VolumeChart({ period }: Props) {
                         : 'text-muted-foreground'
                         }`}
                 >
-                    By Muscle
+                    {t.progress.charts.volume.toggle.muscle}
                 </button>
             </div>
 

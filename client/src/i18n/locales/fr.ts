@@ -138,8 +138,27 @@ export const fr: Dictionary = {
             muscleGroups: "Muscles travaillés (volume)",
             volume: "Évolution du volume",
             exercises: "Progrès par exercice",
-            records: "Records personnels (top 10)",
+            records: {
+                title: "Records personnels (top 10)",
+                empty: "Pas encore de records — au boulot !",
+                in: "en",
+                e1rm: "e1RM",
+                maxReps: "Max Reps",
+                best: "Record"
+            },
             consistency: "Régularité"
+        },
+        charts: {
+            noData: "Pas de données pour cette période",
+            volume: {
+                weekOf: "Semaine du",
+                total: "total",
+                avg: "moy",
+                toggle: {
+                    total: "Total",
+                    muscle: "Par muscle"
+                }
+            }
         }
     },
     history: {
