@@ -1,4 +1,5 @@
 import { Dumbbell, Clock, Trophy, Zap } from 'lucide-react'
+import { useTranslation } from '@/context/LanguageContext'
 import { useOverviewStats } from '@/hooks/useWorkout'
 
 interface Props {
@@ -7,30 +8,31 @@ interface Props {
 
 // Component to display the overview stats
 
-function formatDuration(seconds: number) {
-    const h = Math.floor(seconds / 3600)
+function formatDuration(seconds: number, t: any) {
+    const h = Math.floor(seconds /3600)
     const m = Math.floor((seconds % 3600) / 60)
-    if (h > 0) return `${h}h ${m}m`
-    return `${m}m`
+    if (h > 0) return `${h}${t.history.duration.hourAbbr} ${m}${t.history.duration.minAbbr}`
+    return `${m}${t.history.duration.minAbbr}`
 }
 
 export default function OverviewStrip({ period }: Props) {
+    const { t } = useTranslation()
     const { data, isLoading } = useOverviewStats(period)
 
     const stats = [
         {
             icon: Dumbbell,
-            label: 'Workouts',
+            label: t.progress.overview.workouts,
             value: isLoading ? '-' : data?.totalWorkouts ?? 0,
         },
         {
             icon: Trophy,
-            label: 'Total Sets',
+            label: t.progress.overview.totalSets,
             value: isLoading ? '-' : data?.totalSets ?? 0,
         },
         {
             icon: Zap,
-            label: 'Volume',
+            label: t.progress.overview.volume,
             value: isLoading ? '-' : (
                 (data?.totalVolume ?? 0) >= 1000 
                     ? `${((data?.totalVolume ?? 0) / 1000).toFixed(1)}t` 
@@ -39,8 +41,8 @@ export default function OverviewStrip({ period }: Props) {
         },
         {
             icon: Clock,
-            label: 'Avg Duration',
-            value: isLoading ? '-' : formatDuration(data?.avgDuration ?? 0),
+            label: t.progress.overview.avgDuration,
+            value: isLoading ? '-' : formatDuration(data?.avgDuration ?? 0, t),
         },
     ]
 

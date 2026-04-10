@@ -146,6 +146,12 @@ export const en = {
             },
             consistency: "Consistency"
         },
+        overview: {
+            workouts: "Workouts",
+            totalSets: "Total Sets",
+            volume: "Volume",
+            avgDuration: "Avg Duration"
+        },
         charts: {
             noData: "No data for this period",
             volume: {
@@ -156,6 +162,14 @@ export const en = {
                     total: "Total",
                     muscle: "By Muscle"
                 }
+            },
+            heatmap: {
+                front: "Front",
+                back: "Back",
+                other: "Other",
+                first: "1st",
+                second: "2nd",
+                third: "3rd"
             }
         }
     },

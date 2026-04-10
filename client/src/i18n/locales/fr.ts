@@ -148,6 +148,12 @@ export const fr: Dictionary = {
             },
             consistency: "Régularité"
         },
+        overview: {
+            workouts: "Séances",
+            totalSets: "Séries totales",
+            volume: "Volume",
+            avgDuration: "Durée moy."
+        },
         charts: {
             noData: "Pas de données pour cette période",
             volume: {
@@ -158,6 +164,14 @@ export const fr: Dictionary = {
                     total: "Total",
                     muscle: "Par muscle"
                 }
+            },
+            heatmap: {
+                front: "Face",
+                back: "Dos",
+                other: "Autre",
+                first: "1er",
+                second: "2e",
+                third: "3e"
             }
         }
     },

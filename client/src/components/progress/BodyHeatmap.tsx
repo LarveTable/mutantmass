@@ -1,4 +1,5 @@
 import { useTargetMuscleStats } from '@/hooks/useWorkout'
+import { useTranslation } from '@/context/LanguageContext'
 import Model, { type IExerciseData } from 'react-body-highlighter'
 
 interface Props {
@@ -20,11 +21,12 @@ const PRISMA_TO_BODY_HIGHLIGHTER: Record<string, string[]> = {
 // Component to show the most trained muscles in a visual way
 
 export default function BodyHeatmap({ period }: Props) {
+    const { t } = useTranslation()
     const { data = {}, isLoading } = useTargetMuscleStats(period)
 
     if (isLoading) return (
         <div className="flex items-center justify-center py-8">
-            <p className="text-muted-foreground text-sm">Loading...</p>
+            <p className="text-muted-foreground text-sm">{t.common.loading}</p>
         </div>
     )
 
@@ -81,7 +83,7 @@ export default function BodyHeatmap({ period }: Props) {
             <div className="flex flex-row gap-4 sm:gap-12 justify-center items-center">
                 {/* Front view */}
                 <div className="flex flex-col items-center gap-3 flex-1 max-w-[180px]">
-                    <p className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase opacity-60">Front</p>
+                    <p className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase opacity-60">{t.progress.charts.heatmap.front}</p>
                     <div className="w-full aspect-[1/2.2] flex items-center justify-center p-0">
                         <Model
                             data={highlightedData}
@@ -96,7 +98,7 @@ export default function BodyHeatmap({ period }: Props) {
 
                 {/* Back view */}
                 <div className="flex flex-col items-center gap-3 flex-1 max-w-[180px]">
-                    <p className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase opacity-60">Back</p>
+                    <p className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase opacity-60">{t.progress.charts.heatmap.back}</p>
                     <div className="w-full aspect-[1/2.2] flex items-center justify-center p-0">
                         <Model
                             data={highlightedData}
@@ -113,17 +115,17 @@ export default function BodyHeatmap({ period }: Props) {
             {/* Legend */}
             <div className="flex items-center justify-center gap-4">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[3] }} /> 1st -{'>'} {uniqueVolumes[0] / 1000 > 1 ? uniqueVolumes[0] / 1000 + 't' : uniqueVolumes[0] + 'kg'}
+                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[3] }} /> {t.progress.charts.heatmap.first} -{'>'} {uniqueVolumes[0] / 1000 > 1 ? (uniqueVolumes[0] / 1000).toFixed(1) + 't' : uniqueVolumes[0] + 'kg'}
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[2] }} /> 2nd -{'>'} {uniqueVolumes[1] / 1000 > 1 ? uniqueVolumes[1] / 1000 + 't' : uniqueVolumes[1] + 'kg'}
+                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[2] }} /> {t.progress.charts.heatmap.second} -{'>'} {uniqueVolumes[1] / 1000 > 1 ? (uniqueVolumes[1] / 1000).toFixed(1) + 't' : uniqueVolumes[1] + 'kg'}
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[1] }} /> 3rd -{'>'} {uniqueVolumes[2] / 1000 > 1 ? uniqueVolumes[2] / 1000 + 't' : uniqueVolumes[2] + 'kg'}
+                    <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[1] }} /> {t.progress.charts.heatmap.third} -{'>'} {uniqueVolumes[2] / 1000 > 1 ? (uniqueVolumes[2] / 1000).toFixed(1) + 't' : uniqueVolumes[2] + 'kg'}
                 </div>
                 {uniqueVolumes.length > 3 && (
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                        <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[0] }} /> Other
+                        <div className="h-3 w-3 rounded-sm shadow-sm" style={{ background: colors[0] }} /> {t.progress.charts.heatmap.other}
                     </div>
                 )}
             </div>
