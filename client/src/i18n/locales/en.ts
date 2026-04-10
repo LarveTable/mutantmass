@@ -158,6 +158,53 @@ export const en = {
             description: "Are you sure you want to delete this workout? This will remove all exercises and sets recorded for this session. This action cannot be undone.",
             confirm: "Delete"
         }
+    },
+    dashboard: {
+        greetings: {
+            morning: "Good morning",
+            afternoon: "Good afternoon",
+            evening: "Good evening",
+            fallback: "there"
+        },
+        stats: {
+            thisWeek: "This week",
+            workoutCount: {
+                one: "workout",
+                other: "workouts"
+            },
+            goalMet: "Goal met",
+            streak: {
+                one: "week streak",
+                other: "weeks streak"
+            }
+        },
+        quickStats: {
+            sets: "Sets",
+            volume: "Volume",
+            time: "Time",
+            mostTrained: "Most Trained",
+            last: "Last"
+        },
+        muscleStats: {
+            title: "Muscles Hit This Week",
+            for: "for",
+            reps: "reps"
+        },
+        cta: {
+            start: "Let's get going!"
+        },
+        lastWorkout: {
+            title: "Last Workout",
+            today: "Today",
+            yesterday: "Yesterday",
+            daysAgo: "d ago"
+        },
+        activity: {
+            title: "Activity",
+            weightsIntensity: "Weights intensity",
+            cardioIntensity: "Cardio / Body intensity",
+            days: ["M", "T", "W", "T", "F", "S", "S"]
+        }
     }
 }
 

@@ -160,5 +160,52 @@ export const fr: Dictionary = {
             description: "Es-tu sûr de vouloir supprimer cet entraînement ? Cela retirera tous les exercices et séries enregistrées pour cette séance. Cette action est irréversible.",
             confirm: "Supprimer"
         }
+    },
+    dashboard: {
+        greetings: {
+            morning: "Bonjour",
+            afternoon: "Bon après-midi",
+            evening: "Bonsoir",
+            fallback: "toi"
+        },
+        stats: {
+            thisWeek: "Cette semaine",
+            workoutCount: {
+                one: "entraînement",
+                other: "entraînements"
+            },
+            goalMet: "Objectif atteint",
+            streak: {
+                one: "semaine de suite",
+                other: "semaines de suite"
+            }
+        },
+        quickStats: {
+            sets: "Séries",
+            volume: "Volume",
+            time: "Temps",
+            mostTrained: "Plus travaillé",
+            last: "Dernier"
+        },
+        muscleStats: {
+            title: "Muscles travaillés cette semaine",
+            for: "pour",
+            reps: "reps"
+        },
+        cta: {
+            start: "C'est parti !"
+        },
+        lastWorkout: {
+            title: "Dernière séance",
+            today: "Aujourd'hui",
+            yesterday: "Hier",
+            daysAgo: "il y a {{count}}j"
+        },
+        activity: {
+            title: "Activité",
+            weightsIntensity: "Intensité Fonte",
+            cardioIntensity: "Intensité Cardio / PDC",
+            days: ["L", "M", "M", "J", "V", "S", "D"]
+        }
     }
 }

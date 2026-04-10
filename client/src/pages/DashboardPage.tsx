@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useProfile, useWorkouts, useWorkoutsRange, useConsistencyStats, useOverviewStats } from '@/hooks/useWorkout'
@@ -11,8 +12,8 @@ function toDateString(date: Date): string {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-function formatTime(date: Date): string {
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+function formatTime(date: Date, lang: string): string {
+    return date.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
 function formatDuration(seconds: number): string {
@@ -39,6 +40,7 @@ function getMonthStart(year: number, month: number): number {
 
 // --- Live clock ---
 function LiveClock() {
+    const { lang } = useTranslation()
     const [time, setTime] = useState(new Date())
 
     useEffect(() => {
@@ -46,7 +48,7 @@ function LiveClock() {
         return () => clearInterval(interval)
     }, [])
 
-    const dateStr = time.toLocaleDateString('en-US', {
+    const dateStr = time.toLocaleDateString(lang, {
         weekday: 'long',
         month: 'long',
         day: 'numeric',
@@ -55,7 +57,7 @@ function LiveClock() {
     return (
         <div>
             <p className="text-4xl font-bold tabular-nums tracking-tight">
-                {formatTime(time)}
+                {formatTime(time, lang)}
             </p>
             <p className="text-sm text-muted-foreground mt-0.5">{dateStr}</p>
         </div>
@@ -64,6 +66,7 @@ function LiveClock() {
 
 // --- Monthly calendar ---
 function MonthCalendar() {
+    const { t, lang } = useTranslation()
     const [viewDate, setViewDate] = useState(new Date())
     const year = viewDate.getFullYear()
     const month = viewDate.getMonth()
@@ -105,7 +108,7 @@ function MonthCalendar() {
     const startOffset = getMonthStart(year, month)
     const today = toDateString(new Date())
 
-    const monthLabel = viewDate.toLocaleDateString('en-US', {
+    const monthLabel = viewDate.toLocaleDateString(lang, {
         month: 'long',
         year: 'numeric',
     })
@@ -153,7 +156,7 @@ function MonthCalendar() {
 
             {/* Day labels */}
             <div className="grid grid-cols-7 mb-1">
-                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
+                {t.dashboard.activity.days.map((d, i) => (
                     <div key={i} className="text-center text-xs text-muted-foreground py-1">
                         {d}
                     </div>
@@ -198,7 +201,7 @@ function MonthCalendar() {
             {/* Legend */}
             <div className="flex flex-col gap-1.5 items-end mt-2">
                 <div className="flex items-center gap-2">
-                    <span className="text-[10px] uppercase font-semibold text-muted-foreground bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">Weights intensity</span>
+                    <span className="text-[10px] uppercase font-semibold text-muted-foreground bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">{t.dashboard.activity.weightsIntensity}</span>
                     {['#4c1d95', '#7c3aed', '#a855f7', '#c084fc'].map((color) => (
                         <div
                             key={color}
@@ -208,7 +211,7 @@ function MonthCalendar() {
                     ))}
                 </div>
                 <div className="flex items-center gap-2">
-                    <span className="text-[10px] uppercase font-semibold text-muted-foreground bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600">Cardio / Body intensity</span>
+                    <span className="text-[10px] uppercase font-semibold text-muted-foreground bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600">{t.dashboard.activity.cardioIntensity}</span>
                     {['#9a3412', '#ea580c', '#f97316', '#fdba74'].map((color) => (
                         <div
                             key={color}
@@ -224,6 +227,7 @@ function MonthCalendar() {
 
 // --- Last workout card ---
 function LastWorkoutCard({ workout }: { workout: any }) {
+    const { t } = useTranslation()
     const totalSets = workout.workoutExercises.reduce(
         (t: number, we: any) => t + we.sets.length, 0
     )
@@ -240,18 +244,18 @@ function LastWorkoutCard({ workout }: { workout: any }) {
         <div className="rounded-2xl border border-border bg-card p-4 flex flex-col gap-3">
             <div className="flex items-center justify-between">
                 <div>
-                    <p className="text-xs text-muted-foreground">Last Workout</p>
-                    <p className="font-semibold">{workout.name ?? 'Workout'}</p>
+                    <p className="text-xs text-muted-foreground">{t.dashboard.lastWorkout.title}</p>
+                    <p className="font-semibold">{workout.name ?? t.workout.active.defaultName}</p>
                 </div>
                 <span className="text-xs text-muted-foreground">
-                    {daysAgo === 0 ? 'Today' : daysAgo === 1 ? 'Yesterday' : `${daysAgo}d ago`}
+                    {daysAgo === 0 ? t.dashboard.lastWorkout.today : daysAgo === 1 ? t.dashboard.lastWorkout.yesterday : t.dashboard.lastWorkout.daysAgo.replace('{{count}}', daysAgo.toString())}
                 </span>
             </div>
 
             <div className="flex gap-3">
                 <div className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-3 py-2">
                     <Trophy size={13} className="text-primary" />
-                    <span className="text-xs font-medium">{totalSets} sets</span>
+                    <span className="text-xs font-medium">{totalSets} {t.history.stats.sets}</span>
                 </div>
                 {workout.duration && (
                     <div className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-3 py-2">
@@ -319,6 +323,7 @@ function WeeklyRing({ current, goal }: { current: number; goal: number }) {
 
 // --- Main page ---
 export default function DashboardPage() {
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const { user } = useAuth()
     const { data: profile } = useProfile()
@@ -376,9 +381,9 @@ export default function DashboardPage() {
             {/* Top bar */}
             <div className="flex items-start justify-between relative">
                 <div>
-                    <p className="text-sm text-muted-foreground">Good {
-                        new Date().getHours() < 12 ? 'morning' :
-                            new Date().getHours() < 18 ? 'afternoon' : 'evening'
+                    <p className="text-sm text-muted-foreground">{
+                        new Date().getHours() < 12 ? t.dashboard.greetings.morning :
+                            new Date().getHours() < 18 ? t.dashboard.greetings.afternoon : t.dashboard.greetings.evening
                     },</p>
                     <h1 className="text-2xl font-bold relative z-10">{displayName} 👋</h1>
                 </div>
@@ -398,12 +403,12 @@ export default function DashboardPage() {
                         goal={consistency?.weeklyGoal ?? 3}
                     />
                     <div>
-                        <p className="text-xs text-muted-foreground">This week</p>
+                        <p className="text-xs text-muted-foreground">{t.dashboard.stats.thisWeek}</p>
                         <p className="text-sm font-semibold">
-                            {currentWeek?.count ?? 0} / {consistency?.weeklyGoal ?? 3} workouts
+                            {currentWeek?.count ?? 0} / {consistency?.weeklyGoal ?? 3} {(currentWeek?.count ?? 0) === 1 ? t.dashboard.stats.workoutCount.one : t.dashboard.stats.workoutCount.other}
                         </p>
                         {currentWeek?.met && (
-                            <p className="text-xs text-primary font-medium mt-0.5">Goal met ✅</p>
+                            <p className="text-xs text-primary font-medium mt-0.5">{t.dashboard.stats.goalMet} ✅</p>
                         )}
                     </div>
                 </div>
@@ -414,7 +419,7 @@ export default function DashboardPage() {
                         <span className="text-lg">🔥</span>
                     </div>
                     <p className="text-xs text-muted-foreground text-center">
-                        week{streak !== 1 ? 's' : ''}{'\n'}streak
+                        {streak === 1 ? t.dashboard.stats.streak.one : t.dashboard.stats.streak.other}
                     </p>
                 </div>
             </div>
@@ -432,7 +437,7 @@ export default function DashboardPage() {
                                 </span>
                             )}
                         </div>
-                        <span className="text-xs text-muted-foreground">Sets</span>
+                        <span className="text-xs text-muted-foreground">{t.dashboard.quickStats.sets}</span>
                     </div>
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
                         <Zap size={15} className="text-primary" />
@@ -448,7 +453,7 @@ export default function DashboardPage() {
                                 </span>
                             )}
                         </div>
-                        <span className="text-xs text-muted-foreground">Volume</span>
+                        <span className="text-xs text-muted-foreground">{t.dashboard.quickStats.volume}</span>
                     </div>
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
                         <Clock size={15} className="text-primary" />
@@ -460,7 +465,7 @@ export default function DashboardPage() {
                                 </span>
                             )}
                         </div>
-                        <span className="text-xs text-muted-foreground">Time</span>
+                        <span className="text-xs text-muted-foreground">{t.dashboard.quickStats.time}</span>
                     </div>
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
                         <Dumbbell size={15} className="text-primary" />
@@ -469,10 +474,10 @@ export default function DashboardPage() {
                                 .sort(([, a], [, b]) => (b.volume || b.duration) - (a.volume || a.duration))[0]?.[0].toLowerCase().replace('_', ' ') ?? '-'}
                         </span>
                         <div className="flex items-center gap-1">
-                            <span className="text-xs text-muted-foreground">Most Trained</span>
+                            <span className="text-xs text-muted-foreground">{t.dashboard.quickStats.mostTrained}</span>
                             {Object.keys(lastMuscleData).length > 0 && (
                                 <span className="text-[10px] text-muted-foreground italic border-l border-border pl-1.5">
-                                    Last: {Object.entries(lastMuscleData as Record<string, { volume: number; reps: number; duration: number }>)
+                                    {t.dashboard.quickStats.last}: {Object.entries(lastMuscleData as Record<string, { volume: number; reps: number; duration: number }>)
                                         .sort(([, a], [, b]) => (b.volume || b.duration) - (a.volume || a.duration))[0]?.[0].toLowerCase().replace('_', ' ') ?? '-'}
                                 </span>
                             )}
@@ -485,7 +490,7 @@ export default function DashboardPage() {
             {Object.keys(muscleData).length > 0 && (
                 <div className="rounded-2xl border border-border bg-card p-4 flex flex-col gap-3">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                        Muscles Hit This Week
+                        {t.dashboard.muscleStats.title}
                     </p>
                     <div className="flex flex-wrap gap-2">
                         {Object.entries(muscleData as Record<string, { volume: number; reps: number; duration: number }>)
@@ -505,10 +510,10 @@ export default function DashboardPage() {
                                     </span>
                                     <span className="text-[10px] text-muted-foreground flex flex-col gap-0.5">
                                         {stats.volume > 0 && (
-                                            <span>{(stats.volume / 1000).toFixed(1)}t for {stats.reps} reps</span>
+                                            <span>{(stats.volume / 1000).toFixed(1)}t {t.dashboard.muscleStats.for} {stats.reps} {t.dashboard.muscleStats.reps}</span>
                                         )}
                                         {stats.volume === 0 && stats.reps > 0 && (
-                                            <span>{stats.reps} reps</span>
+                                            <span>{stats.reps} {t.dashboard.muscleStats.reps}</span>
                                         )}
                                         {stats.duration > 0 && (
                                             <span className="flex items-center gap-1">
@@ -530,7 +535,7 @@ export default function DashboardPage() {
                 onClick={() => navigate('/workout')}
             >
                 <Dumbbell size={20} className="mr-2" />
-                Let's get going!
+                {t.dashboard.cta.start}
             </Button>
 
             {/* Last workout */}
@@ -539,7 +544,7 @@ export default function DashboardPage() {
             {/* Monthly calendar */}
             <div className="rounded-2xl border border-border bg-card p-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-                    Activity
+                    {t.dashboard.activity.title}
                 </p>
                 <MonthCalendar />
             </div>
