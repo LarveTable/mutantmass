@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import { useConsistencyStats, useUpdateWeeklyGoal } from '@/hooks/useWorkout'
 import { Check, X, Minus } from 'lucide-react'
 
 // Component to track consistency
 
 export default function ConsistencyTracker() {
+    const { t } = useTranslation()
     const { data, isLoading } = useConsistencyStats()
     const updateGoal = useUpdateWeeklyGoal()
     const [editing, setEditing] = useState(false)
@@ -12,7 +14,7 @@ export default function ConsistencyTracker() {
 
     if (isLoading || !data) return (
         <div className="flex items-center justify-center py-8">
-            <p className="text-muted-foreground text-sm">Loading...</p>
+            <p className="text-muted-foreground text-sm">{t.common.loading}</p>
         </div>
     )
 
@@ -36,7 +38,7 @@ export default function ConsistencyTracker() {
             {/* Goal + streak row */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Weekly goal:</span>
+                    <span className="text-sm text-muted-foreground">{t.progress.sections.consistency.weeklyGoal}</span>
                     {editing ? (
                         <div className="flex items-center gap-1">
                             <input
@@ -61,22 +63,22 @@ export default function ConsistencyTracker() {
                             onClick={() => { setGoalInput(String(weeklyGoal)); setEditing(true) }}
                             className="text-sm font-semibold text-primary underline-offset-2 hover:underline"
                         >
-                            {weeklyGoal}x / week
+                            {weeklyGoal}{t.progress.sections.consistency.xPerWeek}
                         </button>
                     )}
                 </div>
                 <div className="text-right">
-                    <p className="text-sm font-bold">{actualStreak} week{actualStreak !== 1 ? 's' : ''}</p>
-                    <p className="text-xs text-muted-foreground">streak 🔥</p>
+                    <p className="text-sm font-bold">{actualStreak} {actualStreak === 1 ? t.dashboard.stats.streak.one : t.dashboard.stats.streak.other}</p>
+                    <p className="text-xs text-muted-foreground">{t.progress.sections.consistency.streak} 🔥</p>
                 </div>
             </div>
 
             {/* Current week progress */}
             <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">This week</p>
+                    <p className="text-sm font-medium">{t.dashboard.stats.thisWeek}</p>
                     <p className="text-sm text-muted-foreground">
-                        {currentWeek.count} / {weeklyGoal} workouts
+                        {currentWeek.count} / {weeklyGoal} {currentWeek.count === 1 ? t.dashboard.stats.workoutCount.one : t.dashboard.stats.workoutCount.other}
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -89,14 +91,14 @@ export default function ConsistencyTracker() {
                     ))}
                 </div>
                 {currentWeek.met && (
-                    <p className="text-xs text-primary font-medium">✅ Goal met this week!</p>
+                    <p className="text-xs text-primary font-medium">✅ {t.progress.sections.consistency.goalMet}</p>
                 )}
             </div>
 
             {/* Last 8 weeks grid */}
             <div className="flex flex-col gap-2">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">
-                    Last 8 weeks
+                    {t.progress.sections.consistency.last8weeks}
                 </p>
                 <div className="grid grid-cols-8 gap-1.5">
                     {weeks.map((week: any, i: number) => {

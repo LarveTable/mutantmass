@@ -144,7 +144,14 @@ export const en = {
                 maxReps: "Max Reps",
                 best: "Best"
             },
-            consistency: "Consistency"
+            consistency: {
+                title: "Consistency",
+                weeklyGoal: "Weekly goal:",
+                xPerWeek: "x / week",
+                streak: "streak",
+                goalMet: "Goal met this week!",
+                last8weeks: "Last 8 weeks"
+            }
         },
         overview: {
             workouts: "Workouts",

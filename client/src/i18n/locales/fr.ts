@@ -146,7 +146,14 @@ export const fr: Dictionary = {
                 maxReps: "Max Reps",
                 best: "Record"
             },
-            consistency: "Régularité"
+            consistency: {
+                title: "Régularité",
+                weeklyGoal: "Objectif hebdo :",
+                xPerWeek: "x / semaine",
+                streak: "combo",
+                goalMet: "Objectif atteint !",
+                last8weeks: "8 dernières semaines"
+            }
         },
         overview: {
             workouts: "Séances",

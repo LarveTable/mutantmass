@@ -75,7 +75,7 @@ export default function ProgressPage() {
             {/* Consistency */}
             <section className="flex flex-col gap-3 md:col-span-12">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                    {t.progress.sections.consistency}
+                    {t.progress.sections.consistency.title}
                 </h2>
                 <div className="h-full">
                     <ConsistencyTracker />
