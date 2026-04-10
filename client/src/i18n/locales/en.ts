@@ -129,6 +129,70 @@ export const en = {
                 description: "Are you sure you want to remove this exercise from your workout? All recorded sets will be lost.",
                 confirm: "Remove"
             }
+        },
+        addDialog: {
+            addTitle: "Add Custom Exercise",
+            editTitle: "Edit Exercise",
+            imageOptional: "Image (optional)",
+            tapToUpload: "Tap to upload image",
+            imageReqs: "JPEG, PNG, WebP — max 5MB",
+            nameLabel: "Exercise name",
+            namePlaceholder: "e.g. Cable Lateral Raise",
+            nameRequired: "Exercise name is required",
+            typeLabel: "Type",
+            muscleGroupLabel: "Muscle Group",
+            targetMuscleLabel: "Target Muscles (Optional)",
+            makePublic: "Make public",
+            makePublicDesc: "Share with other users",
+            saveChanges: "Save Changes",
+            addExerciseBtn: "Add Exercise",
+            saving: "Saving...",
+            adding: "Adding...",
+            errorGeneric: "Something went wrong",
+            publicWarning: {
+                title: "Make Exercise Public?",
+                desc1: "You are about to make this exercise public. Once public, it will be visible to all users and ",
+                descBold: "cannot be deleted",
+                desc2: ". Are you sure you want to continue?",
+                confirm: "Yes, Make Public"
+            },
+            types: {
+                WEIGHTED: "Weighted",
+                BODYWEIGHT: "Bodyweight",
+                CARDIO: "Cardio"
+            },
+            muscles: {
+                CHEST: "Chest",
+                BACK: "Back",
+                SHOULDERS: "Shoulders",
+                BICEPS: "Biceps",
+                TRICEPS: "Triceps",
+                FOREARMS: "Forearms",
+                LEGS: "Legs",
+                GLUTES: "Glutes",
+                CORE: "Core",
+                CARDIO: "Cardio",
+                FULL_BODY: "Full Body"
+            },
+            targets: {
+                chest: "chest",
+                trapezius: "trapezius",
+                "upper-back": "upper back",
+                "lower-back": "lower back",
+                "front-deltoids": "front deltoids",
+                "back-deltoids": "back deltoids",
+                biceps: "biceps",
+                triceps: "triceps",
+                forearm: "forearm",
+                quadriceps: "quadriceps",
+                hamstring: "hamstring",
+                calves: "calves",
+                adductor: "adductor",
+                abductors: "abductors",
+                gluteal: "gluteal",
+                abs: "abs",
+                obliques: "obliques"
+            }
         }
     },
     progress: {
@@ -264,7 +328,7 @@ export const en = {
             title: "Last Workout",
             today: "Today",
             yesterday: "Yesterday",
-            daysAgo: "d ago"
+            daysAgo: "{{count}}d ago"
         },
         activity: {
             title: "Activity",

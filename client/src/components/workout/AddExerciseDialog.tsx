@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import {
     Dialog,
     DialogContent,
@@ -56,6 +57,7 @@ const PRISMA_TO_BODY_HIGHLIGHTER: Record<string, string[]> = {
 }
 
 export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }: Props) {
+    const { t } = useTranslation()
     const isEdit = !!exercise
     const queryClient = useQueryClient()
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -103,7 +105,7 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
 
     const handleInitialSubmit = () => {
         setError('')
-        if (!name.trim()) return setError('Exercise name is required')
+        if (!name.trim()) return setError(t.workout.addDialog.nameRequired)
 
         if (isPublic && (!isEdit || (isEdit && !exercise.isPublic))) {
             setShowPublicWarning(true)
@@ -144,7 +146,7 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
             if (onSuccess) onSuccess(response.data.exercise)
             handleClose()
         } catch (err: any) {
-            setError(err.response?.data?.error ?? 'Something went wrong')
+            setError(err.response?.data?.error ?? t.workout.addDialog.errorGeneric)
         } finally {
             setLoading(false)
         }
@@ -176,14 +178,14 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
             <Dialog open={open} onOpenChange={handleClose}>
                 <DialogContent className="max-w-sm max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>{isEdit ? 'Edit Exercise' : 'Add Custom Exercise'}</DialogTitle>
+                        <DialogTitle>{isEdit ? t.workout.addDialog.editTitle : t.workout.addDialog.addTitle}</DialogTitle>
                         <DialogDescription />
                     </DialogHeader>
 
                     <div className="flex flex-col gap-5 py-2">
                         {/* Image picker */}
                         <div className="flex flex-col gap-1.5">
-                            <Label>Image (optional)</Label>
+                            <Label>{t.workout.addDialog.imageOptional}</Label>
                             {imagePreview ? (
                                 <div className="relative w-full h-36 rounded-xl overflow-hidden border border-border">
                                     <img
@@ -204,8 +206,8 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
                                     className="flex flex-col items-center justify-center gap-2 w-full h-36 rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-accent transition-colors"
                                 >
                                     <ImagePlus size={24} className="text-muted-foreground" />
-                                    <p className="text-sm text-muted-foreground">Tap to upload image</p>
-                                    <p className="text-xs text-muted-foreground">JPEG, PNG, WebP — max 5MB</p>
+                                    <p className="text-sm text-muted-foreground">{t.workout.addDialog.tapToUpload}</p>
+                                    <p className="text-xs text-muted-foreground">{t.workout.addDialog.imageReqs}</p>
                                 </button>
                             )}
                             <input
@@ -219,9 +221,9 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
 
                         {/* Name */}
                         <div className="flex flex-col gap-1.5">
-                            <Label>Exercise name</Label>
+                            <Label>{t.workout.addDialog.nameLabel}</Label>
                             <Input
-                                placeholder="e.g. Cable Lateral Raise"
+                                placeholder={t.workout.addDialog.namePlaceholder}
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                             />
@@ -229,25 +231,25 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
 
                         {/* Type */}
                         <div className="flex flex-col gap-2">
-                            <Label>Type</Label>
+                            <Label>{t.workout.addDialog.typeLabel}</Label>
                             <div className="grid grid-cols-3 gap-2">
-                                {TYPES.map((t) => (
+                                {TYPES.map((typeOption) => (
                                     <button
-                                        key={t.value}
+                                        key={typeOption.value}
                                         onClick={() => {
-                                            setType(t.value)
-                                            if (t.value === 'CARDIO') {
+                                            setType(typeOption.value)
+                                            if (typeOption.value === 'CARDIO') {
                                                 setMuscleGroup('CARDIO')
                                             } else if (muscleGroup === 'CARDIO') {
                                                 setMuscleGroup('CHEST')
                                             }
                                         }}
-                                        className={`rounded-lg border py-2 text-sm font-medium transition-colors ${type === t.value
+                                        className={`rounded-lg border py-2 text-sm font-medium transition-colors ${type === typeOption.value
                                             ? 'border-primary bg-primary text-primary-foreground'
                                             : 'border-border bg-card hover:bg-accent'
                                             }`}
                                     >
-                                        {t.label}
+                                        {t.workout.addDialog.types[typeOption.value as keyof typeof t.workout.addDialog.types]}
                                     </button>
                                 ))}
                             </div>
@@ -255,7 +257,7 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
 
                         {/* Muscle group */}
                         <div className="flex flex-col gap-2">
-                            <Label>Muscle Group</Label>
+                            <Label>{t.workout.addDialog.muscleGroupLabel}</Label>
                             <div className="grid grid-cols-3 gap-2">
                                 {MUSCLE_GROUPS
                                     .filter(m => type === 'CARDIO' ? m.value === 'CARDIO' : m.value !== 'CARDIO')
@@ -271,7 +273,7 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
                                                 : 'border-border bg-card hover:bg-accent'
                                                 }`}
                                         >
-                                            {m.label}
+                                            {t.workout.addDialog.muscles[m.value as keyof typeof t.workout.addDialog.muscles]}
                                         </button>
                                     ))}
                             </div>
@@ -280,7 +282,7 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
                         {/* Target Muscle */}
                         {PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup] && PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup].length > 1 && (
                             <div className="flex flex-col gap-2">
-                                <Label>Target Muscles (Optional)</Label>
+                                <Label>{t.workout.addDialog.targetMuscleLabel}</Label>
                                 <div className="grid grid-cols-2 gap-2">
                                     {PRISMA_TO_BODY_HIGHLIGHTER[muscleGroup].map((tm) => (
                                         <button
@@ -291,7 +293,7 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
                                                 : 'border-border bg-card hover:bg-accent'
                                                 }`}
                                         >
-                                            {tm.replace('-', ' ')}
+                                            {t.workout.addDialog.targets[tm as keyof typeof t.workout.addDialog.targets] || tm.replace('-', ' ')}
                                         </button>
                                     ))}
                                 </div>
@@ -301,8 +303,8 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
                         {/* Public toggle */}
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium">Make public</p>
-                                <p className="text-xs text-muted-foreground">Share with other users</p>
+                                <p className="text-sm font-medium">{t.workout.addDialog.makePublic}</p>
+                                <p className="text-xs text-muted-foreground">{t.workout.addDialog.makePublicDesc}</p>
                             </div>
                             <Switch checked={isPublic} onCheckedChange={setIsPublic} disabled={isPublicSwitchDisabled} />
                         </div>
@@ -311,9 +313,9 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
                     </div>
 
                     <DialogFooter>
-                        <Button variant="outline" onClick={handleClose}>Cancel</Button>
+                        <Button variant="outline" onClick={handleClose}>{t.common.cancel}</Button>
                         <Button onClick={handleInitialSubmit} disabled={loading}>
-                            {loading ? (isEdit ? 'Saving...' : 'Adding...') : (isEdit ? 'Save Changes' : 'Add Exercise')}
+                            {loading ? (isEdit ? t.workout.addDialog.saving : t.workout.addDialog.adding) : (isEdit ? t.workout.addDialog.saveChanges : t.workout.addDialog.addExerciseBtn)}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -324,9 +326,9 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
                 onClose={() => setShowPublicWarning(false)}
                 onConfirm={performSubmit}
                 loading={loading}
-                title="Make Exercise Public?"
-                description={<>You are about to make this exercise public. Once public, it will be visible to all users and <strong className="text-foreground">cannot be deleted</strong>. Are you sure you want to continue?</>}
-                confirmText="Yes, Make Public"
+                title={t.workout.addDialog.publicWarning.title}
+                description={<>{t.workout.addDialog.publicWarning.desc1}<strong className="text-foreground">{t.workout.addDialog.publicWarning.descBold}</strong>{t.workout.addDialog.publicWarning.desc2}</>}
+                confirmText={t.workout.addDialog.publicWarning.confirm}
             />
         </>
     )

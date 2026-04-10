@@ -131,6 +131,70 @@ export const fr: Dictionary = {
                 description: "Es-tu sûr de vouloir retirer cet exercice de ton entraînement ? Toutes les séries enregistrées seront perdues.",
                 confirm: "Retirer"
             }
+        },
+        addDialog: {
+            addTitle: "Ajouter un exercice personnalisé",
+            editTitle: "Modifier l'exercice",
+            imageOptional: "Image (optionnelle)",
+            tapToUpload: "Appuyez pour télécharger",
+            imageReqs: "JPEG, PNG, WebP — max 5Mo",
+            nameLabel: "Nom de l'exercice",
+            namePlaceholder: "ex. Élévations latérales poulie",
+            nameRequired: "Le nom de l'exercice est requis",
+            typeLabel: "Type",
+            muscleGroupLabel: "Groupe musculaire",
+            targetMuscleLabel: "Muscles ciblés (Optionnel)",
+            makePublic: "Rendre public",
+            makePublicDesc: "Partager avec les autres utilisateurs",
+            saveChanges: "Enregistrer",
+            addExerciseBtn: "Ajouter l'exercice",
+            saving: "Enregistrement...",
+            adding: "Ajout...",
+            errorGeneric: "Quelque chose a mal tourné",
+            publicWarning: {
+                title: "Rendre public ?",
+                desc1: "Vous êtes sur le point de rendre cet exercice public. Une fois public, il sera visible par tous les utilisateurs et ",
+                descBold: "ne pourra plus être supprimé",
+                desc2: ". Êtes-vous sûr de vouloir continuer ?",
+                confirm: "Oui, rendre public"
+            },
+            types: {
+                WEIGHTED: "Poids libres",
+                BODYWEIGHT: "Poids du corps",
+                CARDIO: "Cardio"
+            },
+            muscles: {
+                CHEST: "Pectoraux",
+                BACK: "Dos",
+                SHOULDERS: "Épaules",
+                BICEPS: "Biceps",
+                TRICEPS: "Triceps",
+                FOREARMS: "Avant-bras",
+                LEGS: "Jambes",
+                GLUTES: "Fessiers",
+                CORE: "Abdos",
+                CARDIO: "Cardio",
+                FULL_BODY: "Corps complet"
+            },
+            targets: {
+                chest: "pectoraux",
+                trapezius: "trapèzes",
+                "upper-back": "haut du dos",
+                "lower-back": "bas du dos",
+                "front-deltoids": "deltoïdes antérieurs",
+                "back-deltoids": "deltoïdes postérieurs",
+                biceps: "biceps",
+                triceps: "triceps",
+                forearm: "avant-bras",
+                quadriceps: "quadriceps",
+                hamstring: "ischio-jambiers",
+                calves: "mollets",
+                adductor: "adducteurs",
+                abductors: "abducteurs",
+                gluteal: "fessiers",
+                abs: "abdos",
+                obliques: "obliques"
+            }
         }
     },
     progress: {
