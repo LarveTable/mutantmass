@@ -366,7 +366,7 @@ export default function ProfilePage() {
                     ]}
                 />
                 <EditableField
-                    label="Weight"
+                    label="Weight (kg)"
                     value={profile?.weight}
                     onSave={handleUpdate('weight')}
                     type="number"
@@ -374,7 +374,7 @@ export default function ProfilePage() {
                     icon={Scale}
                 />
                 <EditableField
-                    label="Height"
+                    label="Height (cm)"
                     value={profile?.height}
                     onSave={handleUpdate('height')}
                     type="number"
