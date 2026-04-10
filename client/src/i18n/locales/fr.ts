@@ -64,5 +64,38 @@ export const fr: Dictionary = {
             confirm: "Tout détruire",
             errorPassword: "S'il te plaît, entre ton mot de passe"
         }
+    },
+    auth: {
+        common: {
+            email: "Email",
+            emailPlaceholder: "toi@exemple.com",
+            password: "Mot de passe",
+            passwordPlaceholder: "••••••••",
+            logoAlt: "Logo Mutant Mass"
+        },
+        login: {
+            title: "Bon retour",
+            description: "Connecte-toi à ton compte",
+            submit: "Se connecter",
+            signingIn: "Connexion...",
+            noAccount: "Pas encore de compte ?",
+            registerLink: "S'inscrire",
+            errorInvalid: "Email ou mot de passe invalide"
+        },
+        register: {
+            title: "Créer un compte",
+            description: "Commence à suivre tes progrès",
+            name: "Nom",
+            namePlaceholder: "Ton Nom",
+            confirmPassword: "Confirmer le mot de passe",
+            betaCode: "Code d'accès Beta",
+            betaCodePlaceholder: "Entre ton code d'invitation",
+            submit: "Créer le compte",
+            submitting: "Création du compte...",
+            hasAccount: "Déjà un compte ?",
+            loginLink: "Se connecter",
+            errorMatch: "Les mots de passe ne correspondent pas",
+            errorMinChars: "Le mot de passe doit faire au moins 8 caractères"
+        }
     }
 }

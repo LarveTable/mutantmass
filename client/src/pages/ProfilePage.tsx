@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslation } from '@/context/LanguageContext'
-import type { Language } from '@/context/LanguageContext'
 import {
     useProfile,
     useUpdateProfile,
@@ -34,6 +33,7 @@ import {
     Calendar,
     Globe,
 } from 'lucide-react'
+import { LanguageDialog } from '@/components/LanguageSelector'
 
 // Profile page, basic informations, settings and logout
 
@@ -261,53 +261,6 @@ function DeleteAccountDialog({
     )
 }
 
-const AVAILABLE_LANGUAGES = [
-    { code: 'en', label: 'English', flag: '🇺🇸' },
-    { code: 'fr', label: 'Français', flag: '🇫🇷' },
-]
-
-function LanguageDialog({
-    open,
-    onClose,
-}: {
-    open: boolean
-    onClose: () => void
-}) {
-    const { t, lang, setLang } = useTranslation()
-
-    return (
-        <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-xs sm:max-w-sm rounded-[24px]">
-                <DialogHeader>
-                    <DialogTitle>{t.profile.account.language}</DialogTitle>
-                    <DialogDescription />
-                </DialogHeader>
-                <div className="flex flex-col gap-2 py-4 max-h-[60vh] overflow-y-auto pr-1">
-                    {AVAILABLE_LANGUAGES.map((l) => {
-                        const isActive = lang === l.code
-                        return (
-                            <button
-                                key={l.code}
-                                onClick={() => {
-                                    setLang(l.code as Language)
-                                    setTimeout(onClose, 200)
-                                }}
-                                className={`flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border transition-all ${isActive
-                                    ? 'border-primary bg-primary/10 text-primary'
-                                    : 'border-border bg-card hover:bg-accent hover:border-accent-foreground/20 text-foreground'
-                                    }`}
-                            >
-                                <span className="text-xl leading-none">{l.flag}</span>
-                                <span className="font-medium flex-1 text-left">{l.label}</span>
-                                {isActive && <Check size={18} className="text-primary" />}
-                            </button>
-                        )
-                    })}
-                </div>
-            </DialogContent>
-        </Dialog>
-    )
-}
 
 // --- BMI helper ---
 function getBMI(weight?: number | null, height?: number | null) {
@@ -329,7 +282,7 @@ export default function ProfilePage() {
     const { data: profile, isLoading } = useProfile()
     const updateProfile = useUpdateProfile()
     const deleteAccount = useDeleteAccount()
-    const { t, lang } = useTranslation()
+    const { t, lang, availableLanguages } = useTranslation()
 
     const [passwordDialogOpen, setPasswordDialogOpen] = useState(false)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -472,8 +425,8 @@ export default function ProfilePage() {
                     <Globe size={16} className="text-muted-foreground" />
                     <span className="text-sm flex-1 text-left">{t.profile.account.language}</span>
                     <span className="text-sm text-muted-foreground flex items-center gap-1.5">
-                        <span className="text-[14px] leading-none">{AVAILABLE_LANGUAGES.find(l => l.code === lang)?.flag}</span>
-                        <span>{AVAILABLE_LANGUAGES.find(l => l.code === lang)?.label}</span>
+                        <span className="text-[14px] leading-none">{availableLanguages.find(l => l.code === lang)?.flag}</span>
+                        <span>{availableLanguages.find(l => l.code === lang)?.label}</span>
                     </span>
                     <ChevronRight size={16} className="text-muted-foreground" />
                 </button>

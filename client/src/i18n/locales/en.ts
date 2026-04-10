@@ -62,6 +62,39 @@ export const en = {
             confirm: "Delete Everything",
             errorPassword: "Please enter your password"
         }
+    },
+    auth: {
+        common: {
+            email: "Email",
+            emailPlaceholder: "you@example.com",
+            password: "Password",
+            passwordPlaceholder: "••••••••",
+            logoAlt: "Mutant Mass Logo"
+        },
+        login: {
+            title: "Welcome back",
+            description: "Sign in to your account",
+            submit: "Sign in",
+            signingIn: "Signing in...",
+            noAccount: "Don't have an account?",
+            registerLink: "Register",
+            errorInvalid: "Invalid email or password"
+        },
+        register: {
+            title: "Create an account",
+            description: "Start tracking your progress",
+            name: "Name",
+            namePlaceholder: "Your Name",
+            confirmPassword: "Confirm password",
+            betaCode: "Beta Access Code",
+            betaCodePlaceholder: "Enter your invite code",
+            submit: "Create account",
+            submitting: "Creating account...",
+            hasAccount: "Already have an account?",
+            loginLink: "Sign in",
+            errorMatch: "Passwords do not match",
+            errorMinChars: "Password must be at least 8 characters"
+        }
     }
 }
 

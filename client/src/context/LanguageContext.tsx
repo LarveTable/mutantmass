@@ -4,6 +4,11 @@ import { fr } from '../i18n/locales/fr'
 
 export type Language = 'en' | 'fr'
 
+export const AVAILABLE_LANGUAGES: { code: Language; label: string; flag: string }[] = [
+    { code: 'en', label: 'English', flag: '🇺🇸' },
+    { code: 'fr', label: 'Français', flag: '🇫🇷' },
+]
+
 const dictionaries: Record<Language, Dictionary> = {
     en,
     fr
@@ -13,12 +18,14 @@ interface LanguageContextType {
     lang: Language
     setLang: (lang: Language) => void
     t: Dictionary
+    availableLanguages: typeof AVAILABLE_LANGUAGES
 }
 
 const LanguageContext = createContext<LanguageContextType>({
     lang: 'en',
-    setLang: () => {},
-    t: en
+    setLang: () => { },
+    t: en,
+    availableLanguages: AVAILABLE_LANGUAGES
 })
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
@@ -45,7 +52,8 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
     const value = useMemo(() => ({
         lang,
         setLang,
-        t: dictionaries[lang]
+        t: dictionaries[lang],
+        availableLanguages: AVAILABLE_LANGUAGES
     }), [lang])
 
     return (
