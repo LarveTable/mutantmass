@@ -55,6 +55,7 @@ function EditableField({
     icon?: any
     options?: { value: string; label: string }[]
 }) {
+    const { t } = useTranslation()
     const [editing, setEditing] = useState(false)
     const [input, setInput] = useState(String(value ?? ''))
 
@@ -111,7 +112,7 @@ function EditableField({
                     ) : (
                         <p className="text-sm font-medium">
                             {value ? `${value}${unit ? ` ${unit}` : ''}` : (
-                                <span className="text-muted-foreground italic">Not set</span>
+                                <span className="text-muted-foreground italic">{t.profile.common.notSet}</span>
                             )}
                         </p>
                     )}
@@ -137,6 +138,7 @@ function ChangePasswordDialog({
     open: boolean
     onClose: () => void
 }) {
+    const { t } = useTranslation()
     const changePassword = useChangePassword()
     const [current, setCurrent] = useState('')
     const [next, setNext] = useState('')
@@ -146,14 +148,14 @@ function ChangePasswordDialog({
 
     const handleSave = async () => {
         setError('')
-        if (next.length < 8) return setError('Password must be at least 8 characters')
-        if (next !== confirm) return setError('Passwords do not match')
+        if (next.length < 8) return setError(t.profile.changePassword.errorMinChars)
+        if (next !== confirm) return setError(t.profile.changePassword.errorMatch)
         try {
             await changePassword.mutateAsync({ currentPassword: current, newPassword: next })
             setSuccess(true)
             setTimeout(() => { setSuccess(false); onClose() }, 1500)
         } catch (err: any) {
-            setError(err.response?.data?.error ?? 'Something went wrong')
+            setError(err.response?.data?.error ?? t.profile.common.error)
         }
     }
 
@@ -166,7 +168,7 @@ function ChangePasswordDialog({
         <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent className="max-w-sm">
                 <DialogHeader>
-                    <DialogTitle>Change Password</DialogTitle>
+                    <DialogTitle>{t.profile.changePassword.title}</DialogTitle>
                     <DialogDescription />
                 </DialogHeader>
                 {success ? (
@@ -174,29 +176,29 @@ function ChangePasswordDialog({
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                             <Check size={24} className="text-primary" />
                         </div>
-                        <p className="font-medium">Password updated!</p>
+                        <p className="font-medium">{t.profile.changePassword.success}</p>
                     </div>
                 ) : (
                     <>
                         <div className="flex flex-col gap-4 py-2">
                             <div className="flex flex-col gap-1.5">
-                                <Label>Current password</Label>
+                                <Label>{t.profile.changePassword.currentPassword}</Label>
                                 <Input type="password" value={current} onChange={e => setCurrent(e.target.value)} />
                             </div>
                             <div className="flex flex-col gap-1.5">
-                                <Label>New password</Label>
+                                <Label>{t.profile.changePassword.newPassword}</Label>
                                 <Input type="password" value={next} onChange={e => setNext(e.target.value)} />
                             </div>
                             <div className="flex flex-col gap-1.5">
-                                <Label>Confirm new password</Label>
+                                <Label>{t.profile.changePassword.confirmPassword}</Label>
                                 <Input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} />
                             </div>
                             {error && <p className="text-sm text-destructive">{error}</p>}
                         </div>
                         <DialogFooter>
-                            <Button variant="outline" onClick={handleClose}>Cancel</Button>
+                            <Button variant="outline" onClick={handleClose}>{t.profile.common.cancel}</Button>
                             <Button onClick={handleSave} disabled={changePassword.isPending}>
-                                {changePassword.isPending ? 'Saving...' : 'Update'}
+                                {changePassword.isPending ? t.profile.common.saving : t.profile.common.update}
                             </Button>
                         </DialogFooter>
                     </>
@@ -221,7 +223,7 @@ function DeleteAccountDialog({
     const [error, setError] = useState('')
 
     const handleConfirm = () => {
-        if (!password) return setError('Please enter your password')
+        if (!password) return setError(t.profile.deleteDialog.errorPassword)
         setError('')
         onConfirm(password)
     }
@@ -314,11 +316,11 @@ function getBMI(weight?: number | null, height?: number | null) {
     return bmi.toFixed(1)
 }
 
-function getBMILabel(bmi: number) {
-    if (bmi < 18.5) return { label: 'Underweight', color: 'text-blue-400' }
-    if (bmi < 25) return { label: 'Normal', color: 'text-green-500' }
-    if (bmi < 30) return { label: 'Overweight', color: 'text-yellow-500' }
-    return { label: 'Obese', color: 'text-red-500' }
+function getBMILabel(bmi: number, t: any) {
+    if (bmi < 18.5) return { label: t.profile.bmi.underweight, color: 'text-blue-400' }
+    if (bmi < 25) return { label: t.profile.bmi.normal, color: 'text-green-500' }
+    if (bmi < 30) return { label: t.profile.bmi.overweight, color: 'text-yellow-500' }
+    return { label: t.profile.bmi.obese, color: 'text-red-500' }
 }
 
 // --- Main page ---
@@ -345,16 +347,16 @@ export default function ProfilePage() {
             await deleteAccount.mutateAsync(password)
             logout()
         } catch (err: any) {
-            alert(err.response?.data?.error ?? 'Something went wrong')
+            alert(err.response?.data?.error ?? t.profile.common.error)
         }
     }
 
     const bmi = getBMI(profile?.weight, profile?.height)
-    const bmiInfo = bmi ? getBMILabel(Number(bmi)) : null
+    const bmiInfo = bmi ? getBMILabel(Number(bmi), t) : null
 
     if (isLoading) return (
         <div className="flex min-h-[80vh] items-center justify-center">
-            <p className="text-muted-foreground">Loading...</p>
+            <p className="text-muted-foreground">{t.profile.common.loading}</p>
         </div>
     )
 
@@ -366,12 +368,12 @@ export default function ProfilePage() {
                     {profile?.name ? profile.name[0].toUpperCase() : profile?.email[0].toUpperCase()}
                 </div>
                 <div className="text-center">
-                    <p className="text-lg font-bold">{profile?.name ?? 'No name set'}</p>
+                    <p className="text-lg font-bold">{profile?.name ?? t.profile.personalInfo.noName}</p>
                     <p className="text-sm text-muted-foreground">{profile?.email}</p>
                 </div>
                 {/* Member since */}
                 <p className="text-xs text-muted-foreground">
-                    Member since {new Date(profile?.createdAt).toLocaleDateString('en-US', {
+                    {t.profile.personalInfo.memberSince} {new Date(profile?.createdAt).toLocaleDateString(lang, {
                         month: 'long',
                         year: 'numeric',
                     })}
@@ -382,12 +384,12 @@ export default function ProfilePage() {
             {bmi && bmiInfo && (
                 <div className="rounded-xl border border-border bg-card p-4 flex items-center justify-between">
                     <div>
-                        <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold mb-1">BMI</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold mb-1">{t.profile.bmi.title}</p>
                         <p className="text-2xl font-bold">{bmi}</p>
                     </div>
                     <div className="text-right">
                         <p className={`text-sm font-semibold ${bmiInfo.color}`}>{bmiInfo.label}</p>
-                        <p className="text-xs text-muted-foreground">{profile?.weight}kg · {profile?.height}cm</p>
+                        <p className="text-xs text-muted-foreground">{profile?.weight}{t.profile.common.kg} · {profile?.height}{t.profile.common.cm}</p>
                     </div>
                 </div>
             )}
@@ -395,47 +397,47 @@ export default function ProfilePage() {
             {/* Personal info */}
             <section className="rounded-xl border border-border bg-card px-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-4 pb-2">
-                    Personal Info
+                    {t.profile.personalInfo.title}
                 </p>
                 <EditableField
-                    label="Name"
+                    label={t.profile.personalInfo.name}
                     value={profile?.name}
                     onSave={handleUpdate('name')}
                     icon={User}
                 />
                 <EditableField
-                    label="Age"
+                    label={t.profile.personalInfo.age}
                     value={profile?.age}
                     onSave={handleUpdate('age')}
                     type="number"
-                    unit="years"
+                    unit={t.profile.common.years}
                     icon={Calendar}
                 />
                 <EditableField
-                    label="Sex"
+                    label={t.profile.personalInfo.sex}
                     value={profile?.sex}
                     onSave={handleUpdate('sex')}
                     icon={User}
                     options={[
-                        { value: 'MALE', label: 'Male' },
-                        { value: 'FEMALE', label: 'Female' },
-                        { value: 'OTHER', label: 'Other' },
+                        { value: 'MALE', label: t.profile.personalInfo.male },
+                        { value: 'FEMALE', label: t.profile.personalInfo.female },
+                        { value: 'OTHER', label: t.profile.personalInfo.other },
                     ]}
                 />
                 <EditableField
-                    label="Weight (kg)"
+                    label={t.profile.personalInfo.weight}
                     value={profile?.weight}
                     onSave={handleUpdate('weight')}
                     type="number"
-                    unit="kg"
+                    unit={t.profile.common.kg}
                     icon={Scale}
                 />
                 <EditableField
-                    label="Height (cm)"
+                    label={t.profile.personalInfo.height}
                     value={profile?.height}
                     onSave={handleUpdate('height')}
                     type="number"
-                    unit="cm"
+                    unit={t.profile.common.cm}
                     icon={Ruler}
                 />
             </section>
@@ -443,17 +445,17 @@ export default function ProfilePage() {
             {/* Training preferences */}
             <section className="rounded-xl border border-border bg-card px-4">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide pt-4 pb-2">
-                    Training
+                    {t.profile.training.title}
                 </p>
                 <EditableField
-                    label="Weekly Goal"
+                    label={t.profile.training.weeklyGoal}
                     value={profile?.weeklyGoal}
                     onSave={(val) => {
                         const clamped = Math.min(Math.max(Number(val), 1), 7)
                         handleUpdate('weeklyGoal')(String(clamped))
                     }}
                     type="number"
-                    unit="workouts / week"
+                    unit={t.profile.training.workoutsPerWeek}
                     icon={Target}
                 />
             </section>
@@ -520,7 +522,7 @@ export default function ProfilePage() {
             {/* Version number */}
             <div className="mt-8 text-center">
                 <p className="text-[10px] font-medium text-muted-foreground/40 uppercase tracking-[0.2em]">
-                    MutantMass v0.1.0-beta
+                    {t.profile.common.version}
                 </p>
             </div>
         </div>
