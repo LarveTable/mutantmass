@@ -180,21 +180,19 @@ export default async function exerciseRoutes(app: FastifyInstance) {
 
         const updateData: any = {}
 
-        if (existing.isPublic) {
-            // Only imageUrl is editable for public exercises
-            if (imageUrl) updateData.imageUrl = imageUrl
-            else if (removeImage) updateData.imageUrl = null
-        } else {
-            // All fields editable for private exercises
-            if (name) updateData.name = name
-            if (type) updateData.type = type as any
-            if (muscleGroup) updateData.muscleGroup = muscleGroup as any
-            if (targetMuscle !== undefined) updateData.targetMuscle = targetMuscle
-            if (isPublic !== undefined) updateData.isPublic = isPublic
-            
-            if (imageUrl) updateData.imageUrl = imageUrl
-            else if (removeImage) updateData.imageUrl = null
+        // All fields are editable by the owner, regardless of public status
+        if (name) updateData.name = name
+        if (type) updateData.type = type as any
+        if (muscleGroup) updateData.muscleGroup = muscleGroup as any
+        if (targetMuscle !== undefined) updateData.targetMuscle = targetMuscle
+        
+        // Once public, an exercise cannot be made private again (to match UI and shared nature)
+        if (!existing.isPublic && isPublic !== undefined) {
+            updateData.isPublic = isPublic
         }
+
+        if (imageUrl) updateData.imageUrl = imageUrl
+        else if (removeImage) updateData.imageUrl = null
 
         const updated = await app.prisma.exercise.update({
             where: { id },

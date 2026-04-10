@@ -189,13 +189,13 @@ describe('Exercise Routes', () => {
             })
         })
 
-        it('should only update imageUrl for public exercises', async () => {
+        it('should update name for public exercises', async () => {
             const exercise = { id: 'ex-1', name: 'Public Exercise', isPublic: true, userId: 'user-1' }
             mockPrisma.exercise.findFirst.mockResolvedValue(exercise)
-            mockPrisma.exercise.update.mockResolvedValue(exercise)
+            mockPrisma.exercise.update.mockResolvedValue({ ...exercise, name: 'Updated Name' })
 
             const form = new FormData()
-            form.append('name', 'Hacked Name')
+            form.append('name', 'Updated Name')
 
             const res = await app.inject({
                 method: 'PATCH',
@@ -206,9 +206,9 @@ describe('Exercise Routes', () => {
             })
 
             expect(res.statusCode).toBe(200)
-            // Name should NOT be in update data
+            expect(res.json().exercise.name).toBe('Updated Name')
             const updateCallData = mockPrisma.exercise.update.mock.calls[0]![0].data
-            expect(updateCallData.name).toBeUndefined()
+            expect(updateCallData.name).toBe('Updated Name')
         })
 
         it('should remove imageUrl if removeImage is sent', async () => {
