@@ -209,12 +209,20 @@ export const fr: Dictionary = {
             kmPh: "km",
             lastPrefix: "Dernier : ",
             kgSuffix: " kg",
-            logBtn: "Valider la série"
+            logBtn: "Ajouter une série"
         },
         restTimer: {
             title: "Temps de repos",
             minus15: "-15s",
             plus15: "+15s"
+        },
+        setLogger: {
+            time: "Temps",
+            deleteConfirm: {
+                title: "Supprimer la série ?",
+                description: "Êtes-vous sûr de vouloir supprimer cette série ? Cette action est irréversible.",
+                confirm: "Supprimer"
+            }
         },
         addDialog: {
             addTitle: "Ajouter un exercice personnalisé",

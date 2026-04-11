@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import { Button } from '@/components/ui/button'
 import { Trash2, Plus, Pencil } from 'lucide-react'
 import LogSetDialog from './LogSetDialog'
@@ -38,6 +39,7 @@ export default function SetLogger({
     onDeleteSet,
     onEditSet,
 }: Props) {
+    const { t } = useTranslation()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
     const [setToDelete, setSetToDelete] = useState<string | null>(null)
@@ -71,20 +73,20 @@ export default function SetLogger({
                         <span className="text-xs text-muted-foreground text-center">#</span>
                         {exerciseType === 'WEIGHTED' && (
                             <>
-                                <span className="text-xs text-muted-foreground text-center">Reps</span>
-                                <span className="text-xs text-muted-foreground text-center">kg</span>
+                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.reps}</span>
+                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.kg}</span>
                             </>
                         )}
                         {exerciseType === 'BODYWEIGHT' && (
                             <>
-                                <span className="text-xs text-muted-foreground text-center">Reps</span>
+                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.reps}</span>
                                 <span className="text-xs text-muted-foreground text-center" />
                             </>
                         )}
                         {exerciseType === 'CARDIO' && (
                             <>
-                                <span className="text-xs text-muted-foreground text-center">Time</span>
-                                <span className="text-xs text-muted-foreground text-center">km</span>
+                                <span className="text-xs text-muted-foreground text-center">{t.workout.setLogger.time}</span>
+                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.km}</span>
                             </>
                         )}
                         <span />
@@ -146,7 +148,7 @@ export default function SetLogger({
                 onClick={() => setDialogOpen(true)}
             >
                 <Plus size={16} className="mr-1" />
-                Log Set
+                {t.workout.logSetDialog.logBtn}
             </Button>
 
             <LogSetDialog
@@ -167,9 +169,9 @@ export default function SetLogger({
                         setSetToDelete(null)
                     }
                 }}
-                title="Delete Set?"
-                description="Are you sure you want to delete this set? This action cannot be undone."
-                confirmText="Delete"
+                title={t.workout.setLogger.deleteConfirm.title}
+                description={t.workout.setLogger.deleteConfirm.description}
+                confirmText={t.workout.setLogger.deleteConfirm.confirm}
                 variant="destructive"
             />
         </div>

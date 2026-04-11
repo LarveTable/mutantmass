@@ -214,6 +214,14 @@ export const en = {
             minus15: "-15s",
             plus15: "+15s"
         },
+        setLogger: {
+            time: "Time",
+            deleteConfirm: {
+                title: "Delete Set?",
+                description: "Are you sure you want to delete this set? This action cannot be undone.",
+                confirm: "Delete"
+            }
+        },
         addDialog: {
             addTitle: "Add Custom Exercise",
             editTitle: "Edit Exercise",
