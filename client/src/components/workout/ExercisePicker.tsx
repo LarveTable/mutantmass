@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import { useExercises } from '@/hooks/useWorkout'
 import { Dumbbell, PersonStanding, Timer, ChevronRight, Plus } from 'lucide-react'
@@ -36,6 +37,7 @@ interface Props {
 }
 
 export default function ExercisePicker({ open, onClose, onSelect }: Props) {
+    const { t } = useTranslation()
     const [step, setStep] = useState<Step>('type')
     const [selectedType, setSelectedType] = useState<string | null>(null)
     const [selectedMuscle, setSelectedMuscle] = useState<string | null>(null)
@@ -84,13 +86,13 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
             <SheetContent side="bottom" className="h-[80vh] flex flex-col" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
                 <SheetHeader>
                     <SheetTitle>
-                        {step === 'type' && 'Select Type'}
+                        {step === 'type' && t.workout.picker.title}
                         {step === 'muscle' && (
                             <button
                                 onClick={() => setStep('type')}
                                 className="flex items-center gap-2 text-muted-foreground text-sm font-normal"
                             >
-                                ← Back
+                                ← {t.workout.picker.back}
                             </button>
                         )}
                         {step === 'exercise' && (
@@ -98,7 +100,7 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                                 onClick={() => setStep('muscle')}
                                 className="flex items-center gap-2 text-muted-foreground text-sm font-normal"
                             >
-                                ← Back
+                                ← {t.workout.picker.back}
                             </button>
                         )}
                     </SheetTitle>
@@ -110,7 +112,7 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                         <div className="relative flex-1">
                             <input
                                 type="text"
-                                placeholder="Search exercises..."
+                                placeholder={t.workout.picker.search}
                                 value={search}
                                 onChange={(e) => {
                                     setSearch(e.target.value)
@@ -123,7 +125,7 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                         <button
                             onClick={() => setAddExerciseOpen(true)}
                             className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg border border-border bg-card text-primary hover:bg-accent hover:border-primary transition-all active:scale-95"
-                            title="Add custom exercise"
+                            title={t.workout.picker.addCustom}
                         >
                             <Plus size={20} />
                         </button>
@@ -131,7 +133,7 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                     {/* Step 1: Type */}
                     {step === 'type' && (
                         <div className="flex flex-col gap-3">
-                            {TYPES.map(({ value, label, icon: Icon, description }) => (
+                            {TYPES.map(({ value, icon: Icon }) => (
                                 <button
                                     key={value}
                                     onClick={() => handleTypeSelect(value)}
@@ -141,8 +143,8 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                                         <Icon size={24} className="text-primary" />
                                     </div>
                                     <div className="flex-1">
-                                        <p className="font-semibold">{label}</p>
-                                        <p className="text-sm text-muted-foreground">{description}</p>
+                                        <p className="font-semibold">{t.workout.addDialog.types[value as keyof typeof t.workout.addDialog.types]}</p>
+                                        <p className="text-sm text-muted-foreground">{t.workout.picker.typeDesc[value as keyof typeof t.workout.picker.typeDesc]}</p>
                                     </div>
                                     <ChevronRight size={18} className="text-muted-foreground" />
                                 </button>
@@ -153,13 +155,13 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                     {/* Step 2: Muscle Group */}
                     {step === 'muscle' && (
                         <div className="grid grid-cols-2 gap-3">
-                            {filteredMuscleGroups.map(({ value, label }) => (
+                            {filteredMuscleGroups.map(({ value }) => (
                                 <button
                                     key={value}
                                     onClick={() => handleMuscleSelect(value)}
                                     className="flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:bg-accent transition-colors"
                                 >
-                                    <span className="font-medium">{label}</span>
+                                    <span className="font-medium">{t.workout.addDialog.muscles[value as keyof typeof t.workout.addDialog.muscles]}</span>
                                     <ChevronRight size={16} className="text-muted-foreground" />
                                 </button>
                             ))}
@@ -171,12 +173,12 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                         <div className="flex flex-col gap-3">
                             <div className="flex flex-col gap-2">
                                 {isLoading && (
-                                    <p className="text-center text-muted-foreground py-8">Loading...</p>
+                                    <p className="text-center text-muted-foreground py-8">{t.common.loading}</p>
                                 )}
                                 {!isLoading && exercises?.filter((e: any) =>
                                     e.name.toLowerCase().includes(search.toLowerCase())
                                 ).length === 0 && (
-                                        <p className="text-center text-muted-foreground py-8">No exercises found</p>
+                                        <p className="text-center text-muted-foreground py-8">{t.workout.picker.noFound}</p>
                                     )}
                                 {exercises
                                     ?.filter((e: any) =>

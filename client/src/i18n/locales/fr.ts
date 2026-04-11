@@ -136,6 +136,18 @@ export const fr: Dictionary = {
             label: "Note de l'exercice",
             placeholder: "Astuces de forme, ressentis, choses à retenir..."
         },
+        picker: {
+            title: "Sélectionner un type",
+            back: "Retour",
+            search: "Rechercher des exercices...",
+            addCustom: "Créer un exercice",
+            noFound: "Aucun exercice trouvé",
+            typeDesc: {
+                WEIGHTED: "Barre, haltères, machines",
+                BODYWEIGHT: "Aucun équipement requis",
+                CARDIO: "Course, vélo, rameur"
+            }
+        },
         addDialog: {
             addTitle: "Ajouter un exercice personnalisé",
             editTitle: "Modifier l'exercice",

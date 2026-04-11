@@ -134,6 +134,18 @@ export const en = {
             label: "Exercise note",
             placeholder: "Form cues, feelings, things to remember..."
         },
+        picker: {
+            title: "Select Type",
+            back: "Back",
+            search: "Search exercises...",
+            addCustom: "Add custom exercise",
+            noFound: "No exercises found",
+            typeDesc: {
+                WEIGHTED: "Barbell, dumbbell, machine",
+                BODYWEIGHT: "No equipment needed",
+                CARDIO: "Running, cycling, rowing"
+            }
+        },
         addDialog: {
             addTitle: "Add Custom Exercise",
             editTitle: "Edit Exercise",
