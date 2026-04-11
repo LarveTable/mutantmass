@@ -94,7 +94,7 @@ export default function LogSetDialog({
                                 <Label>{t.workout.logSetDialog.weightLab}</Label>
                                 <Input
                                     type="number"
-                                    placeholder={lastSet?.weight ? `${t.workout.logSetDialog.lastPrefix}${lastSet.weight}${t.workout.logSetDialog.kgSuffix}` : t.workout.logSetDialog.kmPh}
+                                    placeholder={lastSet?.weight ? `${t.workout.logSetDialog.lastPrefix}${lastSet.weight}${t.workout.logSetDialog.kgSuffix}` : t.workout.logSetDialog.kgSuffix}
                                     value={weight}
                                     onChange={(e) => setWeight(e.target.value)}
                                     className="text-center text-lg"

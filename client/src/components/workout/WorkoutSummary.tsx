@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import confetti from 'canvas-confetti'
 import { Button } from '@/components/ui/button'
 import { Dumbbell, Clock, Trophy, ChevronRight } from 'lucide-react'
@@ -68,6 +69,8 @@ function getBestSet(sets: Set[]) {
 }
 
 export default function WorkoutSummary({ workout, onDone }: Props) {
+    const { t } = useTranslation()
+
     useEffect(() => {
         confetti({
             particleCount: 120,
@@ -85,9 +88,9 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
             {/* Header */}
             <div className="flex flex-col items-center gap-2 text-center">
                 <div className="text-5xl mb-2">🎉</div>
-                <h1 className="text-2xl font-bold">Workout Complete!</h1>
+                <h1 className="text-2xl font-bold">{t.workout.summary.title}</h1>
                 <p className="text-muted-foreground">
-                    {workout.name ?? 'Great session'}
+                    {workout.name ?? t.workout.summary.greatSession}
                 </p>
             </div>
 
@@ -98,12 +101,12 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
                     <span className="text-base font-bold whitespace-nowrap">
                         {workout.duration ? formatDuration(workout.duration) : '-'}
                     </span>
-                    <span className="text-[10px] text-muted-foreground uppercase font-semibold">Duration</span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-semibold">{t.workout.summary.duration}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3 text-center">
                     <Trophy size={16} className="text-primary" />
                     <span className="text-base font-bold">{totalSets}</span>
-                    <span className="text-[10px] text-muted-foreground uppercase font-semibold">Sets</span>
+                    <span className="text-[10px] text-muted-foreground uppercase font-semibold">{t.workout.summary.setsLabel}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3 text-center">
                     <Dumbbell size={16} className="text-primary" />
@@ -111,14 +114,14 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
                         {totalVolume > 0 ? `${totalVolume.toLocaleString()}` : '-'}
                     </span>
                     <span className="text-[10px] text-muted-foreground uppercase font-semibold">
-                        {totalVolume > 0 ? 'kg volume' : 'Volume'}
+                        {totalVolume > 0 ? t.workout.summary.kgVolume : t.workout.summary.volume}
                     </span>
                 </div>
                 {workout.restTimer && (
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3 text-center">
                         <Clock size={16} className="text-primary rotate-12" />
                         <span className="text-base font-bold">{workout.restTimer}s</span>
-                        <span className="text-[10px] text-muted-foreground uppercase font-semibold">Rest</span>
+                        <span className="text-[10px] text-muted-foreground uppercase font-semibold">{t.workout.summary.rest}</span>
                     </div>
                 )}
             </div>
@@ -126,7 +129,7 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
             {/* Notes section */}
             {workout.note && (
                 <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Session Note</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">{t.workout.summary.sessionNote}</p>
                     <p className="text-sm">{workout.note}</p>
                 </div>
             )}
@@ -134,7 +137,7 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
             {/* Exercise breakdown */}
             <div className="flex flex-col gap-3">
                 <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
-                    Exercise Breakdown
+                    {t.workout.summary.breakdown}
                 </h2>
                 {workout.workoutExercises.map((we) => {
                     const bestSet = getBestSet(we.sets)
@@ -154,7 +157,7 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
                                 <div className="flex-1">
                                     <p className="font-semibold">{we.exercise.name}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        {we.sets.length} set{we.sets.length !== 1 ? 's' : ''}
+                                        {we.sets.length} {we.sets.length !== 1 ? t.workout.summary.sets : t.workout.summary.set}
                                         {exerciseVolume > 0 && ` · ${exerciseVolume.toLocaleString()} kg`}
                                     </p>
                                 </div>
@@ -166,20 +169,20 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
                                     <span className="text-xs text-muted-foreground text-center">#</span>
                                     {we.exercise.type === 'WEIGHTED' && (
                                         <>
-                                            <span className="text-xs text-muted-foreground text-center">Reps</span>
-                                            <span className="text-xs text-muted-foreground text-center">kg</span>
+                                            <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.reps}</span>
+                                            <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.kg}</span>
                                         </>
                                     )}
                                     {we.exercise.type === 'BODYWEIGHT' && (
                                         <>
-                                            <span className="text-xs text-muted-foreground text-center">Reps</span>
+                                            <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.reps}</span>
                                             <span className="text-xs text-muted-foreground text-center" />
                                         </>
                                     )}
                                     {we.exercise.type === 'CARDIO' && (
                                         <>
-                                            <span className="text-xs text-muted-foreground text-center">Time</span>
-                                            <span className="text-xs text-muted-foreground text-center">km</span>
+                                            <span className="text-xs text-muted-foreground text-center">{t.workout.setLogger.time}</span>
+                                            <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.km}</span>
                                         </>
                                     )}
                                 </div>
@@ -217,7 +220,7 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
                                 {/* Best set highlight for weighted */}
                                 {we.exercise.type === 'WEIGHTED' && bestSet && (
                                     <p className="text-xs text-primary mt-1 px-1">
-                                        🏆 Best set for this workout: {bestSet.reps} reps @ {bestSet.weight} kg
+                                        {t.workout.summary.bestSetPart1}{bestSet.reps}{t.workout.summary.bestSetPart2}{bestSet.weight}{t.workout.summary.bestSetPart3}
                                     </p>
                                 )}
                             </div>
@@ -228,7 +231,7 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
 
             {/* Done button */}
             <Button size="lg" className="w-full" onClick={onDone}>
-                Done
+                {t.workout.summary.done}
                 <ChevronRight size={18} className="ml-1" />
             </Button>
         </div>

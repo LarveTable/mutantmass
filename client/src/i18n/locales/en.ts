@@ -241,6 +241,23 @@ export const en = {
         timer: {
             duration: "Duration"
         },
+        summary: {
+            title: "Workout Complete!",
+            greatSession: "Great session",
+            duration: "Duration",
+            setsLabel: "Sets",
+            kgVolume: "kg volume",
+            volume: "Volume",
+            rest: "Rest",
+            sessionNote: "Session Note",
+            breakdown: "Exercise Breakdown",
+            set: "set",
+            sets: "sets",
+            bestSetPart1: "🏆 Best set for this workout: ",
+            bestSetPart2: " reps @ ",
+            bestSetPart3: " kg",
+            done: "Done"
+        },
         addDialog: {
             addTitle: "Add Custom Exercise",
             editTitle: "Edit Exercise",

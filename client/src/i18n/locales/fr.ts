@@ -243,6 +243,23 @@ export const fr: Dictionary = {
         timer: {
             duration: "Durée"
         },
+        summary: {
+            title: "Séance terminée !",
+            greatSession: "Super séance",
+            duration: "Durée",
+            setsLabel: "Séries",
+            kgVolume: "volume (kg)",
+            volume: "Volume",
+            rest: "Repos",
+            sessionNote: "Note de la séance",
+            breakdown: "Détail de la séance",
+            set: "série",
+            sets: "séries",
+            bestSetPart1: "🏆 Meilleure série de la séance : ",
+            bestSetPart2: " reps @ ",
+            bestSetPart3: " kg",
+            done: "Terminé"
+        },
         addDialog: {
             addTitle: "Ajouter un exercice personnalisé",
             editTitle: "Modifier l'exercice",

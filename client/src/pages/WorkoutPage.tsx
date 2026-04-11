@@ -276,8 +276,8 @@ export default function WorkoutPage() {
                             <ExerciseImage imageUrl={we.exercise.imageUrl} name={we.exercise.name} size="md" zoomable />
                             <div className="flex-1">
                                 <p className="font-semibold">{we.exercise.name}</p>
-                                <p className="text-xs text-muted-foreground capitalize">
-                                    {we.exercise.type.toLowerCase()}
+                                <p className="text-xs text-muted-foreground">
+                                    {t.workout.addDialog.types[we.exercise.type as keyof typeof t.workout.addDialog.types]}
                                 </p>
                             </div>
                             {/* Action buttons */}
