@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import {
     Dialog,
     DialogContent,
@@ -38,6 +39,7 @@ export default function LogSetDialog({
     lastSet,
     onConfirm,
 }: Props) {
+    const { t } = useTranslation()
     const [reps, setReps] = useState(lastSet?.reps?.toString() ?? '')
     const [weight, setWeight] = useState(lastSet?.weight?.toString() ?? '')
     const [duration, setDuration] = useState(
@@ -78,10 +80,10 @@ export default function LogSetDialog({
                     {exerciseType === 'WEIGHTED' && (
                         <>
                             <div className="flex flex-col gap-1.5">
-                                <Label>Reps</Label>
+                                <Label>{t.workout.logSetDialog.repsLab}</Label>
                                 <Input
                                     type="number"
-                                    placeholder={lastSet?.reps ? `Last: ${lastSet.reps}` : 'Reps'}
+                                    placeholder={lastSet?.reps ? `${t.workout.logSetDialog.lastPrefix}${lastSet.reps}` : t.workout.logSetDialog.repsLab}
                                     value={reps}
                                     onChange={(e) => setReps(e.target.value)}
                                     className="text-center text-lg"
@@ -89,10 +91,10 @@ export default function LogSetDialog({
                                 />
                             </div>
                             <div className="flex flex-col gap-1.5">
-                                <Label>Weight (kg)</Label>
+                                <Label>{t.workout.logSetDialog.weightLab}</Label>
                                 <Input
                                     type="number"
-                                    placeholder={lastSet?.weight ? `Last: ${lastSet.weight} kg` : 'kg'}
+                                    placeholder={lastSet?.weight ? `${t.workout.logSetDialog.lastPrefix}${lastSet.weight}${t.workout.logSetDialog.kgSuffix}` : t.workout.logSetDialog.kmPh}
                                     value={weight}
                                     onChange={(e) => setWeight(e.target.value)}
                                     className="text-center text-lg"
@@ -103,10 +105,10 @@ export default function LogSetDialog({
 
                     {exerciseType === 'BODYWEIGHT' && (
                         <div className="flex flex-col gap-1.5">
-                            <Label>Reps</Label>
+                            <Label>{t.workout.logSetDialog.repsLab}</Label>
                             <Input
                                 type="number"
-                                placeholder={lastSet?.reps ? `Last: ${lastSet.reps}` : 'Reps'}
+                                placeholder={lastSet?.reps ? `${t.workout.logSetDialog.lastPrefix}${lastSet.reps}` : t.workout.logSetDialog.repsLab}
                                 value={reps}
                                 onChange={(e) => setReps(e.target.value)}
                                 className="text-center text-lg"
@@ -118,10 +120,10 @@ export default function LogSetDialog({
                     {exerciseType === 'CARDIO' && (
                         <>
                             <div className="flex flex-col gap-1.5">
-                                <Label>Duration (minutes)</Label>
+                                <Label>{t.workout.logSetDialog.durLab}</Label>
                                 <Input
                                     type="number"
-                                    placeholder="Minutes"
+                                    placeholder={t.workout.logSetDialog.minutesPh}
                                     value={duration}
                                     onChange={(e) => setDuration(e.target.value)}
                                     className="text-center text-lg"
@@ -129,10 +131,10 @@ export default function LogSetDialog({
                                 />
                             </div>
                             <div className="flex flex-col gap-1.5">
-                                <Label>Distance (km) — optional</Label>
+                                <Label>{t.workout.logSetDialog.distLab}</Label>
                                 <Input
                                     type="number"
-                                    placeholder="km"
+                                    placeholder={t.workout.logSetDialog.kmPh}
                                     value={distance}
                                     onChange={(e) => setDistance(e.target.value)}
                                     className="text-center text-lg"
@@ -143,8 +145,8 @@ export default function LogSetDialog({
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleConfirm}>Log Set</Button>
+                    <Button variant="outline" onClick={handleClose}>{t.common.cancel}</Button>
+                    <Button onClick={handleConfirm}>{t.workout.logSetDialog.logBtn}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

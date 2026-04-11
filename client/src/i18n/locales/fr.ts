@@ -200,6 +200,22 @@ export const fr: Dictionary = {
                 km: "km"
             }
         },
+        logSetDialog: {
+            repsLab: "Reps",
+            weightLab: "Poids (kg)",
+            durLab: "Durée (minutes)",
+            minutesPh: "Minutes",
+            distLab: "Distance (km) — optionnelle",
+            kmPh: "km",
+            lastPrefix: "Dernier : ",
+            kgSuffix: " kg",
+            logBtn: "Valider la série"
+        },
+        restTimer: {
+            title: "Temps de repos",
+            minus15: "-15s",
+            plus15: "+15s"
+        },
         addDialog: {
             addTitle: "Ajouter un exercice personnalisé",
             editTitle: "Modifier l'exercice",

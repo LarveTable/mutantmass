@@ -198,6 +198,22 @@ export const en = {
                 km: "km"
             }
         },
+        logSetDialog: {
+            repsLab: "Reps",
+            weightLab: "Weight (kg)",
+            durLab: "Duration (minutes)",
+            minutesPh: "Minutes",
+            distLab: "Distance (km) — optional",
+            kmPh: "km",
+            lastPrefix: "Last: ",
+            kgSuffix: " kg",
+            logBtn: "Log Set"
+        },
+        restTimer: {
+            title: "Rest Timer",
+            minus15: "-15s",
+            plus15: "+15s"
+        },
         addDialog: {
             addTitle: "Add Custom Exercise",
             editTitle: "Edit Exercise",

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import { X } from 'lucide-react'
 
 // Component to display rest timer
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function RestTimer({ duration, onComplete, onDismiss }: Props) {
+    const { t } = useTranslation()
     const [remaining, setRemaining] = useState(duration)
 
     useEffect(() => {
@@ -41,7 +43,7 @@ export default function RestTimer({ duration, onComplete, onDismiss }: Props) {
             style={{ bottom: 'calc(5rem + env(safe-area-inset-bottom))' }}
         >
             <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-medium text-muted-foreground">Rest Timer</p>
+                <p className="text-sm font-medium text-muted-foreground">{t.workout.restTimer.title}</p>
                 <button onClick={onDismiss} className="text-muted-foreground hover:text-foreground">
                     <X size={18} />
                 </button>
@@ -56,13 +58,13 @@ export default function RestTimer({ duration, onComplete, onDismiss }: Props) {
                         onClick={() => setRemaining((r) => Math.max(0, r - 15))}
                         className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-accent transition-colors"
                     >
-                        -15s
+                        {t.workout.restTimer.minus15}
                     </button>
                     <button
                         onClick={() => setRemaining((r) => r + 15)}
                         className="rounded-lg border border-border px-3 py-1.5 text-sm hover:bg-accent transition-colors"
                     >
-                        +15s
+                        {t.workout.restTimer.plus15}
                     </button>
                 </div>
             </div>
