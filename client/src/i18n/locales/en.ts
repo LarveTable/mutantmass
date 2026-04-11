@@ -153,6 +153,23 @@ export const en = {
             saving: "Saving...",
             finishBtn: "Finish 🎉"
         },
+        listDialog: {
+            title: "Added Exercises",
+            description: "Manage your custom exercises",
+            loading: "Loading exercises...",
+            empty: "No custom exercises added yet.",
+            publicInfo: "Public",
+            privateInfo: "Private",
+            editHover: "Edit exercise",
+            deleteHover: "Delete private exercise",
+            deleteConfirm: {
+                title: "Delete Custom Exercise?",
+                desc1: "Are you sure you want to delete this custom exercise? This will ",
+                descBold: "remove it from your library and workouts",
+                desc2: ".",
+                confirm: "Delete"
+            }
+        },
         addDialog: {
             addTitle: "Add Custom Exercise",
             editTitle: "Edit Exercise",

@@ -155,6 +155,23 @@ export const fr: Dictionary = {
             saving: "Enregistrement...",
             finishBtn: "Terminer 🎉"
         },
+        listDialog: {
+            title: "Exercices ajoutés",
+            description: "Gérer vos exercices personnalisés",
+            loading: "Chargement des exercices...",
+            empty: "Aucun exercice personnalisé ajouté pour le moment.",
+            publicInfo: "Public",
+            privateInfo: "Privé",
+            editHover: "Modifier l'exercice",
+            deleteHover: "Supprimer l'exercice privé",
+            deleteConfirm: {
+                title: "Supprimer l'exercice personnalisé ?",
+                desc1: "Êtes-vous sûr de vouloir supprimer cet exercice personnalisé ? Cela ",
+                descBold: "le supprimera de votre bibliothèque et de vos entraînements",
+                desc2: ".",
+                confirm: "Supprimer"
+            }
+        },
         addDialog: {
             addTitle: "Ajouter un exercice personnalisé",
             editTitle: "Modifier l'exercice",
