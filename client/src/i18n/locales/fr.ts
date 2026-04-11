@@ -172,6 +172,34 @@ export const fr: Dictionary = {
                 confirm: "Supprimer"
             }
         },
+        logPastDialog: {
+            titleInfo: "Saisir une séance passée",
+            titleExercises: "Exercices & Séries",
+            nameLabel: "Nom de la séance (optionnel)",
+            namePlaceholder: "ex. Push Day",
+            dateLabel: "Date",
+            dateRequired: "La date est requise",
+            durationLabel: "Durée (optionnelle)",
+            restTimerLabel: "Temps de repos",
+            restTimerDesc: "Enregistrer la durée de repos pour cette séance",
+            seconds: "secondes",
+            noteLabel: "Note de la séance (optionnelle)",
+            notePlaceholder: "Comment c'était ?",
+            addSet: "Ajouter série",
+            addExercise: "Ajouter exercice",
+            nextBtn: "Suivant",
+            saveBtn: "Enregistrer la séance",
+            miniPicker: {
+                search: "Rechercher...",
+                addCustom: "Créer un exercice"
+            },
+            units: {
+                reps: "Reps",
+                kg: "kg",
+                min: "Min",
+                km: "km"
+            }
+        },
         addDialog: {
             addTitle: "Ajouter un exercice personnalisé",
             editTitle: "Modifier l'exercice",

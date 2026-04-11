@@ -170,6 +170,34 @@ export const en = {
                 confirm: "Delete"
             }
         },
+        logPastDialog: {
+            titleInfo: "Log Past Workout",
+            titleExercises: "Exercises & Sets",
+            nameLabel: "Workout name (optional)",
+            namePlaceholder: "e.g. Push Day",
+            dateLabel: "Date",
+            dateRequired: "Date is required",
+            durationLabel: "Duration (optional)",
+            restTimerLabel: "Rest Timer",
+            restTimerDesc: "Record rest duration for this session",
+            seconds: "seconds",
+            noteLabel: "Session note (optional)",
+            notePlaceholder: "How did it feel?",
+            addSet: "Add set",
+            addExercise: "Add Exercise",
+            nextBtn: "Next",
+            saveBtn: "Save Workout",
+            miniPicker: {
+                search: "Search exercises...",
+                addCustom: "Add custom exercise"
+            },
+            units: {
+                reps: "Reps",
+                kg: "kg",
+                min: "Min",
+                km: "km"
+            }
+        },
         addDialog: {
             addTitle: "Add Custom Exercise",
             editTitle: "Edit Exercise",

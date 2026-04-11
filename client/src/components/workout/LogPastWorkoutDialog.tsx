@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import { getDefaultWorkoutName } from '@/lib/utils'
 import {
     Dialog,
@@ -56,6 +57,7 @@ function SetRow({
     onChange: (set: SetEntry) => void
     onDelete: () => void
 }) {
+    const { t } = useTranslation()
     return (
         <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground w-5 text-center">{index + 1}</span>
@@ -63,14 +65,14 @@ function SetRow({
                 <>
                     <Input
                         type="number"
-                        placeholder="Reps"
+                        placeholder={t.workout.logPastDialog.units.reps}
                         value={set.reps ?? ''}
                         onChange={(e) => onChange({ ...set, reps: Number(e.target.value) })}
                         className="text-center h-8 text-sm"
                     />
                     <Input
                         type="number"
-                        placeholder="kg"
+                        placeholder={t.workout.logPastDialog.units.kg}
                         value={set.weight ?? ''}
                         onChange={(e) => onChange({ ...set, weight: Number(e.target.value) })}
                         className="text-center h-8 text-sm"
@@ -80,7 +82,7 @@ function SetRow({
             {type === 'BODYWEIGHT' && (
                 <Input
                     type="number"
-                    placeholder="Reps"
+                    placeholder={t.workout.logPastDialog.units.reps}
                     value={set.reps ?? ''}
                     onChange={(e) => onChange({ ...set, reps: Number(e.target.value) })}
                     className="text-center h-8 text-sm"
@@ -90,14 +92,14 @@ function SetRow({
                 <>
                     <Input
                         type="number"
-                        placeholder="Min"
+                        placeholder={t.workout.logPastDialog.units.min}
                         value={set.duration ? set.duration / 60 : ''}
                         onChange={(e) => onChange({ ...set, duration: Number(e.target.value) * 60 })}
                         className="text-center h-8 text-sm"
                     />
                     <Input
                         type="number"
-                        placeholder="km"
+                        placeholder={t.workout.logPastDialog.units.km}
                         value={set.distance ?? ''}
                         onChange={(e) => onChange({ ...set, distance: Number(e.target.value) })}
                         className="text-center h-8 text-sm"
@@ -120,6 +122,7 @@ function ExercisePicker({
 }: {
     onSelect: (exercise: { id: string; name: string; type: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'; muscleGroup: string; imageUrl?: string | null }) => void
 }) {
+    const { t } = useTranslation()
     const [search, setSearch] = useState('')
     const [addExerciseOpen, setAddExerciseOpen] = useState(false)
     const { data: exercises = [] } = useExercises()
@@ -133,7 +136,7 @@ function ExercisePicker({
             <div className="flex gap-2">
                 <input
                     type="text"
-                    placeholder="Search exercises..."
+                    placeholder={t.workout.logPastDialog.miniPicker.search}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     autoFocus
@@ -142,7 +145,7 @@ function ExercisePicker({
                 <button
                     onClick={() => setAddExerciseOpen(true)}
                     className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-lg border border-border bg-card text-primary hover:bg-accent hover:border-primary transition-all active:scale-95"
-                    title="Add custom exercise"
+                    title={t.workout.logPastDialog.miniPicker.addCustom}
                 >
                     <Plus size={18} />
                 </button>
@@ -157,8 +160,8 @@ function ExercisePicker({
                         <ExerciseImage imageUrl={e.imageUrl} name={e.name} size="sm" />
                         <div className="flex-1 min-w-0">
                             <p className="font-medium truncate">{e.name}</p>
-                            <span className="text-xs text-muted-foreground capitalize">
-                                {e.type.toLowerCase()}
+                            <span className="text-xs text-muted-foreground">
+                                {t.workout.addDialog.types[e.type as keyof typeof t.workout.addDialog.types]}
                             </span>
                         </div>
                     </button>
@@ -182,6 +185,7 @@ function ExercisePicker({
 }
 
 export default function LogPastWorkoutDialog({ open, onClose }: Props) {
+    const { t } = useTranslation()
     const queryClient = useQueryClient()
     const [step, setStep] = useState<Step>('info')
     const [name, setName] = useState('')
@@ -256,7 +260,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
 
     const handleSave = async () => {
         setError('')
-        if (!date) return setError('Date is required')
+        if (!date) return setError(t.workout.logPastDialog.dateRequired)
         setLoading(true)
 
         try {
@@ -292,7 +296,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
             queryClient.invalidateQueries({ queryKey: ['workouts'] })
             handleClose()
         } catch (err: any) {
-            setError(err.response?.data?.error ?? 'Something went wrong')
+            setError(err.response?.data?.error ?? t.workout.addDialog.errorGeneric)
         } finally {
             setLoading(false)
         }
@@ -326,7 +330,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                                 <ChevronLeft size={18} />
                             </button>
                         )}
-                        {step === 'info' ? 'Log Past Workout' : 'Exercises & Sets'}
+                        {step === 'info' ? t.workout.logPastDialog.titleInfo : t.workout.logPastDialog.titleExercises}
                     </DialogTitle>
                     <DialogDescription />
                 </DialogHeader>
@@ -335,15 +339,15 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                     {step === 'info' && (
                         <div className="flex flex-col gap-4 py-2">
                             <div className="flex flex-col gap-1.5">
-                                <Label>Workout name (optional)</Label>
+                                <Label>{t.workout.logPastDialog.nameLabel}</Label>
                                 <Input
-                                    placeholder="e.g. Push Day"
+                                    placeholder={t.workout.logPastDialog.namePlaceholder}
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </div>
                             <div className="flex flex-col gap-1.5">
-                                <Label>Date</Label>
+                                <Label>{t.workout.logPastDialog.dateLabel}</Label>
                                 <Input
                                     type="date"
                                     value={date}
@@ -351,7 +355,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                                 />
                             </div>
                             <div className="flex flex-col gap-1.5">
-                                <Label>Duration (optional)</Label>
+                                <Label>{t.workout.logPastDialog.durationLabel}</Label>
                                 <div className="flex items-center gap-2">
                                     <Input
                                         type="number"
@@ -377,8 +381,8 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                             <div className="flex flex-col gap-3 p-3 rounded-lg border border-border bg-muted/30">
                                 <div className="flex items-center justify-between">
                                     <div className="flex flex-col">
-                                        <Label className="text-sm font-medium">Rest Timer</Label>
-                                        <p className="text-xs text-muted-foreground">Record rest duration for this session</p>
+                                        <Label className="text-sm font-medium">{t.workout.logPastDialog.restTimerLabel}</Label>
+                                        <p className="text-xs text-muted-foreground">{t.workout.logPastDialog.restTimerDesc}</p>
                                     </div>
                                     <Switch
                                         checked={restTimerEnabled}
@@ -394,14 +398,14 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                                             className="w-20 h-8 text-center text-sm"
                                             min={0}
                                         />
-                                        <span className="text-xs text-muted-foreground">seconds</span>
+                                        <span className="text-xs text-muted-foreground">{t.workout.logPastDialog.seconds}</span>
                                     </div>
                                 )}
                             </div>
                             <div className="flex flex-col gap-1.5">
-                                <Label>Session note (optional)</Label>
+                                <Label>{t.workout.logPastDialog.noteLabel}</Label>
                                 <textarea
-                                    placeholder="How did it feel?"
+                                    placeholder={t.workout.logPastDialog.notePlaceholder}
                                     value={note}
                                     onChange={(e) => setNote(e.target.value)}
                                     className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm outline-none focus:border-primary transition-colors resize-none"
@@ -432,17 +436,17 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                                     <div className="flex items-center gap-2 px-5">
                                         {ex.exerciseType === 'WEIGHTED' && (
                                             <>
-                                                <span className="flex-1 text-center text-xs text-muted-foreground">Reps</span>
-                                                <span className="flex-1 text-center text-xs text-muted-foreground">kg</span>
+                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.workout.logPastDialog.units.reps}</span>
+                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.workout.logPastDialog.units.kg}</span>
                                             </>
                                         )}
                                         {ex.exerciseType === 'BODYWEIGHT' && (
-                                            <span className="flex-1 text-center text-xs text-muted-foreground">Reps</span>
+                                            <span className="flex-1 text-center text-xs text-muted-foreground">{t.workout.logPastDialog.units.reps}</span>
                                         )}
                                         {ex.exerciseType === 'CARDIO' && (
                                             <>
-                                                <span className="flex-1 text-center text-xs text-muted-foreground">Min</span>
-                                                <span className="flex-1 text-center text-xs text-muted-foreground">km</span>
+                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.workout.logPastDialog.units.min}</span>
+                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.workout.logPastDialog.units.km}</span>
                                             </>
                                         )}
                                         <div className="w-5" />
@@ -464,7 +468,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                                         className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors mt-1"
                                     >
                                         <Plus size={13} />
-                                        Add set
+                                        {t.workout.logPastDialog.addSet}
                                     </button>
                                 </div>
                             ))}
@@ -479,7 +483,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                                     className="flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-4 text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
                                 >
                                     <Plus size={16} />
-                                    Add Exercise
+                                    {t.workout.logPastDialog.addExercise}
                                 </button>
                             )}
 
@@ -491,17 +495,17 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                 <DialogFooter className="mt-4">
                     {step === 'info' ? (
                         <>
-                            <Button variant="outline" onClick={handleClose}>Cancel</Button>
+                            <Button variant="outline" onClick={handleClose}>{t.common.cancel}</Button>
                             <Button onClick={() => setStep('exercises')}>
-                                Next
+                                {t.workout.logPastDialog.nextBtn}
                                 <ChevronRight size={16} className="ml-1" />
                             </Button>
                         </>
                     ) : (
                         <>
-                            <Button variant="outline" onClick={handleClose}>Cancel</Button>
+                            <Button variant="outline" onClick={handleClose}>{t.common.cancel}</Button>
                             <Button onClick={handleSave} disabled={loading}>
-                                {loading ? 'Saving...' : 'Save Workout'}
+                                {loading ? t.workout.addDialog.saving : t.workout.logPastDialog.saveBtn}
                             </Button>
                         </>
                     )}
