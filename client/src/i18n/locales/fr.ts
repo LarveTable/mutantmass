@@ -148,6 +148,13 @@ export const fr: Dictionary = {
                 CARDIO: "Course, vélo, rameur"
             }
         },
+        finishDialog: {
+            title: "Terminer la séance",
+            noteLabel: "Note de la séance (optionnelle)",
+            notePlaceholder: "Comment c'était ? Des records ? Notes pour la prochaine fois...",
+            saving: "Enregistrement...",
+            finishBtn: "Terminer 🎉"
+        },
         addDialog: {
             addTitle: "Ajouter un exercice personnalisé",
             editTitle: "Modifier l'exercice",

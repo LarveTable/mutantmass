@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import {
     Dialog,
     DialogContent,
@@ -21,6 +22,7 @@ interface Props {
 // Component that will allow to set a global note for the workout
 
 export default function FinishWorkoutDialog({ open, onClose, onConfirm, isLoading }: Props) {
+    const { t } = useTranslation()
     const [note, setNote] = useState('')
 
     const handleConfirm = () => {
@@ -32,15 +34,15 @@ export default function FinishWorkoutDialog({ open, onClose, onConfirm, isLoadin
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-sm">
                 <DialogHeader>
-                    <DialogTitle>Finish Workout</DialogTitle>
+                    <DialogTitle>{t.workout.finishDialog.title}</DialogTitle>
                     <DialogDescription />
                 </DialogHeader>
 
                 <div className="flex flex-col gap-3 py-2">
                     <div className="flex flex-col gap-1.5">
-                        <Label>Session note (optional)</Label>
+                        <Label>{t.workout.finishDialog.noteLabel}</Label>
                         <Textarea
-                            placeholder="How did it feel? Any PRs? Notes for next time..."
+                            placeholder={t.workout.finishDialog.notePlaceholder}
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
                             className="resize-none"
@@ -50,9 +52,9 @@ export default function FinishWorkoutDialog({ open, onClose, onConfirm, isLoadin
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>Cancel</Button>
+                    <Button variant="outline" onClick={onClose}>{t.common.cancel}</Button>
                     <Button onClick={handleConfirm} disabled={isLoading}>
-                        {isLoading ? 'Saving...' : 'Finish 🎉'}
+                        {isLoading ? t.workout.finishDialog.saving : t.workout.finishDialog.finishBtn}
                     </Button>
                 </DialogFooter>
             </DialogContent>

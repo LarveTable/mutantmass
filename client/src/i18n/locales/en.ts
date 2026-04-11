@@ -146,6 +146,13 @@ export const en = {
                 CARDIO: "Running, cycling, rowing"
             }
         },
+        finishDialog: {
+            title: "Finish Workout",
+            noteLabel: "Session note (optional)",
+            notePlaceholder: "How did it feel? Any PRs? Notes for next time...",
+            saving: "Saving...",
+            finishBtn: "Finish 🎉"
+        },
         addDialog: {
             addTitle: "Add Custom Exercise",
             editTitle: "Edit Exercise",
