@@ -132,7 +132,7 @@ export default function WorkoutPage() {
         const duration = Math.floor((Date.now() - startTime) / 1000)
 
         let newName = undefined
-        if (workout?.name === 'Workout') {
+        if (workout?.name === t.workout.startDialog.fallbackName) {
             const exercises = workout?.workoutExercises?.map((we: any) => we.exercise) || []
             newName = getDefaultWorkoutName(exercises)
         }
