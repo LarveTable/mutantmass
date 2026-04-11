@@ -56,6 +56,7 @@ export function useUpdateWorkout() {
         onSuccess: (_data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['workout', variables.id] })
             queryClient.invalidateQueries({ queryKey: ['workouts'] })
+            queryClient.invalidateQueries({ queryKey: ['stats'] })
         },
     })
 }
@@ -94,7 +95,11 @@ export function useUpdateSet(workoutId: string) {
             )
             return res.data.set
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workout', workoutId] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['workout', workoutId] })
+            queryClient.invalidateQueries({ queryKey: ['workouts'] })
+            queryClient.invalidateQueries({ queryKey: ['stats'] })
+        },
     })
 }
 
@@ -135,7 +140,11 @@ export function useRemoveExercise(workoutId: string) {
         mutationFn: async (workoutExerciseId: string) => {
             await api.delete(`/workouts/${workoutId}/exercises/${workoutExerciseId}`)
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workout', workoutId] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['workout', workoutId] })
+            queryClient.invalidateQueries({ queryKey: ['workouts'] })
+            queryClient.invalidateQueries({ queryKey: ['stats'] })
+        },
     })
 }
 
@@ -146,7 +155,10 @@ export function useUpdateExerciseNote(workoutId: string) {
             const res = await api.patch(`/workouts/${workoutId}/exercises/${workoutExerciseId}`, { note })
             return res.data.workoutExercise
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workout', workoutId] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['workout', workoutId] })
+            queryClient.invalidateQueries({ queryKey: ['workouts'] })
+        },
     })
 }
 
@@ -157,7 +169,11 @@ export function useAddExercise(workoutId: string) {
             const res = await api.post(`/workouts/${workoutId}/exercises`, { exerciseId })
             return res.data.workoutExercise
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workout', workoutId] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['workout', workoutId] })
+            queryClient.invalidateQueries({ queryKey: ['workouts'] })
+            queryClient.invalidateQueries({ queryKey: ['stats'] })
+        },
     })
 }
 
@@ -183,7 +199,11 @@ export function useAddSet(workoutId: string) {
             )
             return res.data.set
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workout', workoutId] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['workout', workoutId] })
+            queryClient.invalidateQueries({ queryKey: ['workouts'] })
+            queryClient.invalidateQueries({ queryKey: ['stats'] })
+        },
     })
 }
 
@@ -199,7 +219,11 @@ export function useDeleteSet(workoutId: string) {
         }) => {
             await api.delete(`/workouts/${workoutId}/exercises/${workoutExerciseId}/sets/${setId}`)
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workout', workoutId] }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['workout', workoutId] })
+            queryClient.invalidateQueries({ queryKey: ['workouts'] })
+            queryClient.invalidateQueries({ queryKey: ['stats'] })
+        },
     })
 }
 

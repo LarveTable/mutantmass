@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import { X, Dumbbell, Clock, Trophy, StickyNote, Pencil, Trash2, Plus } from 'lucide-react'
 import {
     useWorkout,
@@ -67,6 +68,7 @@ function getBestSet(sets: any[]) {
 }
 
 export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
+    const { t, lang } = useTranslation()
     const { data: workout, isLoading } = useWorkout(workoutId)
 
     // Mutations
@@ -96,7 +98,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
         exerciseType: 'WEIGHTED' | 'BODYWEIGHT' | 'CARDIO'
         currentSet?: any
     } | null>(null)
-    
+
     const [confirmDialog, setConfirmDialog] = useState<{
         open: boolean
         type: 'exercise' | 'set' | null
@@ -133,7 +135,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
     if (isLoading || !workout) {
         return (
             <div className="fixed inset-0 z-50 bg-background flex items-center justify-center">
-                <p className="text-muted-foreground">Loading workout...</p>
+                <p className="text-muted-foreground">{t.history.detailModal.loading}</p>
             </div>
         )
     }
@@ -141,7 +143,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
     const totalVolume = getTotalVolume(workout.workoutExercises)
     const totalSets = workout.workoutExercises.reduce((t: number, we: any) => t + we.sets.length, 0)
 
-    const formattedDate = new Date(workout.date).toLocaleDateString('en-US', {
+    const formattedDate = new Date(workout.date).toLocaleDateString(lang, {
         weekday: 'long',
         month: 'long',
         day: 'numeric',
@@ -199,7 +201,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                             className="text-lg font-bold cursor-pointer hover:text-primary transition-colors flex items-center gap-2"
                             onClick={() => setEditingName(true)}
                         >
-                            {workout.name ?? 'Workout'}
+                            {workout.name ?? t.workout.active.defaultName}
                             <Pencil size={13} className="text-muted-foreground" />
                         </h1>
                     )}
@@ -222,12 +224,12 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                         <span className="text-base font-bold">
                             {workout.duration ? formatDuration(workout.duration) : '-'}
                         </span>
-                        <span className="text-xs text-muted-foreground">Duration</span>
+                        <span className="text-xs text-muted-foreground">{t.history.detailModal.duration}</span>
                     </div>
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3">
                         <Trophy size={16} className="text-primary mb-1" />
                         <span className="text-base font-bold">{totalSets}</span>
-                        <span className="text-xs text-muted-foreground">Sets</span>
+                        <span className="text-xs text-muted-foreground">{t.history.detailModal.sets}</span>
                     </div>
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-3">
                         <Dumbbell size={16} className="text-primary mb-1" />
@@ -235,7 +237,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                             {totalVolume > 0 ? totalVolume.toLocaleString() : '-'}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                            {totalVolume > 0 ? 'kg vol.' : 'Volume'}
+                            {totalVolume > 0 ? t.history.detailModal.kgVol : t.history.detailModal.volume}
                         </span>
                     </div>
                 </div>
@@ -246,7 +248,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                         <div className="flex items-center gap-2">
                             <StickyNote size={14} className="text-primary" />
                             <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">
-                                Session Note
+                                {t.history.detailModal.noteLabel}
                             </p>
                         </div>
                         {!editingNote && (
@@ -263,7 +265,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                             <Textarea
                                 value={noteText}
                                 onChange={(e) => setNoteText(e.target.value)}
-                                placeholder="How did it feel? Any PRs? Notes for next time..."
+                                placeholder={t.workout.summary.sessionNote}
                                 className="resize-none"
                                 rows={3}
                                 autoFocus
@@ -273,16 +275,16 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                     setNoteText(workout.note ?? '')
                                     setEditingNote(false)
                                 }}>
-                                    Cancel
+                                    {t.common.cancel}
                                 </Button>
                                 <Button size="sm" onClick={handleSaveNote} disabled={updateWorkout.isPending}>
-                                    Save
+                                    {t.common.save}
                                 </Button>
                             </div>
                         </div>
                     ) : (
                         <p className="text-sm">
-                            {workout.note || <span className="text-muted-foreground italic">No note</span>}
+                            {workout.note || <span className="text-muted-foreground italic">{t.history.detailModal.noNote}</span>}
                         </p>
                     )}
                 </div>
@@ -290,7 +292,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                 {/* Exercises */}
                 <div className="flex flex-col gap-3">
                     <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                        Exercises
+                        {t.history.detailModal.exercises}
                     </h2>
                     {workout.workoutExercises.map((we: any) => {
                         const bestSet = getBestSet(we.sets)
@@ -308,7 +310,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                     <div className="flex-1">
                                         <p className="font-semibold">{we.exercise.name}</p>
                                         <p className="text-xs text-muted-foreground">
-                                            {we.sets.length} set{we.sets.length !== 1 ? 's' : ''}
+                                            {we.sets.length} {we.sets.length !== 1 ? t.workout.summary.sets : t.workout.summary.set}
                                             {volume > 0 && ` · ${volume.toLocaleString()} kg`}
                                         </p>
                                     </div>
@@ -351,20 +353,20 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                         <span className="text-xs text-muted-foreground text-center">#</span>
                                         {we.exercise.type === 'WEIGHTED' && (
                                             <>
-                                                <span className="text-xs text-muted-foreground text-center">Reps</span>
-                                                <span className="text-xs text-muted-foreground text-center">kg</span>
+                                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.reps}</span>
+                                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.kg}</span>
                                             </>
                                         )}
                                         {we.exercise.type === 'BODYWEIGHT' && (
                                             <>
-                                                <span className="text-xs text-muted-foreground text-center">Reps</span>
+                                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.reps}</span>
                                                 <span className="text-xs text-muted-foreground text-center" />
                                             </>
                                         )}
                                         {we.exercise.type === 'CARDIO' && (
                                             <>
-                                                <span className="text-xs text-muted-foreground text-center">Time</span>
-                                                <span className="text-xs text-muted-foreground text-center">km</span>
+                                                <span className="text-xs text-muted-foreground text-center">{t.workout.setLogger.time}</span>
+                                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.km}</span>
                                             </>
                                         )}
                                         {/* Spacers for edit/delete columns */}
@@ -430,8 +432,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                     {/* Best set */}
                                     {['WEIGHTED', 'BODYWEIGHT'].includes(we.exercise.type) && bestSet && (
                                         <p className="text-xs text-primary mt-1 px-1">
-                                            🏆 Best: {bestSet.reps ?? 0} reps
-                                            {bestSet.weight ? ` @ ${bestSet.weight} kg` : ''}
+                                            {t.workout.summary.bestSetPart1}{bestSet.reps ?? 0}{t.workout.summary.bestSetPart2}{bestSet.weight ? `${bestSet.weight}${t.workout.summary.bestSetPart3}` : ''}
                                         </p>
                                     )}
 
@@ -449,7 +450,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                         className="flex items-center justify-center gap-1.5 mt-1 py-1.5 rounded-lg border border-dashed border-border text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
                                     >
                                         <Plus size={13} />
-                                        Add Set
+                                        {t.history.detailModal.addSet}
                                     </button>
                                 </div>
                             </div>
@@ -464,7 +465,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                     onClick={() => setExercisePickerOpen(true)}
                 >
                     <Plus size={18} className="mr-2" />
-                    Add Exercise
+                    {t.history.detailModal.addExercise}
                 </Button>
             </div>
 
@@ -510,17 +511,17 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                     if (confirmDialog.type === 'exercise') {
                         removeExercise.mutate(confirmDialog.workoutExerciseId)
                     } else if (confirmDialog.type === 'set' && confirmDialog.setId) {
-                        deleteSet.mutate({ 
-                            workoutExerciseId: confirmDialog.workoutExerciseId, 
-                            setId: confirmDialog.setId 
+                        deleteSet.mutate({
+                            workoutExerciseId: confirmDialog.workoutExerciseId,
+                            setId: confirmDialog.setId
                         })
                     }
                 }}
-                title={confirmDialog.type === 'exercise' ? 'Remove Exercise?' : 'Delete Set?'}
-                description={confirmDialog.type === 'exercise' 
-                    ? 'Are you sure you want to remove this exercise and all its sets from this workout?' 
-                    : 'Are you sure you want to delete this set? This action cannot be undone.'}
-                confirmText={confirmDialog.type === 'exercise' ? 'Remove' : 'Delete'}
+                title={confirmDialog.type === 'exercise' ? t.history.detailModal.removeExerciseConfirm.title : t.history.detailModal.deleteSetConfirm.title}
+                description={confirmDialog.type === 'exercise'
+                    ? t.history.detailModal.removeExerciseConfirm.description
+                    : t.history.detailModal.deleteSetConfirm.description}
+                confirmText={confirmDialog.type === 'exercise' ? t.history.detailModal.removeExerciseConfirm.confirm : t.history.detailModal.deleteSetConfirm.confirm}
                 variant="destructive"
             />
         </div>

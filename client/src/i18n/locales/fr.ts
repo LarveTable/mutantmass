@@ -418,6 +418,28 @@ export const fr: Dictionary = {
             title: "Supprimer l'entraînement ?",
             description: "Es-tu sûr de vouloir supprimer cet entraînement ? Cela retirera tous les exercices et séries enregistrées pour cette séance. Cette action est irréversible.",
             confirm: "Supprimer"
+        },
+        detailModal: {
+            loading: "Chargement de la séance...",
+            duration: "Durée",
+            sets: "Séries",
+            volume: "Volume",
+            kgVol: "vol. kg",
+            noteLabel: "Note de la séance",
+            noNote: "Aucune note",
+            exercises: "Exercices",
+            addSet: "Ajouter une série",
+            addExercise: "Ajouter un exercice",
+            removeExerciseConfirm: {
+                title: "Retirer l'exercice ?",
+                description: "Es-tu sûr de vouloir retirer cet exercice et toutes ses séries de cet entraînement ?",
+                confirm: "Retirer"
+            },
+            deleteSetConfirm: {
+                title: "Supprimer la série ?",
+                description: "Es-tu sûr de vouloir supprimer cette série ? Cette action est irréversible.",
+                confirm: "Supprimer"
+            }
         }
     },
     dashboard: {

@@ -416,6 +416,28 @@ export const en = {
             title: "Delete Workout?",
             description: "Are you sure you want to delete this workout? This will remove all exercises and sets recorded for this session. This action cannot be undone.",
             confirm: "Delete"
+        },
+        detailModal: {
+            loading: "Loading workout...",
+            duration: "Duration",
+            sets: "Sets",
+            volume: "Volume",
+            kgVol: "kg vol.",
+            noteLabel: "Session Note",
+            noNote: "No note",
+            exercises: "Exercises",
+            addSet: "Add Set",
+            addExercise: "Add Exercise",
+            removeExerciseConfirm: {
+                title: "Remove Exercise?",
+                description: "Are you sure you want to remove this exercise and all its sets from this workout?",
+                confirm: "Remove"
+            },
+            deleteSetConfirm: {
+                title: "Delete Set?",
+                description: "Are you sure you want to delete this set? This action cannot be undone.",
+                confirm: "Delete"
+            }
         }
     },
     dashboard: {

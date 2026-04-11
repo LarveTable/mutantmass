@@ -190,7 +190,7 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                                             onClick={() => handleExerciseSelect(exercise.id)}
                                             className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:bg-accent transition-colors text-left"
                                         >
-                                            <ExerciseImage imageUrl={exercise.imageUrl} name={exercise.name} size="lg" zoomable />
+                                            <ExerciseImage imageUrl={exercise.imageUrl} name={exercise.name} size="lg" />
                                             <span className="font-medium">{exercise.name}</span>
                                         </button>
                                     ))}
