@@ -130,6 +130,10 @@ export const en = {
                 confirm: "Remove"
             }
         },
+        noteDialog: {
+            label: "Exercise note",
+            placeholder: "Form cues, feelings, things to remember..."
+        },
         addDialog: {
             addTitle: "Add Custom Exercise",
             editTitle: "Edit Exercise",
@@ -342,6 +346,7 @@ export const en = {
         processing: "Processing...",
         confirm: "Confirm",
         cancel: "Cancel",
+        save: "Save",
         search: "Search...",
         noData: "No data"
     }

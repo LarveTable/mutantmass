@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import {
     Dialog,
     DialogContent,
@@ -30,6 +31,7 @@ export default function ExerciseNoteDialog({
     onConfirm,
     isLoading,
 }: Props) {
+    const { t } = useTranslation()
     const [note, setNote] = useState(initialNote ?? '')
 
     useEffect(() => {
@@ -45,9 +47,9 @@ export default function ExerciseNoteDialog({
                 </DialogHeader>
 
                 <div className="flex flex-col gap-1.5 py-2">
-                    <Label>Exercise note</Label>
+                    <Label>{t.workout.noteDialog.label}</Label>
                     <Textarea
-                        placeholder="Form cues, feelings, things to remember..."
+                        placeholder={t.workout.noteDialog.placeholder}
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
                         className="resize-none"
@@ -56,9 +58,9 @@ export default function ExerciseNoteDialog({
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>Cancel</Button>
+                    <Button variant="outline" onClick={onClose}>{t.common.cancel}</Button>
                     <Button onClick={() => onConfirm(note)} disabled={isLoading}>
-                        Save
+                        {t.common.save}
                     </Button>
                 </DialogFooter>
             </DialogContent>

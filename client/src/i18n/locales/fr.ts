@@ -132,6 +132,10 @@ export const fr: Dictionary = {
                 confirm: "Retirer"
             }
         },
+        noteDialog: {
+            label: "Note de l'exercice",
+            placeholder: "Astuces de forme, ressentis, choses à retenir..."
+        },
         addDialog: {
             addTitle: "Ajouter un exercice personnalisé",
             editTitle: "Modifier l'exercice",
@@ -344,6 +348,7 @@ export const fr: Dictionary = {
         processing: "Traitement...",
         confirm: "Confirmer",
         cancel: "Annuler",
+        save: "Enregistrer",
         search: "Rechercher...",
         noData: "Aucune donnée"
     }
