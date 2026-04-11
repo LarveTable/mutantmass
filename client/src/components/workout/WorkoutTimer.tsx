@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import { Clock } from 'lucide-react'
 
 interface Props {
@@ -14,6 +15,7 @@ function formatDuration(seconds: number) {
 }
 
 export default function WorkoutTimer({ startTime }: Props) {
+    const { t } = useTranslation()
     const [elapsed, setElapsed] = useState(Math.floor((Date.now() - startTime) / 1000))
 
     useEffect(() => {
@@ -26,7 +28,7 @@ export default function WorkoutTimer({ startTime }: Props) {
     return (
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
             <Clock size={16} className="text-primary" />
-            <span className="text-sm text-muted-foreground">Duration</span>
+            <span className="text-sm text-muted-foreground">{t.workout.timer.duration}</span>
             <span className="ml-auto font-mono font-semibold tabular-nums">
                 {formatDuration(elapsed)}
             </span>

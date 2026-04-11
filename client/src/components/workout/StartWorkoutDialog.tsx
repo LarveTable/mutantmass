@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from '@/context/LanguageContext'
 import {
     Dialog,
     DialogContent,
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }: Props) {
+    const { t } = useTranslation()
     const [name, setName] = useState('')
     const [restTimerEnabled, setRestTimerEnabled] = useState(false)
     const [restDuration, setRestDuration] = useState(90)
@@ -50,7 +52,7 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
     }
 
     const handleStart = () => {
-        const defaultName = selectedTemplate ? (selectedTemplate.name || 'Workout') : 'Workout'
+        const defaultName = selectedTemplate ? (selectedTemplate.name || t.workout.startDialog.fallbackName) : t.workout.startDialog.fallbackName
         onStart(name || defaultName, restTimerEnabled ? restDuration : null, selectedTemplate)
     }
 
@@ -68,21 +70,20 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
         <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent className="max-w-sm">
                 <DialogHeader>
-                    <DialogTitle>Start Workout</DialogTitle>
+                    <DialogTitle>{t.workout.startDialog.title}</DialogTitle>
                     <DialogDescription />
                 </DialogHeader>
 
                 <div className="flex flex-col gap-5 py-2">
                     {/* Template picker */}
                     <div className="flex flex-col gap-1.5">
-                        <Label>Base on previous workout (optional)</Label>
+                        <Label>{t.workout.startDialog.baseOnPrevious}</Label>
                         {selectedTemplate ? (
                             <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2">
                                 <div>
-                                    <p className="text-sm font-medium">{selectedTemplate.name ?? 'Workout'}</p>
+                                    <p className="text-sm font-medium">{selectedTemplate.name ?? t.workout.startDialog.fallbackName}</p>
                                     <p className="text-xs text-muted-foreground">
-                                        {selectedTemplate.workoutExercises.length} exercise
-                                        {selectedTemplate.workoutExercises.length !== 1 ? 's' : ''}
+                                        {selectedTemplate.workoutExercises.length} {selectedTemplate.workoutExercises.length !== 1 ? t.workout.startDialog.exercises : t.workout.startDialog.exercise}
                                     </p>
                                 </div>
                                 <button
@@ -98,7 +99,7 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                                     onClick={() => setTemplatePickerOpen((v) => !v)}
                                     className="flex w-full items-center justify-between rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground hover:bg-accent transition-colors"
                                 >
-                                    <span>Select a workout...</span>
+                                    <span>{t.workout.startDialog.selectWorkout}</span>
                                     <ChevronDown size={16} />
                                 </button>
 
@@ -106,7 +107,7 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                                     <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg border border-border bg-card shadow-lg overflow-hidden">
                                         <div className="p-2 border-b border-border">
                                             <Input
-                                                placeholder="Search workouts..."
+                                                placeholder={t.workout.startDialog.searchWorkouts}
                                                 value={templateSearch}
                                                 onChange={(e) => setTemplateSearch(e.target.value)}
                                                 autoFocus
@@ -116,7 +117,7 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                                         <div className="max-h-48 overflow-y-auto">
                                             {filteredWorkouts.length === 0 && (
                                                 <p className="text-center text-xs text-muted-foreground py-4">
-                                                    No workouts found
+                                                    {t.workout.startDialog.noWorkoutsFound}
                                                 </p>
                                             )}
                                             {filteredWorkouts.map((workout: any, index: number) => (
@@ -126,7 +127,7 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                                                     className="flex w-full flex-col gap-0.5 px-3 py-2.5 text-left hover:bg-accent transition-colors"
                                                 >
                                                     <div className="flex items-center justify-between gap-2">
-                                                        <p className="text-sm font-medium">{workout.name ?? 'Workout'}</p>
+                                                        <p className="text-sm font-medium">{workout.name ?? t.workout.startDialog.fallbackName}</p>
                                                         <p className="text-[10px] text-muted-foreground whitespace-nowrap">
                                                             {new Date(workout.date).toLocaleDateString(undefined, {
                                                                 month: 'short',
@@ -139,7 +140,7 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                                                         {workout.workoutExercises.map((we: any) => we.exercise.name).join(', ')}
                                                     </p>
                                                     {index === 0 && (
-                                                        <p className="text-[11px] font-medium text-primary mt-0.5">Last workout</p>
+                                                        <p className="text-[11px] font-medium text-primary mt-0.5">{t.workout.startDialog.lastWorkout}</p>
                                                     )}
                                                 </button>
                                             ))}
@@ -152,10 +153,10 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
 
                     {/* Workout name */}
                     <div className="flex flex-col gap-1.5">
-                        <Label htmlFor="workout-name">Workout name (optional)</Label>
+                        <Label htmlFor="workout-name">{t.workout.logPastDialog.nameLabel}</Label>
                         <Input
                             id="workout-name"
-                            placeholder="e.g. Push Day"
+                            placeholder={t.workout.logPastDialog.namePlaceholder}
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                         />
@@ -164,8 +165,8 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                     {/* Rest timer toggle */}
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="font-medium text-sm">Rest Timer</p>
-                            <p className="text-xs text-muted-foreground">Auto-start after each set</p>
+                            <p className="font-medium text-sm">{t.workout.logPastDialog.restTimerLabel}</p>
+                            <p className="text-xs text-muted-foreground">{t.workout.startDialog.restAutoStart}</p>
                         </div>
                         <Switch
                             checked={restTimerEnabled}
@@ -176,7 +177,7 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                     {/* Rest duration presets */}
                     {restTimerEnabled && (
                         <div className="flex flex-col gap-2">
-                            <Label>Rest duration</Label>
+                            <Label>{t.workout.startDialog.restDuration}</Label>
                             <div className="grid grid-cols-4 gap-2">
                                 {REST_PRESETS.map((preset) => (
                                     <button
@@ -200,16 +201,16 @@ export default function StartWorkoutDialog({ open, onClose, onStart, isLoading }
                                     min={10}
                                     max={600}
                                 />
-                                <span className="text-sm text-muted-foreground">seconds (custom)</span>
+                                <span className="text-sm text-muted-foreground">{t.workout.startDialog.secondsCustom}</span>
                             </div>
                         </div>
                     )}
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={handleClose}>Cancel</Button>
+                    <Button variant="outline" onClick={handleClose}>{t.common.cancel}</Button>
                     <Button onClick={handleStart} disabled={isLoading}>
-                        {isLoading ? 'Starting...' : 'Start Workout'}
+                        {isLoading ? t.workout.startDialog.starting : t.workout.startDialog.startBtn}
                     </Button>
                 </DialogFooter>
             </DialogContent>

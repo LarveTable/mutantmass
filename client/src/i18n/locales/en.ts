@@ -222,6 +222,25 @@ export const en = {
                 confirm: "Delete"
             }
         },
+        startDialog: {
+            title: "Start Workout",
+            baseOnPrevious: "Base on previous workout (optional)",
+            exercises: "exercises",
+            exercise: "exercise",
+            selectWorkout: "Select a workout...",
+            searchWorkouts: "Search workouts...",
+            noWorkoutsFound: "No workouts found",
+            fallbackName: "Workout",
+            lastWorkout: "Last workout",
+            restAutoStart: "Auto-start after each set",
+            restDuration: "Rest duration",
+            secondsCustom: "seconds (custom)",
+            starting: "Starting...",
+            startBtn: "Start Workout"
+        },
+        timer: {
+            duration: "Duration"
+        },
         addDialog: {
             addTitle: "Add Custom Exercise",
             editTitle: "Edit Exercise",

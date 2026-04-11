@@ -224,6 +224,25 @@ export const fr: Dictionary = {
                 confirm: "Supprimer"
             }
         },
+        startDialog: {
+            title: "Démarrer la séance",
+            baseOnPrevious: "Basée sur une séance précédente (optionnel)",
+            exercises: "exercices",
+            exercise: "exercice",
+            selectWorkout: "Sélectionner une séance...",
+            searchWorkouts: "Rechercher une séance...",
+            noWorkoutsFound: "Aucune séance trouvée",
+            fallbackName: "Entraînement",
+            lastWorkout: "Dernière séance",
+            restAutoStart: "Démarrage auto après chaque série",
+            restDuration: "Durée du repos",
+            secondsCustom: "secondes (personnalisé)",
+            starting: "Démarrage...",
+            startBtn: "Démarrer"
+        },
+        timer: {
+            duration: "Durée"
+        },
         addDialog: {
             addTitle: "Ajouter un exercice personnalisé",
             editTitle: "Modifier l'exercice",
