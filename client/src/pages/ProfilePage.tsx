@@ -196,9 +196,9 @@ function ChangePasswordDialog({
                             {error && <p className="text-sm text-destructive">{error}</p>}
                         </div>
                         <DialogFooter>
-                            <Button variant="outline" onClick={handleClose}>{t.profile.common.cancel}</Button>
+                            <Button variant="outline" onClick={handleClose}>{t.common.cancel}</Button>
                             <Button onClick={handleSave} disabled={changePassword.isPending}>
-                                {changePassword.isPending ? t.profile.common.saving : t.profile.common.update}
+                                {changePassword.isPending ? t.common.processing : t.profile.common.update}
                             </Button>
                         </DialogFooter>
                     </>
@@ -251,7 +251,7 @@ function DeleteAccountDialog({
                     {error && <p className="text-sm text-destructive">{error}</p>}
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>{t.profile.deleteDialog.cancel}</Button>
+                    <Button variant="outline" onClick={onClose}>{t.common.cancel}</Button>
                     <Button variant="destructive" onClick={handleConfirm}>
                         {t.profile.deleteDialog.confirm}
                     </Button>
@@ -309,7 +309,7 @@ export default function ProfilePage() {
 
     if (isLoading) return (
         <div className="flex min-h-[80vh] items-center justify-center">
-            <p className="text-muted-foreground">{t.profile.common.loading}</p>
+            <p className="text-muted-foreground">{t.common.loading}</p>
         </div>
     )
 
@@ -342,7 +342,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="text-right">
                         <p className={`text-sm font-semibold ${bmiInfo.color}`}>{bmiInfo.label}</p>
-                        <p className="text-xs text-muted-foreground">{profile?.weight}{t.profile.common.kg} · {profile?.height}{t.profile.common.cm}</p>
+                        <p className="text-xs text-muted-foreground">{profile?.weight}{t.common.units.kg} · {profile?.height}{t.profile.common.cm}</p>
                     </div>
                 </div>
             )}
@@ -353,7 +353,7 @@ export default function ProfilePage() {
                     {t.profile.personalInfo.title}
                 </p>
                 <EditableField
-                    label={t.profile.personalInfo.name}
+                    label={t.common.name}
                     value={profile?.name}
                     onSave={handleUpdate('name')}
                     icon={User}
@@ -382,7 +382,7 @@ export default function ProfilePage() {
                     value={profile?.weight}
                     onSave={handleUpdate('weight')}
                     type="number"
-                    unit={t.profile.common.kg}
+                    unit={t.common.units.kg}
                     icon={Scale}
                 />
                 <EditableField

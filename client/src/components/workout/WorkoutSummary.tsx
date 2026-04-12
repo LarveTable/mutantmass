@@ -169,20 +169,20 @@ export default function WorkoutSummary({ workout, onDone }: Props) {
                                     <span className="text-xs text-muted-foreground text-center">#</span>
                                     {we.exercise.type === 'WEIGHTED' && (
                                         <>
-                                            <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.reps}</span>
-                                            <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.kg}</span>
+                                            <span className="text-xs text-muted-foreground text-center">{t.common.units.reps}</span>
+                                            <span className="text-xs text-muted-foreground text-center">{t.common.units.kg}</span>
                                         </>
                                     )}
                                     {we.exercise.type === 'BODYWEIGHT' && (
                                         <>
-                                            <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.reps}</span>
+                                            <span className="text-xs text-muted-foreground text-center">{t.common.units.reps}</span>
                                             <span className="text-xs text-muted-foreground text-center" />
                                         </>
                                     )}
                                     {we.exercise.type === 'CARDIO' && (
                                         <>
                                             <span className="text-xs text-muted-foreground text-center">{t.workout.setLogger.time}</span>
-                                            <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.km}</span>
+                                            <span className="text-xs text-muted-foreground text-center">{t.common.units.km}</span>
                                         </>
                                     )}
                                 </div>

@@ -18,21 +18,24 @@ const navLinks = [
 export default function BottomNav() {
     const { t } = useTranslation()
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background"
+        <nav
+            className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background"
             style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         >
-            <div className="flex h-14 items-center justify-around px-2">
+            <div className="flex h-14 items-center">
                 {navLinks.map(({ to, icon: Icon, key }) => (
                     <NavLink
                         key={to}
                         to={to}
                         className={({ isActive }) =>
-                            `flex flex-col items-center gap-1 px-4 py-2 text-xs transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground'
+                            `flex flex-1 flex-col items-center gap-1 py-2 text-xs transition-colors min-w-0 ${isActive ? 'text-primary' : 'text-muted-foreground'
                             }`
                         }
                     >
-                        <Icon size={22} />
-                        <span>{t.nav[key as keyof typeof t.nav]}</span>
+                        <Icon size={22} className="shrink-0" />
+                        <span className="truncate w-full text-center leading-tight px-1">
+                            {t.nav[key as keyof typeof t.nav]}
+                        </span>
                     </NavLink>
                 ))}
             </div>

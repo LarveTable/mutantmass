@@ -25,23 +25,23 @@ interface Props {
 }
 
 const TYPES = [
-    { value: 'WEIGHTED', label: 'Weighted' },
-    { value: 'BODYWEIGHT', label: 'Bodyweight' },
-    { value: 'CARDIO', label: 'Cardio' },
+    { value: 'WEIGHTED' },
+    { value: 'BODYWEIGHT' },
+    { value: 'CARDIO' },
 ] as const
 
 const MUSCLE_GROUPS = [
-    { value: 'CHEST', label: 'Chest' },
-    { value: 'BACK', label: 'Back' },
-    { value: 'SHOULDERS', label: 'Shoulders' },
-    { value: 'BICEPS', label: 'Biceps' },
-    { value: 'TRICEPS', label: 'Triceps' },
-    { value: 'FOREARMS', label: 'Forearms' },
-    { value: 'LEGS', label: 'Legs' },
-    { value: 'GLUTES', label: 'Glutes' },
-    { value: 'CORE', label: 'Core' },
-    { value: 'CARDIO', label: 'Cardio' },
-    { value: 'FULL_BODY', label: 'Full Body' },
+    { value: 'CHEST' },
+    { value: 'BACK' },
+    { value: 'SHOULDERS' },
+    { value: 'BICEPS' },
+    { value: 'TRICEPS' },
+    { value: 'FOREARMS' },
+    { value: 'LEGS' },
+    { value: 'GLUTES' },
+    { value: 'CORE' },
+    { value: 'CARDIO' },
+    { value: 'FULL_BODY' },
 ] as const
 
 const PRISMA_TO_BODY_HIGHLIGHTER: Record<string, string[]> = {
@@ -315,7 +315,7 @@ export default function AddExerciseDialog({ open, onClose, exercise, onSuccess }
                     <DialogFooter>
                         <Button variant="outline" onClick={handleClose}>{t.common.cancel}</Button>
                         <Button onClick={handleInitialSubmit} disabled={loading}>
-                            {loading ? (isEdit ? t.workout.addDialog.saving : t.workout.addDialog.adding) : (isEdit ? t.workout.addDialog.saveChanges : t.workout.addDialog.addExerciseBtn)}
+                            {loading ? t.common.processing : (isEdit ? t.workout.addDialog.saveChanges : t.workout.addDialog.addExerciseBtn)}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

@@ -5,6 +5,7 @@ const STORAGE_KEY = 'trackedExercises'
 interface TrackedExercise {
     id: string
     name: string
+    imageUrl?: string | null
 }
 
 export function useTrackedExercises() {

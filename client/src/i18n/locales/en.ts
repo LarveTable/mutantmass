@@ -10,18 +10,13 @@ export const en = {
         common: {
             notSet: "Not set",
             error: "Something went wrong",
-            cancel: "Cancel",
-            saving: "Saving...",
             update: "Update",
-            loading: "Loading...",
             years: "years",
-            kg: "kg",
             cm: "cm",
-            version: "MutantMass v0.1.0-beta"
+            version: "MutantMass v0.2.0-beta"
         },
         personalInfo: {
             title: "Personal Info",
-            name: "Name",
             noName: "No name set",
             age: "Age",
             sex: "Sex",
@@ -65,7 +60,6 @@ export const en = {
             description: "Listen up. This permanently deletes your account, your workouts, and all your sick gains from our servers. You can't undo this.",
             confirmLabel: "Enter your password to prove it's you",
             placeholder: "Your password",
-            cancel: "Nah, keep it",
             confirm: "Delete Everything",
             errorPassword: "Please enter your password"
         }
@@ -90,7 +84,6 @@ export const en = {
         register: {
             title: "Create an account",
             description: "Start tracking your progress",
-            name: "Name",
             namePlaceholder: "Your Name",
             confirmPassword: "Confirm password",
             betaCode: "Beta Access Code",
@@ -137,7 +130,6 @@ export const en = {
         picker: {
             title: "Select Type",
             back: "Back",
-            search: "Search exercises...",
             addCustom: "Add custom exercise",
             noFound: "No exercises found",
             typeDesc: {
@@ -150,13 +142,11 @@ export const en = {
             title: "Finish Workout",
             noteLabel: "Session note (optional)",
             notePlaceholder: "How did it feel? Any PRs? Notes for next time...",
-            saving: "Saving...",
             finishBtn: "Finish 🎉"
         },
         listDialog: {
             title: "Added Exercises",
             description: "Manage your custom exercises",
-            loading: "Loading exercises...",
             empty: "No custom exercises added yet.",
             publicInfo: "Public",
             privateInfo: "Private",
@@ -190,12 +180,6 @@ export const en = {
             miniPicker: {
                 search: "Search exercises...",
                 addCustom: "Add custom exercise"
-            },
-            units: {
-                reps: "Reps",
-                kg: "kg",
-                min: "Min",
-                km: "km"
             }
         },
         logSetDialog: {
@@ -274,8 +258,6 @@ export const en = {
             makePublicDesc: "Share with other users",
             saveChanges: "Save Changes",
             addExerciseBtn: "Add Exercise",
-            saving: "Saving...",
-            adding: "Adding...",
             errorGeneric: "Something went wrong",
             publicWarning: {
                 title: "Make Exercise Public?",
@@ -418,7 +400,6 @@ export const en = {
             confirm: "Delete"
         },
         detailModal: {
-            loading: "Loading workout...",
             duration: "Duration",
             sets: "Sets",
             volume: "Volume",
@@ -494,7 +475,16 @@ export const en = {
         cancel: "Cancel",
         save: "Save",
         search: "Search...",
-        noData: "No data"
+        noData: "No data",
+        name: "Name",
+        units: {
+            kg: "kg",
+            reps: "Reps",
+            min: "Min",
+            km: "km",
+            h: "h",
+            m: "m"
+        }
     }
 }
 

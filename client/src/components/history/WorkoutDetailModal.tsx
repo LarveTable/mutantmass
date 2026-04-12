@@ -135,7 +135,7 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
     if (isLoading || !workout) {
         return (
             <div className="fixed inset-0 z-50 bg-background flex items-center justify-center">
-                <p className="text-muted-foreground">{t.history.detailModal.loading}</p>
+                <p className="text-muted-foreground">{t.common.loading}</p>
             </div>
         )
     }
@@ -353,20 +353,20 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                         <span className="text-xs text-muted-foreground text-center">#</span>
                                         {we.exercise.type === 'WEIGHTED' && (
                                             <>
-                                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.reps}</span>
-                                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.kg}</span>
+                                                <span className="text-xs text-muted-foreground text-center">{t.common.units.reps}</span>
+                                                <span className="text-xs text-muted-foreground text-center">{t.common.units.kg}</span>
                                             </>
                                         )}
                                         {we.exercise.type === 'BODYWEIGHT' && (
                                             <>
-                                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.reps}</span>
+                                                <span className="text-xs text-muted-foreground text-center">{t.common.units.reps}</span>
                                                 <span className="text-xs text-muted-foreground text-center" />
                                             </>
                                         )}
                                         {we.exercise.type === 'CARDIO' && (
                                             <>
                                                 <span className="text-xs text-muted-foreground text-center">{t.workout.setLogger.time}</span>
-                                                <span className="text-xs text-muted-foreground text-center">{t.workout.logPastDialog.units.km}</span>
+                                                <span className="text-xs text-muted-foreground text-center">{t.common.units.km}</span>
                                             </>
                                         )}
                                         {/* Spacers for edit/delete columns */}

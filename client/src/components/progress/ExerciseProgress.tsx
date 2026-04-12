@@ -14,6 +14,7 @@ import {
 import { useExerciseStats, useExercises } from '@/hooks/useWorkout'
 import { useTrackedExercises } from '@/hooks/useTrackedExercises'
 import { Plus, Pencil, X, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import ExerciseImage from '@/components/workout/ExerciseImage'
 import {
     Dialog,
     DialogContent,
@@ -97,7 +98,7 @@ function ExerciseCard({
     period,
     onEdit,
 }: {
-    slot: { id: string; name: string } | null
+    slot: { id: string; name: string; imageUrl?: string | null } | null
     index: number
     period: string
     onEdit: (index: number) => void
@@ -142,7 +143,8 @@ function ExerciseCard({
                 onClick={() => setExpanded(true)}
             >
                 {/* Header */}
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-3">
+                    <ExerciseImage imageUrl={slot.imageUrl} name={slot.name} size="md" />
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold truncate">{slot.name}</p>
                         {latest !== null && (
@@ -303,7 +305,7 @@ function ExercisePicker({
 }: {
     open: boolean
     onClose: () => void
-    onSelect: (exercise: { id: string; name: string } | null) => void
+    onSelect: (exercise: { id: string; name: string; imageUrl?: string | null } | null) => void
 }) {
     const { t } = useTranslation()
     const [search, setSearch] = useState('')
@@ -333,10 +335,11 @@ function ExercisePicker({
                         {filtered.map((e: any) => (
                             <button
                                 key={e.id}
-                                onClick={() => { onSelect({ id: e.id, name: e.name }); onClose() }}
-                                className="flex w-full items-center px-3 py-2.5 rounded-lg text-left text-sm hover:bg-accent transition-colors"
+                                onClick={() => { onSelect({ id: e.id, name: e.name, imageUrl: e.imageUrl }); onClose() }}
+                                className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm hover:bg-accent transition-colors"
                             >
-                                {e.name}
+                                <ExerciseImage imageUrl={e.imageUrl} name={e.name} size="sm" />
+                                <span className="flex-1 truncate">{e.name}</span>
                             </button>
                         ))}
                     </div>
@@ -358,6 +361,15 @@ export default function ExerciseProgress({ period }: Props) {
     const { t } = useTranslation()
     const { tracked, setSlot } = useTrackedExercises()
     const [editingSlot, setEditingSlot] = useState<number | null>(null)
+    const { data: exercises = [] } = useExercises()
+
+    // Enrich tracked data with current exercise data (to handle name/image changes)
+    const enrichedTracked = tracked.map(slot => {
+        if (!slot) return null
+        const exercise = exercises.find((e: any) => e.id === slot.id)
+        if (exercise) return { id: exercise.id, name: exercise.name, imageUrl: exercise.imageUrl }
+        return slot
+    })
 
     return (
         <div className="flex flex-col gap-3">
@@ -366,7 +378,7 @@ export default function ExerciseProgress({ period }: Props) {
             </p>
 
             <div className="flex flex-col gap-3">
-                {tracked.map((slot, index) => (
+                {enrichedTracked.map((slot, index) => (
                     <ExerciseCard
                         key={index}
                         slot={slot}

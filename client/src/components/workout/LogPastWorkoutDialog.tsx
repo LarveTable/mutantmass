@@ -65,14 +65,14 @@ function SetRow({
                 <>
                     <Input
                         type="number"
-                        placeholder={t.workout.logPastDialog.units.reps}
+                        placeholder={t.common.units.reps}
                         value={set.reps ?? ''}
                         onChange={(e) => onChange({ ...set, reps: Number(e.target.value) })}
                         className="text-center h-8 text-sm"
                     />
                     <Input
                         type="number"
-                        placeholder={t.workout.logPastDialog.units.kg}
+                        placeholder={t.common.units.kg}
                         value={set.weight ?? ''}
                         onChange={(e) => onChange({ ...set, weight: Number(e.target.value) })}
                         className="text-center h-8 text-sm"
@@ -82,7 +82,7 @@ function SetRow({
             {type === 'BODYWEIGHT' && (
                 <Input
                     type="number"
-                    placeholder={t.workout.logPastDialog.units.reps}
+                    placeholder={t.common.units.reps}
                     value={set.reps ?? ''}
                     onChange={(e) => onChange({ ...set, reps: Number(e.target.value) })}
                     className="text-center h-8 text-sm"
@@ -92,14 +92,14 @@ function SetRow({
                 <>
                     <Input
                         type="number"
-                        placeholder={t.workout.logPastDialog.units.min}
+                        placeholder={t.common.units.min}
                         value={set.duration ? set.duration / 60 : ''}
                         onChange={(e) => onChange({ ...set, duration: Number(e.target.value) * 60 })}
                         className="text-center h-8 text-sm"
                     />
                     <Input
                         type="number"
-                        placeholder={t.workout.logPastDialog.units.km}
+                        placeholder={t.common.units.km}
                         value={set.distance ?? ''}
                         onChange={(e) => onChange({ ...set, distance: Number(e.target.value) })}
                         className="text-center h-8 text-sm"
@@ -136,7 +136,7 @@ function ExercisePicker({
             <div className="flex gap-2">
                 <input
                     type="text"
-                    placeholder={t.workout.logPastDialog.miniPicker.search}
+                    placeholder={t.common.search}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     autoFocus
@@ -436,17 +436,17 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                                     <div className="flex items-center gap-2 px-5">
                                         {ex.exerciseType === 'WEIGHTED' && (
                                             <>
-                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.workout.logPastDialog.units.reps}</span>
-                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.workout.logPastDialog.units.kg}</span>
+                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.common.units.reps}</span>
+                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.common.units.kg}</span>
                                             </>
                                         )}
                                         {ex.exerciseType === 'BODYWEIGHT' && (
-                                            <span className="flex-1 text-center text-xs text-muted-foreground">{t.workout.logPastDialog.units.reps}</span>
+                                            <span className="flex-1 text-center text-xs text-muted-foreground">{t.common.units.reps}</span>
                                         )}
                                         {ex.exerciseType === 'CARDIO' && (
                                             <>
-                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.workout.logPastDialog.units.min}</span>
-                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.workout.logPastDialog.units.km}</span>
+                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.common.units.min}</span>
+                                                <span className="flex-1 text-center text-xs text-muted-foreground">{t.common.units.km}</span>
                                             </>
                                         )}
                                         <div className="w-5" />
@@ -505,7 +505,7 @@ export default function LogPastWorkoutDialog({ open, onClose }: Props) {
                         <>
                             <Button variant="outline" onClick={handleClose}>{t.common.cancel}</Button>
                             <Button onClick={handleSave} disabled={loading}>
-                                {loading ? t.workout.addDialog.saving : t.workout.logPastDialog.saveBtn}
+                                {loading ? t.common.processing : t.workout.logPastDialog.saveBtn}
                             </Button>
                         </>
                     )}

@@ -54,7 +54,7 @@ export default function FinishWorkoutDialog({ open, onClose, onConfirm, isLoadin
                 <DialogFooter>
                     <Button variant="outline" onClick={onClose}>{t.common.cancel}</Button>
                     <Button onClick={handleConfirm} disabled={isLoading}>
-                        {isLoading ? t.workout.finishDialog.saving : t.workout.finishDialog.finishBtn}
+                        {isLoading ? t.common.processing : t.workout.finishDialog.finishBtn}
                     </Button>
                 </DialogFooter>
             </DialogContent>

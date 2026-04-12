@@ -16,11 +16,11 @@ function formatTime(date: Date, lang: string): string {
     return date.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
-function formatDuration(seconds: number): string {
+function formatDuration(seconds: number, t: any): string {
     const h = Math.floor(seconds / 3600)
     const m = Math.floor((seconds % 3600) / 60)
-    if (h > 0) return `${h}h ${m}m`
-    return `${m}m`
+    if (h > 0) return `${h}${t.common.units.h} ${m}${t.common.units.m}`
+    return `${m}${t.common.units.m}`
 }
 
 function getDaysInMonth(year: number, month: number): Date[] {
@@ -260,7 +260,7 @@ function LastWorkoutCard({ workout }: { workout: any }) {
                 {workout.duration && (
                     <div className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-3 py-2">
                         <Clock size={13} className="text-primary" />
-                        <span className="text-xs font-medium">{formatDuration(workout.duration)}</span>
+                        <span className="text-xs font-medium">{formatDuration(workout.duration, t)}</span>
                     </div>
                 )}
                 {totalVolume > 0 && (
@@ -458,10 +458,10 @@ export default function DashboardPage() {
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
                         <Clock size={15} className="text-primary" />
                         <div className="flex items-baseline gap-1.5">
-                            <span className="text-base font-bold">{formatDuration(weekStats.totalDuration ?? 0)}</span>
+                            <span className="text-base font-bold">{formatDuration(weekStats.totalDuration ?? 0, t)}</span>
                             {lastWeekStats && (
                                 <span className={`text-[10px] font-medium ${(weekStats.totalDuration ?? 0) >= (lastWeekStats.totalDuration ?? 0) ? 'text-green-500' : 'text-red-500'}`}>
-                                    {(weekStats.totalDuration ?? 0) >= (lastWeekStats.totalDuration ?? 0) ? '+' : '-'}{formatDuration(Math.abs((weekStats.totalDuration ?? 0) - (lastWeekStats.totalDuration ?? 0)))}
+                                    {(weekStats.totalDuration ?? 0) >= (lastWeekStats.totalDuration ?? 0) ? '+' : '-'}{formatDuration(Math.abs((weekStats.totalDuration ?? 0) - (lastWeekStats.totalDuration ?? 0)), t)}
                                 </span>
                             )}
                         </div>
@@ -469,16 +469,22 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card py-3">
                         <Dumbbell size={15} className="text-primary" />
-                        <span className="text-base font-bold truncate px-1 max-w-full capitalize">
-                            {Object.entries(muscleData as Record<string, { volume: number; reps: number; duration: number }>)
-                                .sort(([, a], [, b]) => (b.volume || b.duration) - (a.volume || a.duration))[0]?.[0].toLowerCase().replace('_', ' ') ?? '-'}
+                        <span className="text-base font-bold truncate px-1 max-w-full">
+                            {(() => {
+                                const topMuscle = Object.entries(muscleData as Record<string, { volume: number; reps: number; duration: number }>)
+                                    .sort(([, a], [, b]) => (b.volume || b.duration) - (a.volume || a.duration))[0]?.[0]
+                                return topMuscle ? t.workout.addDialog.muscles[topMuscle as keyof typeof t.workout.addDialog.muscles] : '-'
+                            })()}
                         </span>
                         <div className="flex items-center gap-1">
                             <span className="text-xs text-muted-foreground">{t.dashboard.quickStats.mostTrained}</span>
                             {Object.keys(lastMuscleData).length > 0 && (
                                 <span className="text-[10px] text-muted-foreground italic border-l border-border pl-1.5">
-                                    {t.dashboard.quickStats.last}: {Object.entries(lastMuscleData as Record<string, { volume: number; reps: number; duration: number }>)
-                                        .sort(([, a], [, b]) => (b.volume || b.duration) - (a.volume || a.duration))[0]?.[0].toLowerCase().replace('_', ' ') ?? '-'}
+                                    {t.dashboard.quickStats.last}: {(() => {
+                                        const lastTopMuscle = Object.entries(lastMuscleData as Record<string, { volume: number; reps: number; duration: number }>)
+                                            .sort(([, a], [, b]) => (b.volume || b.duration) - (a.volume || a.duration))[0]?.[0]
+                                        return lastTopMuscle ? t.workout.addDialog.muscles[lastTopMuscle as keyof typeof t.workout.addDialog.muscles] : '-'
+                                    })()}
                                 </span>
                             )}
                         </div>
@@ -505,8 +511,8 @@ export default function DashboardPage() {
                                         className="h-2 w-2 rounded-full"
                                         style={{ background: MUSCLE_COLORS[muscle] }}
                                     />
-                                    <span className="text-xs font-medium capitalize" style={{ color: MUSCLE_COLORS[muscle] }}>
-                                        {muscle.toLowerCase().replace('_', ' ')}
+                                    <span className="text-xs font-medium" style={{ color: MUSCLE_COLORS[muscle] }}>
+                                        {t.workout.addDialog.muscles[muscle as keyof typeof t.workout.addDialog.muscles]}
                                     </span>
                                     <span className="text-[10px] text-muted-foreground flex flex-col gap-0.5">
                                         {stats.volume > 0 && (
@@ -518,7 +524,7 @@ export default function DashboardPage() {
                                         {stats.duration > 0 && (
                                             <span className="flex items-center gap-1">
                                                 {stats.volume === 0 && stats.reps === 0 ? '' : '• '}
-                                                {formatDuration(stats.duration)}
+                                                {formatDuration(stats.duration, t)}
                                             </span>
                                         )}
                                     </span>

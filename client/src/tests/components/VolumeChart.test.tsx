@@ -60,9 +60,9 @@ describe('VolumeChart', () => {
         expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
 
         // Default mode is 'By Muscle' -> Muscle legend should appear explicitly for filled data
-        // "chest" should be visible from our MUSCLES list transformation
-        expect(screen.getByText('chest')).toBeInTheDocument()
-        expect(screen.getByText('back')).toBeInTheDocument()
+        // "Chest" should be visible from our i18n dict
+        expect(screen.getByText(/chest/i)).toBeInTheDocument()
+        expect(screen.getByText(/back/i)).toBeInTheDocument()
         
         // Switch to "Total" view
         const totalBtn = screen.getByText('Total')
@@ -71,6 +71,6 @@ describe('VolumeChart', () => {
         // The toggled button should now look active
         expect(totalBtn).toHaveClass('bg-card', 'text-foreground')
         // And the muscle specific legends will hide
-        expect(screen.queryByText('chest')).not.toBeInTheDocument()
+        expect(screen.queryByText(/chest/i)).not.toBeInTheDocument()
     })
 })

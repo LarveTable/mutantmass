@@ -3,7 +3,7 @@ import { type Dictionary } from './en'
 export const fr: Dictionary = {
     nav: {
         home: "Accueil",
-        workout: "Entraînement",
+        workout: "Séance",
         history: "Historique",
         progress: "Progrès",
         profile: "Profil"
@@ -12,18 +12,13 @@ export const fr: Dictionary = {
         common: {
             notSet: "Non défini",
             error: "Une erreur est survenue",
-            cancel: "Annuler",
-            saving: "Enregistrement...",
             update: "Mettre à jour",
-            loading: "Chargement...",
             years: "ans",
-            kg: "kg",
             cm: "cm",
-            version: "MutantMass v0.1.0-beta"
+            version: "MutantMass v0.2.0-beta"
         },
         personalInfo: {
             title: "Infos Personnelles",
-            name: "Nom",
             noName: "Aucun nom défini",
             age: "Âge",
             sex: "Sexe",
@@ -67,7 +62,6 @@ export const fr: Dictionary = {
             description: "Écoute bien. Ça va supprimer définitivement ton compte, tes entraînements et tous tes gains de nos serveurs. Pas de retour en arrière possible.",
             confirmLabel: "Entre ton mot de passe pour prouver que c'est toi",
             placeholder: "Ton mot de passe",
-            cancel: "Laisse tomber",
             confirm: "Tout détruire",
             errorPassword: "S'il te plaît, entre ton mot de passe"
         }
@@ -92,7 +86,6 @@ export const fr: Dictionary = {
         register: {
             title: "Créer un compte",
             description: "Commence à suivre tes progrès",
-            name: "Nom",
             namePlaceholder: "Ton Nom",
             confirmPassword: "Confirmer le mot de passe",
             betaCode: "Code d'accès Beta",
@@ -139,7 +132,6 @@ export const fr: Dictionary = {
         picker: {
             title: "Sélectionner un type",
             back: "Retour",
-            search: "Rechercher des exercices...",
             addCustom: "Créer un exercice",
             noFound: "Aucun exercice trouvé",
             typeDesc: {
@@ -152,13 +144,11 @@ export const fr: Dictionary = {
             title: "Terminer la séance",
             noteLabel: "Note de la séance (optionnelle)",
             notePlaceholder: "Comment c'était ? Des records ? Notes pour la prochaine fois...",
-            saving: "Enregistrement...",
             finishBtn: "Terminer 🎉"
         },
         listDialog: {
             title: "Exercices ajoutés",
             description: "Gérer vos exercices personnalisés",
-            loading: "Chargement des exercices...",
             empty: "Aucun exercice personnalisé ajouté pour le moment.",
             publicInfo: "Public",
             privateInfo: "Privé",
@@ -192,12 +182,6 @@ export const fr: Dictionary = {
             miniPicker: {
                 search: "Rechercher...",
                 addCustom: "Créer un exercice"
-            },
-            units: {
-                reps: "Reps",
-                kg: "kg",
-                min: "Min",
-                km: "km"
             }
         },
         logSetDialog: {
@@ -276,8 +260,6 @@ export const fr: Dictionary = {
             makePublicDesc: "Partager avec les autres utilisateurs",
             saveChanges: "Enregistrer",
             addExerciseBtn: "Ajouter l'exercice",
-            saving: "Enregistrement...",
-            adding: "Ajout...",
             errorGeneric: "Quelque chose a mal tourné",
             publicWarning: {
                 title: "Rendre public ?",
@@ -420,7 +402,6 @@ export const fr: Dictionary = {
             confirm: "Supprimer"
         },
         detailModal: {
-            loading: "Chargement de la séance...",
             duration: "Durée",
             sets: "Séries",
             volume: "Volume",
@@ -465,7 +446,7 @@ export const fr: Dictionary = {
             sets: "Séries",
             volume: "Volume",
             time: "Temps",
-            mostTrained: "Plus travaillé",
+            mostTrained: "Le plus travaillé",
             last: "Dernier"
         },
         muscleStats: {
@@ -496,6 +477,15 @@ export const fr: Dictionary = {
         cancel: "Annuler",
         save: "Enregistrer",
         search: "Rechercher...",
-        noData: "Aucune donnée"
+        noData: "Aucune donnée",
+        name: "Nom",
+        units: {
+            kg: "kg",
+            reps: "Reps",
+            min: "Min",
+            km: "km",
+            h: "h",
+            m: "m"
+        }
     }
 }

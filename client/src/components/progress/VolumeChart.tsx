@@ -52,8 +52,8 @@ const CustomTooltip = ({ active, payload, mode }: any) => {
                         <div key={m} className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-1">
                                 <div className="h-2 w-2 rounded-full" style={{ background: MUSCLE_COLORS[m] }} />
-                                <span className="text-xs text-muted-foreground capitalize">
-                                    {m.toLowerCase().replace('_', ' ')}
+                                <span className="text-xs text-muted-foreground">
+                                    {t.workout.addDialog.muscles[m as keyof typeof t.workout.addDialog.muscles]}
                                 </span>
                             </div>
                             <span className="text-xs font-medium">
@@ -171,8 +171,8 @@ export default function VolumeChart({ period }: Props) {
                     {MUSCLES.map(m => (
                         <div key={m} className="flex items-center gap-1">
                             <div className="h-2 w-2 rounded-full" style={{ background: MUSCLE_COLORS[m] }} />
-                            <span className="text-xs text-muted-foreground capitalize">
-                                {m.toLowerCase().replace('_', ' ')}
+                            <span className="text-xs text-muted-foreground">
+                                {t.workout.addDialog.muscles[m as keyof typeof t.workout.addDialog.muscles]}
                             </span>
                         </div>
                     ))}

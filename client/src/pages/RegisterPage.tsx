@@ -66,7 +66,7 @@ export default function RegisterPage() {
                 <CardContent>
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="name">{t.auth.register.name}</Label>
+                            <Label htmlFor="name">{t.common.name}</Label>
                             <Input
                                 id="name"
                                 type="text"

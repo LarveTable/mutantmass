@@ -34,7 +34,7 @@ export default function ListAddedExercisesDialog({ open, onClose }: Props) {
 
                     <div className="flex-1 overflow-y-auto pr-2 flex flex-col gap-3 py-2">
                         {isLoading ? (
-                            <p className="text-center text-muted-foreground py-4">{t.workout.listDialog.loading}</p>
+                            <p className="text-center text-muted-foreground py-4">{t.common.loading}</p>
                         ) : !exercises || exercises.length === 0 ? (
                             <p className="text-center text-muted-foreground py-4">{t.workout.listDialog.empty}</p>
                         ) : (

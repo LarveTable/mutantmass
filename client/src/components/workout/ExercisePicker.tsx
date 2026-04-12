@@ -9,23 +9,23 @@ import AddExerciseDialog from './AddExerciseDialog'
 // Component to pick an exercise to add to the workout
 
 const TYPES = [
-    { value: 'WEIGHTED', label: 'Weighted', icon: Dumbbell, description: 'Barbell, dumbbell, machine' },
-    { value: 'BODYWEIGHT', label: 'Bodyweight', icon: PersonStanding, description: 'No equipment needed' },
-    { value: 'CARDIO', label: 'Cardio', icon: Timer, description: 'Running, cycling, rowing' },
+    { value: 'WEIGHTED', icon: Dumbbell },
+    { value: 'BODYWEIGHT', icon: PersonStanding },
+    { value: 'CARDIO', icon: Timer },
 ] as const
 
 const MUSCLE_GROUPS = [
-    { value: 'CHEST', label: 'Chest' },
-    { value: 'BACK', label: 'Back' },
-    { value: 'SHOULDERS', label: 'Shoulders' },
-    { value: 'BICEPS', label: 'Biceps' },
-    { value: 'TRICEPS', label: 'Triceps' },
-    { value: 'FOREARMS', label: 'Forearms' },
-    { value: 'LEGS', label: 'Legs' },
-    { value: 'GLUTES', label: 'Glutes' },
-    { value: 'CORE', label: 'Core' },
-    { value: 'CARDIO', label: 'Cardio' },
-    { value: 'FULL_BODY', label: 'Full Body' },
+    { value: 'CHEST' },
+    { value: 'BACK' },
+    { value: 'SHOULDERS' },
+    { value: 'BICEPS' },
+    { value: 'TRICEPS' },
+    { value: 'FOREARMS' },
+    { value: 'LEGS' },
+    { value: 'GLUTES' },
+    { value: 'CORE' },
+    { value: 'CARDIO' },
+    { value: 'FULL_BODY' },
 ] as const
 
 type Step = 'type' | 'muscle' | 'exercise'
@@ -112,7 +112,7 @@ export default function ExercisePicker({ open, onClose, onSelect }: Props) {
                         <div className="relative flex-1">
                             <input
                                 type="text"
-                                placeholder={t.workout.picker.search}
+                                placeholder={t.common.search}
                                 value={search}
                                 onChange={(e) => {
                                     setSearch(e.target.value)
