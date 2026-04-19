@@ -15,7 +15,7 @@ export const fr: Dictionary = {
             update: "Mettre à jour",
             years: "ans",
             cm: "cm",
-            version: "MutantMass v0.2.0-beta"
+            version: "MutantMass v0.3.0-beta"
         },
         personalInfo: {
             title: "Infos Personnelles",

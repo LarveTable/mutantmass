@@ -13,7 +13,7 @@ export const en = {
             update: "Update",
             years: "years",
             cm: "cm",
-            version: "MutantMass v0.2.0-beta"
+            version: "MutantMass v0.3.0-beta"
         },
         personalInfo: {
             title: "Personal Info",
