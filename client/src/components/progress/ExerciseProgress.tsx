@@ -10,6 +10,7 @@ import {
     CartesianGrid,
     Area,
     AreaChart,
+    Legend
 } from 'recharts'
 import { useExerciseStats, useExercises } from '@/hooks/useWorkout'
 import { useTrackedExercises } from '@/hooks/useTrackedExercises'
@@ -30,7 +31,7 @@ interface Props {
 // Component to display exercises progress
 
 // --- Sparkline ---
-function Sparkline({ data }: { data: any[] }) {
+function Sparkline({ data, dataKey = 'primaryValue' }: { data: any[], dataKey?: string }) {
     const { t } = useTranslation()
     if (!data || data.length === 0) return (
         <div className="flex h-16 items-center justify-center">
@@ -49,7 +50,7 @@ function Sparkline({ data }: { data: any[] }) {
                 </defs>
                 <Area
                     type="monotone"
-                    dataKey="primaryValue"
+                    dataKey={dataKey}
                     stroke="var(--primary)"
                     strokeWidth={2}
                     fill="url(#sparkGrad)"
@@ -70,23 +71,32 @@ const FullTooltip = ({ active, payload }: any) => {
         <div className="rounded-lg border border-border bg-card px-3 py-2 text-sm shadow">
             <p className="text-muted-foreground text-xs mb-1">{d.date}</p>
             <p className="text-primary font-bold">
-                {d.type === 'WEIGHTED' && `${d.primaryValue} kg ${t.progress.sections.records.e1rm}`}
-                {d.type === 'BODYWEIGHT' && `${d.primaryValue} ${t.progress.sections.exercises.repsMax}`}
-                {d.type === 'CARDIO' && (d.primaryValue ? `${d.primaryValue} km` : `${Math.floor((d.bestDuration || 0) / 60)} ${t.history.duration.minAbbr}`)}
+                {d.type === 'WEIGHTED' && `${d.displayValue} kg ${t.progress.sections.exercises.labels.maxMoved}`}
+                {d.type === 'BODYWEIGHT' && `${d.displayValue} ${t.progress.sections.exercises.repsMax}`}
+                {d.type === 'CARDIO' && (d.displayValue ? `${d.displayValue} km` : `${Math.floor((d.bestDuration || 0) / 60)} ${t.history.duration.minAbbr}`)}
             </p>
             {d.type === 'WEIGHTED' && (
-                <p className="text-xs text-muted-foreground">
-                    {d.bestWeight}kg × {d.bestReps} {t.dashboard.muscleStats.reps}
-                </p>
+                <>
+                    <p className="text-xs text-muted-foreground">
+                        {d.bestWeight}kg × {d.bestReps} {t.dashboard.muscleStats.reps} ({d.primaryValue}kg {t.progress.sections.records.e1rm})
+                    </p>
+                    {d.kgPerRep !== null && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {t.progress.sections.exercises.labels.avg}: {d.kgPerRep} {t.progress.sections.exercises.labels.kgPerRep}
+                        </p>
+                    )}
+                </>
             )}
             {d.type === 'CARDIO' && d.bestDistance > 0 && d.bestDuration > 0 && (
                 <p className="text-xs text-muted-foreground">
                     {t.progress.sections.records.in} {Math.floor(d.bestDuration / 60)}{t.history.duration.minAbbr}
                 </p>
             )}
-            <p className="text-xs text-muted-foreground mt-1">
-                {t.progress.sections.exercises.volume}: {d.volume.toLocaleString()} kg
-            </p>
+            {d.type !== 'WEIGHTED' && (
+                <p className="text-xs text-muted-foreground mt-1">
+                    {t.progress.sections.exercises.volume}: {d.volume?.toLocaleString()} kg
+                </p>
+            )}
         </div>
     )
 }
@@ -107,19 +117,28 @@ function ExerciseCard({
     const { data = [], isLoading } = useExerciseStats(slot?.id ?? null, period)
     const [expanded, setExpanded] = useState(false)
 
-    const values = data.map((d: any) => d.primaryValue).filter((v: any) => v !== null)
-    const latest = values[values.length - 1] ?? null
-    const first = values[0] ?? null
-    const trend = latest !== null && first !== null ? latest - first : null
-    const bestEver = values.length > 0 ? Math.max(...values) : null
-
     const exerciseType = data.length > 0 ? data[data.length - 1].type : 'WEIGHTED'
     const unit = exerciseType === 'BODYWEIGHT' ? ` ${t.dashboard.muscleStats.reps}` : exerciseType === 'CARDIO' ? 'km' : 'kg'
     const label = exerciseType === 'BODYWEIGHT' ? t.progress.sections.exercises.labels.maxReps : exerciseType === 'CARDIO' ? t.progress.sections.exercises.labels.distance : t.progress.sections.exercises.labels.e1rm
 
+    const processedData = data.map((d: any) => ({
+        ...d,
+        kgPerRep: (d.volume > 0 && d.totalReps > 0) ? parseFloat((d.volume / d.totalReps).toFixed(1)) : null,
+        displayValue: exerciseType === 'WEIGHTED' ? d.maxWeight : d.primaryValue
+    }))
+
+    const displayValues = processedData.map((d: any) => d.displayValue).filter((v: any) => v !== null)
+    const latestDisplay = displayValues[displayValues.length - 1] ?? null
+    const firstDisplay = displayValues[0] ?? null
+    const trend = latestDisplay !== null && firstDisplay !== null ? latestDisplay - firstDisplay : null
+    const bestEver = displayValues.length > 0 ? Math.max(...displayValues) : null
+
+    const primaryValues = processedData.map((d: any) => d.primaryValue).filter((v: any) => v !== null)
+    const latestE1RM = primaryValues[primaryValues.length - 1] ?? null
+
     const TrendIcon = trend === null ? null : trend > 0 ? TrendingUp : trend < 0 ? TrendingDown : Minus
     const trendColor = trend === null ? '' : trend > 0 ? 'text-green-500' : trend < 0 ? 'text-red-500' : 'text-muted-foreground'
-    const formatValue = (v: any) => `${v}${unit}`
+    const formatValue = (v: any) => `${parseFloat(Number(v).toFixed(1))}${unit}`
 
     // Empty slot
     if (!slot) {
@@ -147,9 +166,14 @@ function ExerciseCard({
                     <ExerciseImage imageUrl={slot.imageUrl} name={slot.name} size="md" />
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold truncate">{slot.name}</p>
-                        {latest !== null && (
+                        {latestE1RM !== null && exerciseType === 'WEIGHTED' && (
                             <p className="text-xs text-muted-foreground">
-                                {label}: <span className="text-primary font-semibold">{formatValue(latest)}</span>
+                                {label}: <span className="text-primary font-semibold">{formatValue(latestE1RM)}</span>
+                            </p>
+                        )}
+                        {exerciseType !== 'WEIGHTED' && latestDisplay !== null && (
+                            <p className="text-xs text-muted-foreground">
+                                {label}: <span className="text-primary font-semibold">{formatValue(latestDisplay)}</span>
                             </p>
                         )}
                     </div>
@@ -167,7 +191,7 @@ function ExerciseCard({
                         <p className="text-xs text-muted-foreground">{t.common.loading}</p>
                     </div>
                 ) : (
-                    <Sparkline data={data} />
+                    <Sparkline data={processedData} dataKey="displayValue" />
                 )}
 
                 {/* Footer stats */}
@@ -194,7 +218,10 @@ function ExerciseCard({
                     <DialogHeader>
                         <DialogTitle>{slot.name}</DialogTitle>
                         <DialogDescription>
-                            {period}
+                            {period === '3months' ? t.progress.periods.threeMonths : 
+                             period === 'week' ? t.progress.periods.week :
+                             period === 'month' ? t.progress.periods.month :
+                             period === 'all' ? t.progress.periods.all : period}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -203,13 +230,13 @@ function ExerciseCard({
                         <div className="grid grid-cols-3 gap-2">
                             <div className="flex flex-col items-center gap-0.5 rounded-xl bg-muted/50 p-3">
                                 <span className="text-base font-bold text-primary">
-                                    {latest !== null ? latest : '-'}
+                                    {latestDisplay !== null ? latestDisplay : '-'}
                                 </span>
-                                <span className="text-xs text-muted-foreground text-center">{t.progress.sections.exercises.current} {label}</span>
+                                <span className="text-xs text-muted-foreground text-center">{t.progress.sections.exercises.current} {exerciseType === 'WEIGHTED' ? t.progress.sections.exercises.labels.max : label}</span>
                             </div>
                             <div className="flex flex-col items-center gap-0.5 rounded-xl bg-muted/50 p-3">
                                 <span className="text-base font-bold">{bestEver !== null ? bestEver : '-'}</span>
-                                <span className="text-xs text-muted-foreground text-center">{t.progress.sections.exercises.best} {label}</span>
+                                <span className="text-xs text-muted-foreground text-center">{t.progress.sections.exercises.best} {exerciseType === 'WEIGHTED' ? t.progress.sections.exercises.labels.max : label}</span>
                             </div>
                             <div className={`flex flex-col items-center gap-0.5 rounded-xl bg-muted/50 p-3 ${trendColor}`}>
                                 <span className="text-base font-bold">
@@ -220,9 +247,9 @@ function ExerciseCard({
                         </div>
 
                         {/* Full chart */}
-                        {data.length > 0 ? (
+                        {processedData.length > 0 ? (
                             <ResponsiveContainer width="100%" height={200} initialDimension={{ width: 1, height: 1 }}>
-                                <LineChart data={data} margin={{ top: 4, right: 20, left: 0, bottom: 0 }}>
+                                <LineChart data={processedData} margin={{ top: 4, right: 20, left: 0, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.2} />
@@ -248,14 +275,27 @@ function ExerciseCard({
                                         domain={['auto', 'auto']}
                                     />
                                     <Tooltip content={<FullTooltip />} />
+                                    <Legend wrapperStyle={{ fontSize: '10px' }} />
                                     <Line
                                         type="monotone"
-                                        dataKey="primaryValue"
+                                        dataKey="displayValue"
+                                        name={exerciseType === 'WEIGHTED' ? t.progress.sections.exercises.labels.maxMoved : label}
                                         stroke="var(--primary)"
                                         strokeWidth={2.5}
                                         dot={{ fill: 'var(--primary)', r: 4, strokeWidth: 0 }}
                                         activeDot={{ r: 6, strokeWidth: 0 }}
                                     />
+                                    {exerciseType === 'WEIGHTED' && (
+                                        <Line
+                                            type="monotone"
+                                            dataKey="kgPerRep"
+                                            name={t.progress.sections.exercises.labels.kgPerRep}
+                                            stroke="#10b981"
+                                            strokeWidth={2}
+                                            dot={{ fill: '#10b981', r: 3, strokeWidth: 0 }}
+                                            activeDot={{ r: 5, strokeWidth: 0 }}
+                                        />
+                                    )}
                                 </LineChart>
                             </ResponsiveContainer>
                         ) : (
@@ -271,7 +311,7 @@ function ExerciseCard({
                                     {t.progress.sections.exercises.sessions}
                                 </p>
                                 <div className="flex flex-col gap-1 max-h-40 overflow-y-auto">
-                                    {[...data].reverse().map((d: any, i: number) => (
+                                    {[...processedData].reverse().map((d: any, i: number) => (
                                         <div
                                             key={i}
                                             className="flex items-center justify-between px-3 py-2 rounded-lg bg-muted/40"
@@ -282,9 +322,14 @@ function ExerciseCard({
                                                 {d.type === 'BODYWEIGHT' && `${d.bestReps} ${t.dashboard.muscleStats.reps}`}
                                                 {d.type === 'CARDIO' && (d.bestDistance ? `${d.bestDistance} km` : `${Math.floor((d.bestDuration || 0) / 60)} ${t.history.duration.minAbbr}`)}
                                             </span>
-                                            <span className="text-xs text-primary font-semibold">
-                                                {d.primaryValue ? formatValue(d.primaryValue) : '-'}
-                                            </span>
+                                            <div className="flex flex-col items-end">
+                                                <span className="text-xs text-primary font-semibold">
+                                                    {d.displayValue ? formatValue(d.displayValue) : '-'}
+                                                </span>
+                                                {d.type === 'WEIGHTED' && d.kgPerRep !== null && (
+                                                    <span className="text-[10px] text-muted-foreground">{d.kgPerRep} {t.progress.sections.exercises.labels.kgPerRep}</span>
+                                                )}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

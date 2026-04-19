@@ -331,7 +331,11 @@ export const en = {
                 labels: {
                     maxReps: "Max Reps",
                     distance: "Distance",
-                    e1rm: "e1RM"
+                    e1rm: "e1RM",
+                    maxMoved: "Max Moved",
+                    kgPerRep: "kg/rep",
+                    avg: "Avg",
+                    max: "Max"
                 }
             },
             records: {

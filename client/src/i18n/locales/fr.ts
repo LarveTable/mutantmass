@@ -333,7 +333,11 @@ export const fr: Dictionary = {
                 labels: {
                     maxReps: "Max Reps",
                     distance: "Distance",
-                    e1rm: "e1RM"
+                    e1rm: "e1RM",
+                    maxMoved: "Max Soulevé",
+                    kgPerRep: "kg/rep",
+                    avg: "Moy",
+                    max: "Max"
                 }
             },
             records: {

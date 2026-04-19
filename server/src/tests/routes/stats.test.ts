@@ -166,6 +166,8 @@ describe('Stats Routes', () => {
             expect(json.data).toHaveLength(1)
             expect(json.data[0].date).toBe('2026-04-08')
             expect(json.data[0].volume).toBe(1500) // 100*10 + 100*5
+            expect(json.data[0].totalReps).toBe(15)
+            expect(json.data[0].maxWeight).toBe(100)
             expect(json.data[0].estimatedOneRM).toBe(133)
             expect(json.data[0].primaryValue).toBe(133) // for WEIGHTED
             expect(json.data[0].bestWeight).toBe(100)

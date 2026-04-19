@@ -202,6 +202,10 @@ export default async function statsRoutes(app: FastifyInstance) {
                 estimatedOneRM: type === 'WEIGHTED' && bestSet ? primaryValue : null,
                 primaryValue,
                 volume: we.sets.reduce((t, s) => t + (s.weight && s.reps ? s.weight * s.reps : 0), 0),
+                totalReps: we.sets.reduce((t, s) => t + (s.reps ?? 0), 0),
+                maxWeight: type === 'WEIGHTED' && we.sets.length > 0 
+                  ? Math.max(...we.sets.map(s => s.weight ?? 0)) 
+                  : null,
             }
         })
 
