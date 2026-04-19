@@ -52,7 +52,7 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center px-4 gap-6">
+        <div className="flex min-h-screen flex-col items-center justify-center px-4 gap-6" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
             <LanguageToggle />
             <div className="flex flex-col items-center gap-2">
                 <img src="/icons/icon-512.png" alt={t.auth.common.logoAlt} className="h-16 w-16 rounded-2xl drop-shadow-lg" />
