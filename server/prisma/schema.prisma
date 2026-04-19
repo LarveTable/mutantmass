@@ -126,5 +126,6 @@ model Set {
   weight            Float?
   duration          Int?
   distance          Float?
+  isUnilateral      Boolean         @default(false)
   createdAt         DateTime        @default(now())
 }

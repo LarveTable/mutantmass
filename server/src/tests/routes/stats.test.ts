@@ -52,6 +52,29 @@ describe('Stats Routes', () => {
             const res = await app.inject({ method: 'GET', url: '/stats/overview' })
             expect(res.statusCode).toBe(401)
         })
+
+        it('should properly multiply stats natively by two when isUnilateral is flagged', async () => {
+            mockPrisma.workout.findMany.mockResolvedValue([
+                {
+                    id: 'w-2', duration: 45,
+                    workoutExercises: [
+                        { sets: [{ weight: 14, reps: 10, isUnilateral: true }] }
+                    ]
+                }
+            ])
+
+            const res = await app.inject({
+                method: 'GET',
+                url: '/stats/overview',
+                cookies: { access_token: token },
+            })
+
+            expect(res.statusCode).toBe(200)
+            const data = res.json()
+            expect(data.totalWorkouts).toBe(1)
+            // 14 * 10 * 2 = 280
+            expect(data.totalVolume).toBe(280)
+        })
     })
 
     describe('GET /stats/volume', () => {

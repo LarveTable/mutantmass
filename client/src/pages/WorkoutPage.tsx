@@ -50,11 +50,11 @@ function ExerciseFooterStats({ exerciseId, workoutId }: { exerciseId: string, wo
     const bestSession = [...processedData].reduce((best: any, d: any) => {
         if (!best) return d
         if (exerciseType === 'WEIGHTED') {
-            const bestVol = best.bestWeight && best.bestReps ? best.bestWeight * best.bestReps : 0;
-            const currentVol = d.bestWeight && d.bestReps ? d.bestWeight * d.bestReps : 0;
+            const bestVol = best.bestWeight && best.bestReps ? best.bestWeight * best.bestReps * (best.bestIsUnilateral ? 2 : 1) : 0;
+            const currentVol = d.bestWeight && d.bestReps ? d.bestWeight * d.bestReps * (d.bestIsUnilateral ? 2 : 1) : 0;
             return currentVol > bestVol ? d : best;
         } else if (exerciseType === 'BODYWEIGHT') {
-            return (d.bestReps ?? 0) > (best.bestReps ?? 0) ? d : best;
+            return ((d.bestReps ?? 0) * (d.bestIsUnilateral ? 2 : 1)) > ((best.bestReps ?? 0) * (best.bestIsUnilateral ? 2 : 1)) ? d : best;
         } else if (exerciseType === 'CARDIO') {
             const currentDist = d.bestDistance ?? 0;
             const bestDist = best.bestDistance ?? 0;

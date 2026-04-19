@@ -193,6 +193,7 @@ export const fr: Dictionary = {
             kmPh: "km",
             lastPrefix: "Dernier : ",
             kgSuffix: " kg",
+            unilateralLab: "Unilatéral (G/D)",
             logBtn: "Ajouter une série"
         },
         restTimer: {
@@ -202,6 +203,7 @@ export const fr: Dictionary = {
         },
         setLogger: {
             time: "Temps",
+            unilateralBadge: "Uni",
             deleteConfirm: {
                 title: "Supprimer la série ?",
                 description: "Êtes-vous sûr de vouloir supprimer cette série ? Cette action est irréversible.",

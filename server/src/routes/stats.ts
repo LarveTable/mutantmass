@@ -65,7 +65,7 @@ export default async function statsRoutes(app: FastifyInstance) {
         const totalVolume = workouts.reduce((t, w) =>
             t + w.workoutExercises.reduce((t2, we) =>
                 t2 + we.sets.reduce((t3, s) =>
-                    t3 + (s.weight && s.reps ? s.weight * s.reps : 0), 0), 0), 0)
+                    t3 + (s.weight && s.reps ? s.weight * s.reps * (s.isUnilateral ? 2 : 1) : 0), 0), 0), 0)
         const avgDuration = workouts.length > 0
             ? Math.round(workouts.reduce((t, w) => t + (w.duration ?? 0), 0) / workouts.length)
             : 0
@@ -119,7 +119,7 @@ export default async function statsRoutes(app: FastifyInstance) {
             for (const we of workout.workoutExercises) {
                 const muscle = we.exercise.muscleGroup ?? 'FULL_BODY'
                 const volume = we.sets.reduce((t, s) =>
-                    t + (s.weight && s.reps ? s.weight * s.reps : 0), 0)
+                    t + (s.weight && s.reps ? s.weight * s.reps * (s.isUnilateral ? 2 : 1) : 0), 0)
 
                 week.total += volume
                 week.byMuscle[muscle] = (week.byMuscle[muscle] ?? 0) + volume
@@ -200,10 +200,11 @@ export default async function statsRoutes(app: FastifyInstance) {
                 bestReps: bestSet?.reps ?? null,
                 bestDistance: bestSet?.distance ?? null,
                 bestDuration: bestSet?.duration ?? null,
+                bestIsUnilateral: bestSet?.isUnilateral ?? false,
                 estimatedOneRM: type === 'WEIGHTED' && bestSet ? primaryValue : null,
                 primaryValue,
-                volume: we.sets.reduce((t, s) => t + (s.weight && s.reps ? s.weight * s.reps : 0), 0),
-                totalReps: we.sets.reduce((t, s) => t + (s.reps ?? 0), 0),
+                volume: we.sets.reduce((t, s) => t + (s.weight && s.reps ? s.weight * s.reps * (s.isUnilateral ? 2 : 1) : 0), 0),
+                totalReps: we.sets.reduce((t, s) => t + ((s.reps ?? 0) * (s.isUnilateral ? 2 : 1)), 0),
                 maxWeight: type === 'WEIGHTED' && we.sets.length > 0 
                   ? Math.max(...we.sets.map(s => s.weight ?? 0)) 
                   : null,
@@ -311,8 +312,8 @@ export default async function statsRoutes(app: FastifyInstance) {
                 : [we.exercise.muscleGroup]
 
             const stats = we.sets.reduce((acc, s) => {
-                acc.volume += (s.weight && s.reps ? s.weight * s.reps : 0)
-                acc.reps += (s.reps ?? 0)
+                acc.volume += (s.weight && s.reps ? s.weight * s.reps * (s.isUnilateral ? 2 : 1) : 0)
+                acc.reps += ((s.reps ?? 0) * (s.isUnilateral ? 2 : 1))
                 acc.duration += (s.duration ?? 0)
                 return acc
             }, { volume: 0, reps: 0, duration: 0 })

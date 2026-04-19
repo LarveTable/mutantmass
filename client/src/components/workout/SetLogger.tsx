@@ -12,6 +12,7 @@ interface Set {
     weight?: number | null
     duration?: number | null
     distance?: number | null
+    isUnilateral?: boolean | null
 }
 
 interface Props {
@@ -25,6 +26,7 @@ interface Props {
         weight?: number
         duration?: number
         distance?: number
+        isUnilateral?: boolean
     }) => void
     onDeleteSet: (workoutExerciseId: string, setId: string) => void
     onEditSet: (workoutExerciseId: string, set: Set) => void
@@ -51,6 +53,7 @@ export default function SetLogger({
         weight?: number
         duration?: number
         distance?: number
+        isUnilateral?: boolean
     }) => {
         onAddSet({
             workoutExerciseId,
@@ -98,7 +101,10 @@ export default function SetLogger({
                             key={set.id}
                             className="grid grid-cols-[2rem_1fr_1fr_2rem_2rem] gap-2 items-center px-1 py-1.5 rounded-lg bg-muted/40"
                         >
-                            <span className="text-sm text-muted-foreground text-center">{index + 1}</span>
+                            <span className="text-sm text-muted-foreground text-center">
+                                {index + 1}
+                                {set.isUnilateral && <span className="text-[10px] ml-1 text-primary">{t.workout.setLogger.unilateralBadge}</span>}
+                            </span>
                             {exerciseType === 'WEIGHTED' && (
                                 <>
                                     <span className="text-sm text-center font-medium">{set.reps}</span>

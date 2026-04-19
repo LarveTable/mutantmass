@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 
 interface Props {
     open: boolean
@@ -22,12 +23,14 @@ interface Props {
         weight?: number | null
         duration?: number | null
         distance?: number | null
+        isUnilateral?: boolean | null
     }
     onConfirm: (data: {
         reps?: number
         weight?: number
         duration?: number
         distance?: number
+        isUnilateral?: boolean
     }) => void
 }
 
@@ -46,14 +49,15 @@ export default function LogSetDialog({
         lastSet?.duration ? String(Math.floor(lastSet.duration / 60)) : ''
     )
     const [distance, setDistance] = useState(lastSet?.distance?.toString() ?? '')
+    const [isUnilateral, setIsUnilateral] = useState(lastSet?.isUnilateral ?? false)
 
     const handleConfirm = () => {
         if (exerciseType === 'WEIGHTED') {
             if (!reps || !weight) return
-            onConfirm({ reps: Number(reps), weight: Number(weight) })
+            onConfirm({ reps: Number(reps), weight: Number(weight), isUnilateral })
         } else if (exerciseType === 'BODYWEIGHT') {
             if (!reps) return
-            onConfirm({ reps: Number(reps) })
+            onConfirm({ reps: Number(reps), isUnilateral })
         } else if (exerciseType === 'CARDIO') {
             if (!duration) return
             onConfirm({
@@ -114,6 +118,15 @@ export default function LogSetDialog({
                                 className="text-center text-lg"
                                 autoFocus
                             />
+                        </div>
+                    )}
+
+                    {(exerciseType === 'WEIGHTED' || exerciseType === 'BODYWEIGHT') && (
+                        <div className="flex items-center justify-between rounded-lg border p-3">
+                            <div className="space-y-0.5">
+                                <Label>{t.workout.logSetDialog.unilateralLab}</Label>
+                            </div>
+                            <Switch checked={isUnilateral} onCheckedChange={setIsUnilateral} />
                         </div>
                     )}
 

@@ -81,6 +81,7 @@ export function useUpdateSet(workoutId: string) {
             weight,
             duration,
             distance,
+            isUnilateral,
         }: {
             workoutExerciseId: string
             setId: string
@@ -88,10 +89,11 @@ export function useUpdateSet(workoutId: string) {
             weight?: number
             duration?: number
             distance?: number
+            isUnilateral?: boolean
         }) => {
             const res = await api.patch(
                 `/workouts/${workoutId}/exercises/${workoutExerciseId}/sets/${setId}`,
-                { reps, weight, duration, distance }
+                { reps, weight, duration, distance, isUnilateral }
             )
             return res.data.set
         },
@@ -186,16 +188,18 @@ export function useAddSet(workoutId: string) {
             weight,
             duration,
             distance,
+            isUnilateral,
         }: {
             workoutExerciseId: string
             reps?: number
             weight?: number
             duration?: number
             distance?: number
+            isUnilateral?: boolean
         }) => {
             const res = await api.post(
                 `/workouts/${workoutId}/exercises/${workoutExerciseId}/sets`,
-                { reps, weight, duration, distance }
+                { reps, weight, duration, distance, isUnilateral }
             )
             return res.data.set
         },

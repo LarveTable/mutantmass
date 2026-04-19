@@ -12,6 +12,7 @@ interface Set {
     weight?: number | null
     duration?: number | null
     distance?: number | null
+    isUnilateral?: boolean | null
 }
 
 interface WorkoutExercise {
@@ -52,7 +53,7 @@ function formatDuration(seconds: number) {
 function getTotalVolume(exercises: WorkoutExercise[]) {
     return exercises.reduce((total, we) => {
         return total + we.sets.reduce((setTotal, set) => {
-            if (set.weight && set.reps) return setTotal + set.weight * set.reps
+            if (set.weight && set.reps) return setTotal + set.weight * set.reps * (set.isUnilateral ? 2 : 1)
             return setTotal
         }, 0)
     }, 0)
@@ -69,11 +70,11 @@ function getBestSet(sets: Set[], type: string) {
         if (!best) return set
 
         if (type === 'WEIGHTED') {
-            const currentVol = (set.weight && set.reps) ? set.weight * set.reps : 0
-            const bestVol = (best.weight && best.reps) ? best.weight * best.reps : 0
+            const currentVol = (set.weight && set.reps) ? set.weight * set.reps * (set.isUnilateral ? 2 : 1) : 0
+            const bestVol = (best.weight && best.reps) ? best.weight * best.reps * (best.isUnilateral ? 2 : 1) : 0
             return currentVol > bestVol ? set : best
         } else if (type === 'BODYWEIGHT') {
-            return (set.reps ?? 0) > (best.reps ?? 0) ? set : best
+            return ((set.reps ?? 0) * (set.isUnilateral ? 2 : 1)) > ((best.reps ?? 0) * (best.isUnilateral ? 2 : 1)) ? set : best
         } else if (type === 'CARDIO') {
             const currentDist = set.distance ?? 0; const bestDist = best.distance ?? 0;
             if (currentDist > bestDist) return set
@@ -89,10 +90,10 @@ function WorkoutSummaryExerciseCard({ we, t, workoutId }: { we: WorkoutExercise,
     const { data: rawStats = [] } = useExerciseStats(we.exercise.id, 'all')
     const bestSet = getBestSet(we.sets, we.exercise.type)
     const exerciseVolume = we.sets.reduce((total, set) => {
-        if (set.weight && set.reps) return total + set.weight * set.reps
+        if (set.weight && set.reps) return total + set.weight * set.reps * (set.isUnilateral ? 2 : 1)
         return total
     }, 0)
-    const totalReps = we.sets.reduce((total, set) => total + (set.reps || 0), 0)
+    const totalReps = we.sets.reduce((total, set) => total + ((set.reps || 0) * (set.isUnilateral ? 2 : 1)), 0)
 
     const currentKgPerRep = (exerciseVolume > 0 && totalReps > 0) ? parseFloat((exerciseVolume / totalReps).toFixed(1)) : null
     
@@ -118,14 +119,14 @@ function WorkoutSummaryExerciseCard({ we, t, workoutId }: { we: WorkoutExercise,
     let bestSetDiffMetric = '';
 
     if (we.exercise.type === 'WEIGHTED') {
-        const prevBestVolume = (prevStat?.bestWeight && prevStat?.bestReps) ? (prevStat.bestWeight * prevStat.bestReps) : null
-        const currentBestVolume = (bestSet?.weight && bestSet?.reps) ? (bestSet.weight * bestSet.reps) : null
+        const prevBestVolume = (prevStat?.bestWeight && prevStat?.bestReps) ? (prevStat.bestWeight * prevStat.bestReps * (prevStat.isUnilateral ? 2 : 1)) : null
+        const currentBestVolume = (bestSet?.weight && bestSet?.reps) ? (bestSet.weight * bestSet.reps * (bestSet.isUnilateral ? 2 : 1)) : null
         if (currentBestVolume !== null && prevBestVolume !== null) {
             bestSetDiff = parseFloat((currentBestVolume - prevBestVolume).toFixed(1))
         }
     } else if (we.exercise.type === 'BODYWEIGHT') {
-        const prevReps = prevStat?.bestReps ?? null
-        const currentReps = bestSet?.reps ?? null
+        const prevReps = prevStat?.bestReps ? (prevStat.bestReps * (prevStat.isUnilateral ? 2 : 1)) : null
+        const currentReps = bestSet?.reps ? (bestSet.reps * (bestSet.isUnilateral ? 2 : 1)) : null
         if (currentReps !== null && prevReps !== null) {
             bestSetDiff = currentReps - prevReps
         }
@@ -204,7 +205,10 @@ function WorkoutSummaryExerciseCard({ we, t, workoutId }: { we: WorkoutExercise,
                         key={set.id}
                         className="grid grid-cols-[2rem_1fr_1fr] gap-2 items-center px-1 py-1.5 rounded-lg bg-muted/40"
                     >
-                        <span className="text-sm text-muted-foreground text-center">{index + 1}</span>
+                        <span className="text-sm text-muted-foreground text-center">
+                            {index + 1}
+                            {set.isUnilateral && <span className="text-[10px] ml-1 text-primary">{t.workout.setLogger.unilateralBadge}</span>}
+                        </span>
                         {we.exercise.type === 'WEIGHTED' && (
                             <>
                                 <span className="text-sm text-center font-medium">{set.reps}</span>

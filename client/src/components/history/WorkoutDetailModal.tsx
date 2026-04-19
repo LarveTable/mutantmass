@@ -38,7 +38,7 @@ function formatDuration(seconds: number) {
 function getTotalVolume(exercises: any[]) {
     return exercises.reduce((total: number, we: any) =>
         total + we.sets.reduce((t: number, s: any) =>
-            t + (s.weight && s.reps ? s.weight * s.reps : 0), 0), 0)
+            t + (s.weight && s.reps ? s.weight * s.reps * (s.isUnilateral ? 2 : 1) : 0), 0), 0)
 }
 
 function getBestSet(sets: any[], type: string) {
@@ -48,11 +48,11 @@ function getBestSet(sets: any[], type: string) {
         if (!best) return set
 
         if (type === 'WEIGHTED') {
-            const currentVol = (set.weight && set.reps) ? set.weight * set.reps : 0
-            const bestVol = (best.weight && best.reps) ? best.weight * best.reps : 0
+            const currentVol = (set.weight && set.reps) ? set.weight * set.reps * (set.isUnilateral ? 2 : 1) : 0
+            const bestVol = (best.weight && best.reps) ? best.weight * best.reps * (best.isUnilateral ? 2 : 1) : 0
             return currentVol > bestVol ? set : best
         } else if (type === 'BODYWEIGHT') {
-            return (set.reps ?? 0) > (best.reps ?? 0) ? set : best
+            return ((set.reps ?? 0) * (set.isUnilateral ? 2 : 1)) > ((best.reps ?? 0) * (best.isUnilateral ? 2 : 1)) ? set : best
         } else if (type === 'CARDIO') {
             const currentDist = set.distance ?? 0; const bestDist = best.distance ?? 0;
             if (currentDist > bestDist) return set
@@ -294,9 +294,9 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                     {workout.workoutExercises.map((we: any) => {
                         const bestSet = getBestSet(we.sets, we.exercise.type)
                         const volume = we.sets.reduce((t: number, s: any) =>
-                            t + (s.weight && s.reps ? s.weight * s.reps : 0), 0)
+                            t + (s.weight && s.reps ? s.weight * s.reps * (s.isUnilateral ? 2 : 1) : 0), 0)
                         const totalReps = we.sets.reduce((t: number, s: any) =>
-                            t + (s.reps || 0), 0)
+                            t + ((s.reps || 0) * (s.isUnilateral ? 2 : 1)), 0)
                         const currentKgPerRep = (volume > 0 && totalReps > 0) ? parseFloat((volume / totalReps).toFixed(1)) : null
 
                         return (
@@ -383,7 +383,10 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                             key={set.id}
                                             className="grid grid-cols-[2rem_1fr_1fr_2rem_2rem] gap-2 items-center px-1 py-1.5 rounded-lg bg-muted/40"
                                         >
-                                            <span className="text-sm text-muted-foreground text-center">{index + 1}</span>
+                                            <span className="text-sm text-muted-foreground text-center">
+                                                {index + 1}
+                                                {set.isUnilateral && <span className="text-[10px] ml-1 text-primary">{t.workout.setLogger.unilateralBadge}</span>}
+                                            </span>
                                             {we.exercise.type === 'WEIGHTED' && (
                                                 <>
                                                     <span className="text-sm text-center font-medium">{set.reps}</span>

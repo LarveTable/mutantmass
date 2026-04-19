@@ -191,6 +191,7 @@ export const en = {
             kmPh: "km",
             lastPrefix: "Last: ",
             kgSuffix: " kg",
+            unilateralLab: "Unilateral (L/R)",
             logBtn: "Log Set"
         },
         restTimer: {
@@ -200,6 +201,7 @@ export const en = {
         },
         setLogger: {
             time: "Time",
+            unilateralBadge: "Uni",
             deleteConfirm: {
                 title: "Delete Set?",
                 description: "Are you sure you want to delete this set? This action cannot be undone.",
