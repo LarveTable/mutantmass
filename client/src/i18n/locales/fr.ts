@@ -242,6 +242,8 @@ export const fr: Dictionary = {
             bestSetPart1: "🏆 Meilleure série de la séance : ",
             bestSetPart2: " reps @ ",
             bestSetPart3: " kg",
+            bestSet: "Meilleure série de tous les temps : ",
+            lastKgPerRepAvg: "Dernière moyenne par rep : ",
             done: "Terminé"
         },
         addDialog: {

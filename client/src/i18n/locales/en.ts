@@ -240,6 +240,8 @@ export const en = {
             bestSetPart1: "🏆 Best set for this workout: ",
             bestSetPart2: " reps @ ",
             bestSetPart3: " kg",
+            bestSet: "All time best set: ",
+            lastKgPerRepAvg: "Last avg per rep: ",
             done: "Done"
         },
         addDialog: {

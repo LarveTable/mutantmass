@@ -19,10 +19,9 @@ import RestTimer from '@/components/workout/RestTimer'
 import WorkoutSummary from '@/components/workout/WorkoutSummary'
 import WorkoutTimer from '@/components/workout/WorkoutTimer'
 import FinishWorkoutDialog from '@/components/workout/FinishWorkoutDialog'
-import { useRemoveExercise, useUpdateExerciseNote } from '@/hooks/useWorkout'
+import { useRemoveExercise, useUpdateExerciseNote, useUpdateSet, useExerciseStats } from '@/hooks/useWorkout'
 import ExerciseNoteDialog from '@/components/workout/ExerciseNoteDialog'
 import { Trash2, StickyNote } from 'lucide-react'
-import { useUpdateSet } from '@/hooks/useWorkout'
 import LogSetDialog from '@/components/workout/LogSetDialog'
 import { useQueryClient } from '@tanstack/react-query'
 import api from '@/api/axios'
@@ -31,6 +30,40 @@ import LogPastWorkoutDialog from '@/components/workout/LogPastWorkoutDialog'
 import ListAddedExercisesDialog from '@/components/workout/ListAddedExercisesDialog'
 import ExerciseImage from '@/components/workout/ExerciseImage'
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog'
+
+// Component to display footer stats cleanly for active workout exercises
+function ExerciseFooterStats({ exerciseId }: { exerciseId: string }) {
+    const { t } = useTranslation()
+    const { data = [] } = useExerciseStats(exerciseId, 'all')
+
+    if (data.length === 0) return null
+    const exerciseType = data[data.length - 1].type
+    if (exerciseType !== 'WEIGHTED') return null
+
+    const processedData = data.filter((d: any) => d.type === 'WEIGHTED' && d.volume > 0 && d.totalReps > 0).map((d: any) => ({
+        ...d,
+        kgPerRep: parseFloat((d.volume / d.totalReps).toFixed(1))
+    }))
+
+    const lastSession = processedData.length > 0 ? processedData[processedData.length - 1] : null
+    const lastKgPerRep = lastSession ? lastSession.kgPerRep : null
+
+    const bestSession = [...processedData].reduce((best: any, d: any) => {
+        if (!best) return d
+        const bestOrm = best.bestWeight * (1 + best.bestReps / 30)
+        const currentOrm = d.bestWeight * (1 + d.bestReps / 30)
+        return currentOrm > bestOrm ? d : best
+    }, null)
+
+    if (!lastKgPerRep && !bestSession) return null
+
+    return (
+        <div className="flex justify-between items-center text-xs text-muted-foreground mt-1 pt-3 border-t border-border">
+            <span>{t.workout.summary.lastKgPerRepAvg} <span className="font-semibold text-foreground">{lastKgPerRep ? `${lastKgPerRep} ${t.progress.sections.exercises.labels.kgPerRep}` : '-'}</span></span>
+            <span>{t.workout.summary.bestSet} <span className="font-semibold text-foreground">{bestSession ? `${bestSession.bestWeight}kg × ${bestSession.bestReps} ${t.common.units.reps || 'reps'}` : '-'}</span></span>
+        </div>
+    )
+}
 
 // Main page for logging workouts
 
@@ -342,6 +375,7 @@ export default function WorkoutPage() {
                                 onConfirm={handleEditSet}
                             />
                         )}
+                        <ExerciseFooterStats exerciseId={we.exercise.id} />
                     </div>
                 ))}
 
