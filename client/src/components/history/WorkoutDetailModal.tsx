@@ -41,30 +41,27 @@ function getTotalVolume(exercises: any[]) {
             t + (s.weight && s.reps ? s.weight * s.reps : 0), 0), 0)
 }
 
-function getBestSet(sets: any[]) {
-    if (!sets.length) return null
+function getBestSet(sets: any[], type: string) {
+    if (sets.length === 0) return null
+
     return sets.reduce((best: any, set: any) => {
         if (!best) return set
-        const weight = set.weight ?? 0
-        const bestWeight = best.weight ?? 0
-        const reps = set.reps ?? 0
-        const bestReps = best.reps ?? 0
 
-        const volume = weight * reps
-        const bestVolume = bestWeight * bestReps
-
-        if (volume > bestVolume) return set
-        if (volume < bestVolume) return best
-
-        // If volume is tied (e.g., both 0 for bodyweight), prioritize higher weight
-        if (weight > bestWeight) return set
-        if (weight < bestWeight) return best
-
-        // If weight is also tied, prioritize higher reps
-        if (reps > bestReps) return set
+        if (type === 'WEIGHTED') {
+            const currentVol = (set.weight && set.reps) ? set.weight * set.reps : 0
+            const bestVol = (best.weight && best.reps) ? best.weight * best.reps : 0
+            return currentVol > bestVol ? set : best
+        } else if (type === 'BODYWEIGHT') {
+            return (set.reps ?? 0) > (best.reps ?? 0) ? set : best
+        } else if (type === 'CARDIO') {
+            const currentDist = set.distance ?? 0; const bestDist = best.distance ?? 0;
+            if (currentDist > bestDist) return set
+            if (currentDist === bestDist && (set.duration ?? 0) > (best.duration ?? 0)) return set
+            return best
+        }
 
         return best
-    }, null)
+    }, sets[0])
 }
 
 export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
@@ -295,9 +292,12 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                         {t.history.detailModal.exercises}
                     </h2>
                     {workout.workoutExercises.map((we: any) => {
-                        const bestSet = getBestSet(we.sets)
+                        const bestSet = getBestSet(we.sets, we.exercise.type)
                         const volume = we.sets.reduce((t: number, s: any) =>
                             t + (s.weight && s.reps ? s.weight * s.reps : 0), 0)
+                        const totalReps = we.sets.reduce((t: number, s: any) =>
+                            t + (s.reps || 0), 0)
+                        const currentKgPerRep = (volume > 0 && totalReps > 0) ? parseFloat((volume / totalReps).toFixed(1)) : null
 
                         return (
                             <div
@@ -309,10 +309,15 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                     <ExerciseImage imageUrl={we.exercise.imageUrl} name={we.exercise.name} size="md" zoomable />
                                     <div className="flex-1">
                                         <p className="font-semibold">{we.exercise.name}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            {we.sets.length} {we.sets.length !== 1 ? t.workout.summary.sets : t.workout.summary.set}
-                                            {volume > 0 && ` · ${volume.toLocaleString()} kg`}
-                                        </p>
+                                        <div className="flex flex-wrap gap-x-1.5 text-xs text-muted-foreground items-center mt-0.5">
+                                            <span>
+                                                {we.sets.length} {we.sets.length !== 1 ? t.workout.summary.sets : t.workout.summary.set}
+                                                {volume > 0 && ` · ${volume.toLocaleString()} ${t.common.units.kg}`}
+                                            </span>
+                                            {currentKgPerRep !== null && (
+                                                <span>· {currentKgPerRep} {t.progress.sections.exercises.labels.kgPerRep}</span>
+                                            )}
+                                        </div>
                                     </div>
                                     {/* Action buttons */}
                                     <div className="flex items-center gap-2">
@@ -430,9 +435,12 @@ export default function WorkoutDetailModal({ workoutId, onClose }: Props) {
                                     ))}
 
                                     {/* Best set */}
-                                    {['WEIGHTED', 'BODYWEIGHT'].includes(we.exercise.type) && bestSet && (
-                                        <p className="text-xs text-primary mt-1 px-1">
-                                            {t.workout.summary.bestSetPart1}{bestSet.reps ?? 0}{t.workout.summary.bestSetPart2}{bestSet.weight ? `${bestSet.weight}${t.workout.summary.bestSetPart3}` : ''}
+                                    {bestSet && (
+                                        <p className="text-xs text-primary font-medium mt-1 px-1">
+                                            {t.workout.summary.bestSetPart1}
+                                            {we.exercise.type === 'WEIGHTED' && `${bestSet.reps ?? 0}${t.workout.summary.bestSetPart2}${bestSet.weight ?? 0}${t.workout.summary.bestSetPart3}`}
+                                            {we.exercise.type === 'BODYWEIGHT' && `${bestSet.reps ?? 0} ${t.common.units.reps}`}
+                                            {we.exercise.type === 'CARDIO' && `${bestSet.distance ? `${bestSet.distance}${t.common.units.km}` : ''}${bestSet.distance && bestSet.duration ? ' · ' : ''}${bestSet.duration ? `${Math.floor(bestSet.duration / 60)}${t.common.units.m}` : ''}`}
                                         </p>
                                     )}
 

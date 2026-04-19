@@ -32,17 +32,16 @@ import ExerciseImage from '@/components/workout/ExerciseImage'
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog'
 
 // Component to display footer stats cleanly for active workout exercises
-function ExerciseFooterStats({ exerciseId }: { exerciseId: string }) {
+function ExerciseFooterStats({ exerciseId, workoutId }: { exerciseId: string, workoutId: string | null }) {
     const { t } = useTranslation()
     const { data = [] } = useExerciseStats(exerciseId, 'all')
 
     if (data.length === 0) return null
     const exerciseType = data[data.length - 1].type
-    if (exerciseType !== 'WEIGHTED') return null
 
-    const processedData = data.filter((d: any) => d.type === 'WEIGHTED' && d.volume > 0 && d.totalReps > 0).map((d: any) => ({
+    const processedData = data.filter((d: any) => d.workoutId !== workoutId).map((d: any) => ({
         ...d,
-        kgPerRep: parseFloat((d.volume / d.totalReps).toFixed(1))
+        kgPerRep: (d.type === 'WEIGHTED' && d.volume > 0 && d.totalReps > 0) ? parseFloat((d.volume / d.totalReps).toFixed(1)) : null
     }))
 
     const lastSession = processedData.length > 0 ? processedData[processedData.length - 1] : null
@@ -50,17 +49,40 @@ function ExerciseFooterStats({ exerciseId }: { exerciseId: string }) {
 
     const bestSession = [...processedData].reduce((best: any, d: any) => {
         if (!best) return d
-        const bestOrm = best.bestWeight * (1 + best.bestReps / 30)
-        const currentOrm = d.bestWeight * (1 + d.bestReps / 30)
-        return currentOrm > bestOrm ? d : best
+        if (exerciseType === 'WEIGHTED') {
+            const bestVol = best.bestWeight && best.bestReps ? best.bestWeight * best.bestReps : 0;
+            const currentVol = d.bestWeight && d.bestReps ? d.bestWeight * d.bestReps : 0;
+            return currentVol > bestVol ? d : best;
+        } else if (exerciseType === 'BODYWEIGHT') {
+            return (d.bestReps ?? 0) > (best.bestReps ?? 0) ? d : best;
+        } else if (exerciseType === 'CARDIO') {
+            const currentDist = d.bestDistance ?? 0;
+            const bestDist = best.bestDistance ?? 0;
+            if (currentDist > bestDist) return d;
+            if (currentDist === bestDist && (d.bestDuration ?? 0) > (best.bestDuration ?? 0)) return d;
+            return best;
+        }
+        return best;
     }, null)
 
-    if (!lastKgPerRep && !bestSession) return null
+    const hasBestSessionData = bestSession && (bestSession.bestWeight || bestSession.bestReps || bestSession.bestDistance || bestSession.bestDuration)
+
+    if (!lastKgPerRep && !hasBestSessionData) return null
 
     return (
-        <div className="flex justify-between items-center text-xs text-muted-foreground mt-1 pt-3 border-t border-border">
-            <span>{t.workout.summary.lastKgPerRepAvg} <span className="font-semibold text-foreground">{lastKgPerRep ? `${lastKgPerRep} ${t.progress.sections.exercises.labels.kgPerRep}` : '-'}</span></span>
-            <span>{t.workout.summary.bestSet} <span className="font-semibold text-foreground">{bestSession ? `${bestSession.bestWeight}kg × ${bestSession.bestReps} ${t.common.units.reps || 'reps'}` : '-'}</span></span>
+        <div className={`flex justify-between items-center text-xs text-muted-foreground mt-1 pt-3 border-t border-border ${!lastKgPerRep ? 'justify-end' : ''}`}>
+            {lastKgPerRep && (
+                <span>{t.workout.summary.lastKgPerRepAvg} <span className="font-semibold text-foreground">{lastKgPerRep} {t.progress.sections.exercises.labels.kgPerRep}</span></span>
+            )}
+            {hasBestSessionData && (
+                <span>
+                    {t.workout.summary.bestSet} <span className="font-semibold text-foreground">
+                        {exerciseType === 'WEIGHTED' && `${bestSession.bestWeight}kg × ${bestSession.bestReps} ${t.common.units.reps || 'reps'}`}
+                        {exerciseType === 'BODYWEIGHT' && `${bestSession.bestReps} ${t.common.units.reps}`}
+                        {exerciseType === 'CARDIO' && `${bestSession.bestDistance ? `${bestSession.bestDistance}${t.common.units.km}` : ''}${bestSession.bestDistance && bestSession.bestDuration ? ' · ' : ''}${bestSession.bestDuration ? `${Math.floor(bestSession.bestDuration / 60)}${t.common.units.m}` : ''}`}
+                    </span>
+                </span>
+            )}
         </div>
     )
 }
@@ -375,7 +397,7 @@ export default function WorkoutPage() {
                                 onConfirm={handleEditSet}
                             />
                         )}
-                        <ExerciseFooterStats exerciseId={we.exercise.id} />
+                        <ExerciseFooterStats exerciseId={we.exercise.id} workoutId={workoutId} />
                     </div>
                 ))}
 

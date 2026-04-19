@@ -193,6 +193,7 @@ export default async function statsRoutes(app: FastifyInstance) {
                         : null
 
             return {
+                workoutId: we.workout.id,
                 date: toLocalDateString(we.workout.date),
                 type,
                 bestWeight: bestSet?.weight ?? null,
