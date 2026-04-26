@@ -1,0 +1,403 @@
+.mutant-login-theme {
+    --bg-color: #12141a;
+    --card-bg: #1c1e26;
+    --primary-glow: #00ff87;
+    --primary-cyan: #00e5ff;
+    --primary-purple: #ad2bee;
+    --text-main: #ffffff;
+    --text-muted: #9ba1a6;
+    --input-bg: #16181f;
+    --input-border: #262933;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    position: relative;
+    width: 100%;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom);
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: padding-bottom 0.3s ease;
+}
+
+/* Expand the scrollable container when an input is focused to allow smooth native scroll without webview shifting */
+.mutant-login-theme:has(input:focus) {
+    padding-bottom: 50vh;
+}
+
+.mutant-login-theme::-webkit-scrollbar,
+html:has(.mutant-login-theme)::-webkit-scrollbar,
+body:has(.mutant-login-theme)::-webkit-scrollbar {
+    display: none;
+}
+
+html:has(.mutant-login-theme) {
+    background-color: #12141a;
+}
+
+body:has(.mutant-login-theme) {
+    background-color: #12141a;
+    overscroll-behavior: none;
+    margin: 0;
+    padding: 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.mutant-login-theme .lang-toggle-fixed {
+    position: fixed;
+    top: env(safe-area-inset-top, 12px);
+    right: 16px;
+    z-index: 50;
+    padding-top: 12px;
+}
+
+.mutant-login-theme * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: inherit;
+}
+
+.mutant-login-theme .bg-glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    opacity: 0.5;
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.mutant-login-theme .glow-cyan {
+    top: -10%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: var(--primary-cyan);
+}
+
+.mutant-login-theme .glow-purple {
+    top: 85lvh;
+    left: -10%;
+    width: 500px;
+    height: 500px;
+    background: var(--primary-purple);
+    opacity: 0.3;
+}
+
+.mutant-login-theme .glow-green-top {
+    top: -10%;
+    right: -10%;
+    width: 450px;
+    height: 450px;
+    background: var(--primary-glow);
+    opacity: 0.2;
+}
+
+.mutant-login-theme .glow-green-bottom {
+    top: 85lvh;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: var(--primary-glow);
+    opacity: 0.15;
+}
+
+.mutant-login-theme .bg-ring {
+    position: fixed;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background-color: transparent;
+    z-index: 0;
+}
+
+.mutant-login-theme .ring-tl {
+    top: -80px;
+    left: -80px;
+    width: 300px;
+    height: 300px;
+    border-color: rgba(0, 229, 255, 0.4);
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.2), inset 0 0 30px rgba(0, 229, 255, 0.2);
+}
+
+.mutant-login-theme .ring-tr {
+    top: -120px;
+    right: -80px;
+    width: 400px;
+    height: 400px;
+    border-color: rgba(0, 255, 135, 0.4);
+    box-shadow: 0 0 30px rgba(0, 255, 135, 0.2), inset 0 0 30px rgba(0, 255, 135, 0.2);
+}
+
+.mutant-login-theme .ring-bl {
+    top: calc(100lvh - 150px);
+    left: -50px;
+    width: 200px;
+    height: 200px;
+    border-color: rgba(173, 43, 238, 0.4);
+    box-shadow: 0 0 30px rgba(173, 43, 238, 0.2), inset 0 0 30px rgba(173, 43, 238, 0.2);
+}
+
+.mutant-login-theme .ring-br {
+    top: calc(100lvh - 250px);
+    right: -100px;
+    width: 350px;
+    height: 350px;
+    border-color: rgba(0, 255, 135, 0.4);
+    box-shadow: 0 0 30px rgba(0, 255, 135, 0.2), inset 0 0 30px rgba(0, 255, 135, 0.2);
+}
+
+.mutant-login-theme .login-wrapper {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 400px;
+    flex-shrink: 1;
+    margin-bottom: 120px;
+}
+
+.mutant-login-theme .circuit-tr {
+    position: absolute;
+    top: 0px;
+    right: -50px;
+    width: 110px;
+    height: 210px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.mutant-login-theme .circuit-bl {
+    position: absolute;
+    bottom: 0px;
+    left: -50px;
+    width: 110px;
+    height: 210px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.mutant-login-theme .alien-logo-container {
+    margin: 40px auto -50px auto;
+    width: 100px;
+    height: 100px;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 22%;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 255, 135, 0.8), 0 0 10px rgba(173, 43, 238, 0.8);
+    animation: logo-pulse 3s ease-in-out infinite;
+}
+
+.mutant-login-theme .alien-logo-container img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.mutant-login-theme .login-card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 50px 30px 30px;
+    box-shadow: -40px -40px 80px rgba(0, 229, 255, 0.25), -40px 40px 80px rgba(173, 43, 238, 0.25), 40px 0 80px rgba(0, 255, 135, 0.25), inset 0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 3px rgba(255, 255, 255, 0.05);
+    position: relative;
+    border: 8px solid rgba(38, 42, 40, 0.5);
+}
+
+.mutant-login-theme .brand-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 10px;
+    background: linear-gradient(90deg, var(--primary-glow), var(--primary-cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(0, 255, 135, 0.3);
+    letter-spacing: 0.5px;
+}
+
+.mutant-login-theme .welcome-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 25px;
+    margin-bottom: 5px;
+}
+
+.mutant-login-theme .welcome-subtitle {
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 35px;
+}
+
+.mutant-login-theme .form-group {
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: left;
+}
+
+.mutant-login-theme .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.mutant-login-theme .form-row .form-group {
+    margin-bottom: 0;
+}
+
+@media (max-width: 450px) {
+    .mutant-login-theme .form-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+.mutant-login-theme .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: #c9cdd2;
+    margin-bottom: 8px;
+    margin-left: 5px;
+}
+
+.mutant-login-theme .form-control {
+    width: 100%;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 99px;
+    padding: 10px 20px;
+    color: var(--text-main);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.6), inset -4px -4px 10px rgba(40, 45, 55, 0.4);
+}
+
+.mutant-login-theme .form-control::placeholder {
+    color: #5b6068;
+}
+
+.mutant-login-theme .form-control:focus,
+.mutant-login-theme .form-control:active {
+    border-color: var(--primary-glow);
+    box-shadow: 0 0 15px rgba(0, 255, 135, 0.3), inset 4px 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.mutant-login-theme .submit-btn {
+    width: 100%;
+    background: linear-gradient(90deg, #2dee82, var(--primary-glow));
+    color: #000000;
+    border: none;
+    border-radius: 99px;
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 135, 0.5), inset 2px 2px 5px rgba(255, 255, 255, 0.4), inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+    animation: btn-flicker 5s ease-in-out infinite;
+}
+
+.mutant-login-theme .submit-btn:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 135, 0.7), inset 2px 2px 5px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    animation: none;
+}
+
+.mutant-login-theme .submit-btn:disabled {
+    background: #5b6068;
+    box-shadow: none;
+    cursor: not-allowed;
+    color: #a1a5ab;
+    transform: none;
+    animation: none;
+}
+
+.mutant-login-theme .signup-link {
+    display: block;
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.mutant-login-theme .signup-link a {
+    color: var(--primary-glow);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid var(--primary-glow);
+    padding-bottom: 2px;
+    transition: all 0.3s ease;
+}
+
+.mutant-login-theme .signup-link a:hover {
+    color: var(--primary-cyan);
+    border-color: var(--primary-cyan);
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+.mutant-login-theme .error-text {
+    color: #ff3366;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 10px;
+    text-shadow: 0 0 10px rgba(255, 51, 102, 0.4);
+}
+
+/* Logo pulsing glow */
+@keyframes logo-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px rgba(0, 255, 135, 0.8), 0 0 10px rgba(173, 43, 238, 0.8);
+    }
+
+    50% {
+        box-shadow: 0 0 25px rgba(0, 255, 135, 1), 0 0 40px rgba(0, 255, 135, 0.4), 0 0 20px rgba(173, 43, 238, 1), 0 0 40px rgba(173, 43, 238, 0.3);
+    }
+}
+
+/* Button unstable energy flicker — barely-perceptible extinction dip */
+@keyframes btn-flicker {
+
+    0%,
+    82%,
+    86%,
+    100% {
+        box-shadow: 0 0 20px rgba(0, 255, 135, 0.5), inset 2px 2px 5px rgba(255, 255, 255, 0.4), inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+        opacity: 1;
+    }
+
+    83% {
+        box-shadow: 0 0 12px rgba(0, 255, 135, 0.3), inset 2px 2px 5px rgba(255, 255, 255, 0.25), inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+        opacity: 0.92;
+    }
+
+    84% {
+        box-shadow: 0 0 20px rgba(0, 255, 135, 0.5), inset 2px 2px 5px rgba(255, 255, 255, 0.4), inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+        opacity: 1;
+    }
+
+    84.5% {
+        box-shadow: 0 0 10px rgba(0, 255, 135, 0.25), inset 2px 2px 5px rgba(255, 255, 255, 0.2), inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+        opacity: 0.9;
+    }
+
+    85% {
+        box-shadow: 0 0 20px rgba(0, 255, 135, 0.5), inset 2px 2px 5px rgba(255, 255, 255, 0.4), inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+        opacity: 1;
+    }
+}

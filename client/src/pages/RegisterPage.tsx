@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { useTranslation } from '@/context/LanguageContext'
 import { LanguageToggle } from '@/components/LanguageSelector'
+import './mutant-auth.css'
 
 // Register page, only accessible if the user is not authenticated
 
@@ -52,87 +49,100 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center px-4 gap-6" style={{ paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
-            <LanguageToggle />
-            <div className="flex flex-col items-center gap-2">
-                <img src="/icons/icon-512.png" alt={t.auth.common.logoAlt} className="h-16 w-16 rounded-2xl drop-shadow-lg" />
-                <h1 className="text-3xl font-black tracking-tight">Mutant Mass</h1>
+        <div className="mutant-login-theme w-full">
+
+            <div className="lang-toggle-fixed">
+                <LanguageToggle variant="neon" />
             </div>
-            <Card className="w-full max-w-sm">
-                <CardHeader>
-                    <CardTitle className="text-2xl">{t.auth.register.title}</CardTitle>
-                    <CardDescription>{t.auth.register.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="name">{t.common.name}</Label>
-                            <Input
-                                id="name"
-                                type="text"
-                                placeholder={t.auth.register.namePlaceholder}
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                            />
+
+            <div className="bg-glow glow-cyan"></div>
+            <div className="bg-glow glow-purple"></div>
+            <div className="bg-glow glow-green-top"></div>
+            <div className="bg-glow glow-green-bottom"></div>
+            <div className="bg-ring ring-tl"></div>
+            <div className="bg-ring ring-tr"></div>
+            <div className="bg-ring ring-bl"></div>
+            <div className="bg-ring ring-br"></div>
+
+            <div className="alien-logo-container">
+                <img src="/icons/icon-512.png" alt={t.auth.common.logoAlt} className="w-[100px] h-[100px]" />
+            </div>
+
+            <div className="login-wrapper">
+                <svg className="circuit-tr" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="neon-glow-tr" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                        </filter>
+                    </defs>
+                    <path d="M 10 10 Q 50 10 70 40 T 70 140 Q 70 160 40 190" stroke="#00ff87" strokeWidth="2" fill="none" filter="url(#neon-glow-tr)" style={{ opacity: 0.8 }} />
+                    <path d="M 20 20 Q 40 20 55 45 T 55 110" stroke="#00e5ff" strokeWidth="1.5" fill="none" filter="url(#neon-glow-tr)" style={{ opacity: 0.6 }} />
+                    <circle cx="10" cy="10" r="3" fill="#00ff87" filter="url(#neon-glow-tr)" />
+                    <circle cx="40" cy="190" r="3" fill="#00ff87" filter="url(#neon-glow-tr)" />
+                </svg>
+
+                <svg className="circuit-bl" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="neon-glow-bl" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="6" result="blur" />
+                            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                        </filter>
+                    </defs>
+                    <path d="M 90 190 Q 50 190 30 160 T 30 60 Q 30 40 60 10" stroke="#00ff87" strokeWidth="2" fill="none" filter="url(#neon-glow-bl)" style={{ opacity: 0.8 }} />
+                    <path d="M 80 180 Q 60 180 45 155 T 45 90" stroke="#00e5ff" strokeWidth="1.5" fill="none" filter="url(#neon-glow-bl)" style={{ opacity: 0.6 }} />
+                    <circle cx="60" cy="10" r="3" fill="#00ff87" filter="url(#neon-glow-bl)" />
+                    <circle cx="90" cy="190" r="3" fill="#00ff87" filter="url(#neon-glow-bl)" />
+                </svg>
+
+                <div className="login-card">
+                    <h1 className="brand-title">Mutant Mass</h1>
+                    <h2 className="welcome-title">{t.auth.register.title}</h2>
+                    <p className="welcome-subtitle">{t.auth.register.description}</p>
+
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label htmlFor="name">{t.common.name}</label>
+                                <input type="text" id="name" className="form-control" placeholder={t.auth.register.namePlaceholder} value={name} onChange={(e) => setName(e.target.value)} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="email">{t.auth.common.email}</label>
+                                <input type="email" id="email" className="form-control" placeholder={t.auth.common.emailPlaceholder} value={email} onChange={(e) => setEmail(e.target.value)} required />
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="email">{t.auth.common.email}</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder={t.auth.common.emailPlaceholder}
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
+
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label htmlFor="password">{t.auth.common.password}</label>
+                                <input type="password" id="password" className="form-control" placeholder={t.auth.common.passwordPlaceholder} value={password} onChange={(e) => setPassword(e.target.value)} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="confirm">{t.auth.register.confirmPassword}</label>
+                                <input type="password" id="confirm" className="form-control" placeholder={t.auth.common.passwordPlaceholder} value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="password">{t.auth.common.password}</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder={t.auth.common.passwordPlaceholder}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
+
+                        <div className="form-group">
+                            <label htmlFor="betaCode">{t.auth.register.betaCode}</label>
+                            <input type="text" id="betaCode" className="form-control" placeholder={t.auth.register.betaCodePlaceholder} value={betaCode} onChange={(e) => setBetaCode(e.target.value)} required />
                         </div>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="confirm">{t.auth.register.confirmPassword}</Label>
-                            <Input
-                                id="confirm"
-                                type="password"
-                                placeholder={t.auth.common.passwordPlaceholder}
-                                value={confirm}
-                                onChange={(e) => setConfirm(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="betaCode">{t.auth.register.betaCode}</Label>
-                            <Input
-                                id="betaCode"
-                                type="text"
-                                placeholder={t.auth.register.betaCodePlaceholder}
-                                value={betaCode}
-                                onChange={(e) => setBetaCode(e.target.value)}
-                                required
-                            />
-                        </div>
-                        {error && <p className="text-sm text-destructive">{error}</p>}
-                        <Button type="submit" className="w-full" disabled={loading}>
+
+                        <button type="submit" className="submit-btn" disabled={loading}>
                             {loading ? t.auth.register.submitting : t.auth.register.submit}
-                        </Button>
-                        <p className="text-center text-sm text-muted-foreground">
+                        </button>
+
+                        {error && <p className="error-text">{error}</p>}
+
+                        <div className="signup-link">
                             {t.auth.register.hasAccount}{' '}
-                            <Link to="/login" className="text-foreground underline">
+                            <Link to="/login">
                                 {t.auth.register.loginLink}
                             </Link>
-                        </p>
+                        </div>
                     </form>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     )
 }

@@ -54,7 +54,7 @@ export function LanguageDialog({
     )
 }
 
-export function LanguageToggle() {
+export function LanguageToggle({ variant = 'default' }: { variant?: 'default' | 'neon' }) {
     const [open, setOpen] = useState(false)
     const { lang, availableLanguages } = useTranslation()
     const currentLang = availableLanguages.find(l => l.code === lang)
@@ -63,12 +63,15 @@ export function LanguageToggle() {
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="fixed right-4 flex items-center gap-2 px-3 py-2 rounded-full border border-border bg-card/50 backdrop-blur-sm hover:bg-accent transition-all z-50 shadow-sm"
-                style={{ top: 'calc(1rem + env(safe-area-inset-top))' }}
+                className={`flex items-center rounded-full z-50 transition-all ${variant === 'neon'
+                    ? 'min-w-[100px] justify-center gap-3 px-8 py-3 border border-[#00ff87]/40 hover:border-[#00ff87]/80 bg-black/30 backdrop-blur-md text-[#00ff87] hover:text-[#00ff87] [text-shadow:0_0_8px_rgba(0,255,135,0.6)] hover:[text-shadow:0_0_15px_rgba(0,255,135,1)] font-bold tracking-widest'
+                    : 'gap-2 px-3 py-2 fixed right-4 border border-border bg-card/50 backdrop-blur-sm hover:bg-accent shadow-sm'
+                    }`}
+                style={variant === 'neon' ? {} : { top: 'calc(1rem + env(safe-area-inset-top))' }}
             >
-                <Globe size={16} className="text-muted-foreground" />
-                <span className="text-xs font-medium uppercase tracking-wider">{currentLang?.code}</span>
-                <span className="text-sm">{currentLang?.flag}</span>
+                {variant !== 'neon' && <Globe size={16} className="text-muted-foreground" />}
+                <span className={`uppercase tracking-wider ${variant === 'neon' ? 'text-lg' : 'text-xs font-medium'}`}>{currentLang?.code}</span>
+                <span className={variant === 'neon' ? 'text-lg' : 'text-sm'}>{currentLang?.flag}</span>
             </button>
             <LanguageDialog open={open} onClose={() => setOpen(false)} />
         </>
